@@ -19,6 +19,8 @@ public class Nodelijst {
 		client1.put("IPadress", new Integer(19216814));
 		
 		listofclients.add(client1);
+		
+		Nodelijst.writeJSON();
 	}
 	
 	public static void writeJSON()
