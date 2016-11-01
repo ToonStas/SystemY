@@ -15,8 +15,9 @@ public class Nodelijst {
 	public static void main(String[] args) 
 	{
 		JSONObject client1 = new JSONObject();
-		client1.put("Name", "Matthias");
-		client1.put("IPadress", new Integer(19216814));
+		client1.put("Name", "Matthias");					//client name
+		client1.put("IPadress", "192.168.1.4");				//client Ipadress
+		client1.put("hash", new Integer(32768));			//client integer waarde bekomen door hash functie
 		
 		listofclients.add(client1);
 		
