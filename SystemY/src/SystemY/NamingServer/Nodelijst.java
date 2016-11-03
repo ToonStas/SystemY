@@ -23,8 +23,7 @@ public class Nodelijst {
 	public static void main(String[] args)
 	{
 		Nodelijst.addNode("Matthias","192.168.1.4");
-		Nodelijst.addNode("floris","192.168.1.2");
-		Nodelijst.addNode("Matthias","192.168.1.4");
+		Nodelijst.addNode("Floris","192.168.1.2");
 		Nodelijst.writeJSON();
 		Nodelijst.readJSON();
 	}
