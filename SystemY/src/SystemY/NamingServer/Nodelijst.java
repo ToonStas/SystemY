@@ -73,6 +73,7 @@ public class Nodelijst {
 	{
 		JSONParser parser = new JSONParser();
 		listofnodes.clear();
+		listofclients.clear();
 		try 
 		{ 
 			Object obj = parser.parse(new FileReader("C:/TEMP/JSONFile.json")); 
@@ -80,8 +81,8 @@ public class Nodelijst {
 			   
 			for (int i = 0; i < jsonarray.size(); i++) {
 			    JSONObject jsonobject = (JSONObject) jsonarray.get(i);
-			    String tempName = (String) jsonobject.get("name");
-			    String tempIpadress = (String) jsonobject.get("ipAdress");
+			    String tempName = (String) jsonobject.get("Name");
+			    String tempIpadress = (String) jsonobject.get("IpAdress");
 			    Nodelijst.addNode(tempName, tempIpadress);
 			}
 			System.out.println("\nreading JSON object from file");
