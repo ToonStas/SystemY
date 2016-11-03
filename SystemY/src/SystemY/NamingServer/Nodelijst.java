@@ -26,26 +26,36 @@ public class Nodelijst {
 		Nodelijst.addNode("Floris","192.168.1.2");
 		Nodelijst.writeJSON();
 		Nodelijst.readJSON();
+		Nodelijst.removeNode(0);
+		Nodelijst.addNode("Matthias","192.168.1.4");
+		Nodelijst.writeJSON();
+		Nodelijst.readJSON();
+		
 	}
 	
 	public static void addNode(String name, String ipaddr)
 	{
 		Node newnode = new Node(name,ipaddr);
 		listofnodes.add(newnode);
-		Nodelijst.updateJSON();
+		Nodelijst.updateJSON(Integer.MAX_VALUE);
 	}
 	public static void removeNode(int place)
 	{
 		listofnodes.remove(place);
+		Nodelijst.updateJSON(place);
 	}
 	
-	public static void updateJSON()
+	public static void updateJSON(int index) // als je integermax value doorgeeft voeg je een node toe anders remove je de node op de meegegeven index.
 	{
-		listofclients.add(listofnodes.get(listofnodes.size()-1).Node);
-		/*for(int i=0;i<listofnodes.size();i++)
+		if(index == Integer.MAX_VALUE)
 		{
-			listofclients.add(listofnodes.get(i).Node);
-		}*/
+			listofclients.add(listofnodes.get(listofnodes.size()-1).Node);
+		}
+		else
+		{
+			listofclients.remove(index);
+		}
+		
 	}
 	
 	public static void writeJSON()
@@ -55,7 +65,7 @@ public class Nodelijst {
 			File file=new File("C:/TEMP/JSONFile.json");
 			file.createNewFile(); 
 			FileWriter fileWriter = new FileWriter(file);
-			System.out.println("Writing JSON object to file");
+			System.out.println("\nWriting JSON object to file");
 			System.out.println("-----------------------");
 			System.out.print(listofclients);
 			fileWriter.write(listofclients.toJSONString());
