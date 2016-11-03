@@ -6,7 +6,6 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import org.json.simple.JSONArray;
@@ -50,7 +49,6 @@ public class Nodelijst {
 		}*/
 	}
 	
-	@SuppressWarnings("unchecked")
 	public static void writeJSON()
 	{
 		try
