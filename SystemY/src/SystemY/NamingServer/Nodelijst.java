@@ -21,8 +21,13 @@ public class Nodelijst {
 	private List<Node> listOfNodes = new ArrayList<Node>();
 	private Nodelijst nodeLijst = new Nodelijst();
 	
-	public void main(String[] args)
+	public static void main(String[] args)
 	{
+		new Nodelijst();
+	}
+	
+	public void NodeLijst(){
+
 		nodeLijst.addNode("Matthias","192.168.1.4"); 
 		nodeLijst.addNode("Floris","192.168.1.2");
 		nodeLijst.writeJSON();
