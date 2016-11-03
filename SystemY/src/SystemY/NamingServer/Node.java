@@ -36,9 +36,14 @@ public class Node {
 		return(ipAdress);
 	}
 	public void calculatehash(){
-		this.hash = 32768;
+		int tempHash = this.name.hashCode();
+		if (tempHash < 0)
+			tempHash = tempHash * -1;
+		tempHash = tempHash % 32768;
+		this.hash = tempHash;
 		Node.replace("hash", this.hash);
 	}
+	
 	public int gethash(){
 		return(hash);
 	}
