@@ -1,12 +1,18 @@
 package SystemY.NamingServer;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 
 
 
@@ -63,6 +69,31 @@ public class Nodelijst {
 	
 	public static void readJSON()
 	{
+		JSONParser parser = new JSONParser();
+		listofnodes.clear();
+		try 
+		{ 
+			Object obj = parser.parse(new FileReader("C:/TEMP/JSONFile.json")); 
+			JSONArray jsonarray = (JSONArray) obj;
+			   
+			for (int i = 0; i < jsonarray.size(); i++) {
+			    JSONObject jsonobject = (JSONObject) jsonarray.get(i);
+			    String tempName = (String) jsonobject.get("name");
+			    String tempIpadress = (String) jsonobject.get("ipAdress");
+			    int tempHash = (int) jsonobject.get("hash");
+			    Nodelijst.addNode(tempName, tempIpadress);
+			}
+					
+		} 
+		catch (FileNotFoundException e) { 
+			e.printStackTrace(); 
+		} 
+		catch (IOException e) { 
+			e.printStackTrace(); 
+		} 
+		catch (ParseException e) { 
+			e.printStackTrace(); 
+		}
 		
 	}
 }
