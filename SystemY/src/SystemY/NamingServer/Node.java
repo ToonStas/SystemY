@@ -1,5 +1,8 @@
 package SystemY.NamingServer;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.json.simple.JSONObject;
 
 public class Node {
@@ -8,6 +11,7 @@ public class Node {
 	private String name;
 	private String ipAdress;
 	private int hash;
+	private Map<String, String> node = new HashMap<String, String>();
 	
 	public Node (String name, String ipAdress)
 	{
@@ -15,21 +19,26 @@ public class Node {
 		this.ipAdress = ipAdress;
 		calculatehash();
 		
-		Node.put("Name", this.name);
-		Node.put("IpAdress", this.ipAdress);
-		Node.put("hash", this.hash);
+		node.put("Name", this.name);
+		node.put("IpAdress", this.ipAdress);
+		node.put("Hash", Integer.toString(this.hash));
 	}
 	
-	public void setName (String name){
+	public int setName (String name){
 		this.name = name;
-		Node.replace("name",this.name);
+		if(name == getName())
+			return 0;
+		else{
+			node.put("Name",this.name);
+			return 1;
+		}
 	}
 	public String getName (){
 		return(name);
 	}
 	public void setIpAdress (String ipAdress){
 		this.ipAdress = ipAdress;
-		Node.replace("ipAdress",this.ipAdress);
+		node.put("IpAdress",this.ipAdress);
 
 	}
 	public String getIpAdress (){
@@ -41,10 +50,14 @@ public class Node {
 			tempHash = tempHash * -1;
 		tempHash = tempHash % 32768;
 		this.hash = tempHash;
-		Node.replace("hash", this.hash);
+		Node.put("Hash", Integer.toString(this.hash));
 	}
 	
 	public int gethash(){
 		return(hash);
+	}
+	
+	public int generateJSON(HashMap<String, String> node){
+		return 1;
 	}
 }

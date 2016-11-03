@@ -17,48 +17,61 @@ import org.json.simple.parser.ParseException;
 
 public class Nodelijst {
 
-	public static JSONArray listofclients = new JSONArray();
-	public static List<Node> listofnodes = new ArrayList<Node>();
+	private JSONArray listOfClients = new JSONArray();
+	private List<Node> listOfNodes = new ArrayList<Node>();
+	private Nodelijst nodeLijst = new Nodelijst();
 	
-	public static void main(String[] args)
+	public void main(String[] args)
 	{
-		Nodelijst.addNode("Matthias","192.168.1.4"); 
-		Nodelijst.addNode("Floris","192.168.1.2");
-		Nodelijst.writeJSON();
-		Nodelijst.readJSON();
-		Nodelijst.removeNode(0);
-		Nodelijst.addNode("Matthias","192.168.1.4");
-		Nodelijst.writeJSON();
-		Nodelijst.readJSON();
-		
+		nodeLijst.addNode("Matthias","192.168.1.4"); 
+		nodeLijst.addNode("Floris","192.168.1.2");
+		nodeLijst.writeJSON();
+		nodeLijst.readJSON();
+		nodeLijst.removeNode(0);
+		nodeLijst.addNode("Matthias","192.168.1.4");
+		nodeLijst.writeJSON();
+		nodeLijst.readJSON();
 	}
 	
-	public static void addNode(String name, String ipaddr)
+	public int addNode(String name, String ipaddr)
 	{
-		Node newnode = new Node(name,ipaddr);
-		listofnodes.add(newnode);
-		Nodelijst.updateJSON(Integer.MAX_VALUE);
-	}
-	public static void removeNode(int place)
-	{
-		listofnodes.remove(place);
-		Nodelijst.updateJSON(place);
+		for(int i=0; i<listOfNodes.size(); i++){
+			if(listOfNodes.get(i).getName()==name){
+				System.out.println("testopesto");
+				return 0;
+			}else{
+				
+			}
+		}
+		if(listOfNodes.contains(name)==false){
+			Node newnode = new Node(name,ipaddr);
+			listOfNodes.add(newnode);
+			nodeLijst.updateJSON(Integer.MAX_VALUE);
+			return 1;
+		}else{
+			return 0;
+		}
 	}
 	
-	public static void updateJSON(int index) // als je integermax value doorgeeft voeg je een node toe anders remove je de node op de meegegeven index.
+	public void removeNode(int place)
+	{
+		listOfNodes.remove(place);
+		nodeLijst.updateJSON(place);
+	}
+	
+	public void updateJSON(int index) // als je integermax value doorgeeft voeg je een node toe anders remove je de node op de meegegeven index.
 	{
 		if(index == Integer.MAX_VALUE)
 		{
-			listofclients.add(listofnodes.get(listofnodes.size()-1).Node);
+			listOfClients.add(listOfNodes.get(listOfNodes.size()-1).Node);
 		}
 		else
 		{
-			listofclients.remove(index);
+			listOfClients.remove(index);
 		}
-		
 	}
 	
-	public static void writeJSON()
+	public void writeJSON()
 	{
 		try
 		{
@@ -67,8 +80,8 @@ public class Nodelijst {
 			FileWriter fileWriter = new FileWriter(file);
 			System.out.println("\nWriting JSON object to file");
 			System.out.println("-----------------------");
-			System.out.print(listofclients);
-			fileWriter.write(listofclients.toJSONString());
+			System.out.print(listOfClients);
+			fileWriter.write(listOfClients.toJSONString());
 			fileWriter.flush();
 			fileWriter.close();
 		
@@ -79,11 +92,11 @@ public class Nodelijst {
         }
 	}
 	
-	public static void readJSON()
+	public void readJSON()
 	{
 		JSONParser parser = new JSONParser();
-		listofnodes.clear();
-		listofclients.clear();
+		listOfNodes.clear();
+		listOfClients.clear();
 		try 
 		{ 
 			Object obj = parser.parse(new FileReader("C:/TEMP/JSONFile.json")); 
@@ -93,11 +106,11 @@ public class Nodelijst {
 			    JSONObject jsonobject = (JSONObject) jsonarray.get(i);
 			    String tempName = (String) jsonobject.get("Name");
 			    String tempIpadress = (String) jsonobject.get("IpAdress");
-			    Nodelijst.addNode(tempName, tempIpadress);
+			    nodeLijst.addNode(tempName, tempIpadress);
 			}
 			System.out.println("\nreading JSON object from file");
 			System.out.println("-----------------------");
-			System.out.print(listofclients);
+			System.out.print(listOfClients);
 					
 		} 
 		catch (FileNotFoundException e) { 
