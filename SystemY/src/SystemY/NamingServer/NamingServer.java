@@ -19,7 +19,7 @@ public class NamingServer {
 //--> abstracte klasse voor communicatie
 
 //Node:
-//--> klasse bestandenlijst
+//--> klasse bestandenlijst   ==> niet gewoon in een list als atribuut van node
 //--> abstracte klasse voor communicatie
 
 
