@@ -1,87 +1,77 @@
 package SystemY.NamingServer;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-
+import java.util.HashMap;
+import java.util.Map;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
-
-
 public class Nodelijst {
 
-	private JSONArray listOfClients = new JSONArray();
-	private List<Node> listOfNodes = new ArrayList<Node>();
-	private Nodelijst nodeLijst = new Nodelijst();
+	private static JSONArray listOfClients;
+	private static Map<Integer, String> listOfNodes;
+	public static Nodelijst nodeLijst;
 	
-	public static void main(String[] args)
-	{
-		new Nodelijst();
+	public static void main(String[] args) {
+		nodeLijst = new Nodelijst();
+		listOfClients = new JSONArray();
+		listOfNodes = new HashMap<>();
+		nodeLijst.addNode("Matthias", "192.168.1.4");
+		nodeLijst.addNode("Floris", "192.168.1.2");
+		//nodeLijst.writeJSON();
+		//ijst.readJSON();
+		//nodeLijst.removeNode(0);
+		nodeLijst.addNode("Matthias", "192.168.1.4");
+		nodeLijst.writeJSON();
+		nodeLijst.readJSON();
 	}
-	
-	public void NodeLijst(){
 
-		nodeLijst.addNode("Matthias","192.168.1.4"); 
-		nodeLijst.addNode("Floris","192.168.1.2");
-		nodeLijst.writeJSON();
-		nodeLijst.readJSON();
-		nodeLijst.removeNode(0);
-		nodeLijst.addNode("Matthias","192.168.1.4");
-		nodeLijst.writeJSON();
-		nodeLijst.readJSON();
+	public Nodelijst() {
+		
 	}
-	
-	public int addNode(String name, String ipaddr)
-	{
-		for(int i=0; i<listOfNodes.size(); i++){
-			if(listOfNodes.get(i).getName()==name){
-				System.out.println("testopesto");
-				return 0;
-			}else{
-				
+
+	public int addNode(String name, String ipaddr) {
+		int val = 0;
+		int hash = calculatehash(name);
+		System.out.println(hash);
+		
+			if (listOfNodes.containsKey(hash)) {
+				System.out.println("bestaat al");
+			} else {
+				System.out.println("test");
+				Node node = new Node(name, ipaddr);
+				listOfNodes.put(node.gethash(), node.getIpAdress());
+				updateJSON(Integer.MAX_VALUE);
 			}
-		}
-		if(listOfNodes.contains(name)==false){
-			Node newnode = new Node(name,ipaddr);
-			listOfNodes.add(newnode);
-			nodeLijst.updateJSON(Integer.MAX_VALUE);
-			return 1;
-		}else{
-			return 0;
-		}
+		
+		return val;
 	}
-	
-	public void removeNode(int place)
-	{
+
+	public void removeNode(int place) {
 		listOfNodes.remove(place);
-		nodeLijst.updateJSON(place);
+		updateJSON(place);
 	}
-	
-	public void updateJSON(int index) // als je integermax value doorgeeft voeg je een node toe anders remove je de node op de meegegeven index.
+
+	public void updateJSON(int index) // als je integermax value doorgeeft voeg
+										// je een node toe anders verwijder je
+										// de node op de meegegeven index.
 	{
-		if(index == Integer.MAX_VALUE)
-		{
-			listOfClients.add(listOfNodes.get(listOfNodes.size()-1).Node);
-		}
-		else
-		{
+		if (index == Integer.MAX_VALUE) {
+			// listOfClients.add(listOfNodes.get(listOfNodes.size()-1).Node);
+		} else {
 			listOfClients.remove(index);
 		}
 	}
-	
-	public void writeJSON()
-	{
-		try
-		{
-			File file=new File("C:/TEMP/JSONFile.json");
-			file.createNewFile(); 
+
+	public void writeJSON() {
+		try {
+			File file = new File("C:/TEMP/JSONFile.json");
+			file.createNewFile();
 			FileWriter fileWriter = new FileWriter(file);
 			System.out.println("\nWriting JSON object to file");
 			System.out.println("-----------------------");
@@ -89,44 +79,41 @@ public class Nodelijst {
 			fileWriter.write(listOfClients.toJSONString());
 			fileWriter.flush();
 			fileWriter.close();
-		
-		
+
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
-		catch (IOException e) {
-            e.printStackTrace();
-        }
 	}
-	
-	public void readJSON()
-	{
+
+	public void readJSON() {
 		JSONParser parser = new JSONParser();
 		listOfNodes.clear();
 		listOfClients.clear();
-		try 
-		{ 
-			Object obj = parser.parse(new FileReader("C:/TEMP/JSONFile.json")); 
+		try {
+			Object obj = parser.parse(new FileReader("C:/TEMP/JSONFile.json"));
 			JSONArray jsonarray = (JSONArray) obj;
-			   
+
 			for (int i = 0; i < jsonarray.size(); i++) {
-			    JSONObject jsonobject = (JSONObject) jsonarray.get(i);
-			    String tempName = (String) jsonobject.get("Name");
-			    String tempIpadress = (String) jsonobject.get("IpAdress");
-			    nodeLijst.addNode(tempName, tempIpadress);
+				JSONObject jsonobject = (JSONObject) jsonarray.get(i);
+				String tempName = (String) jsonobject.get("Name");
+				String tempIpadress = (String) jsonobject.get("IpAdress");
+				addNode(tempName, tempIpadress);
 			}
 			System.out.println("\nreading JSON object from file");
 			System.out.println("-----------------------");
 			System.out.print(listOfClients);
-					
-		} 
-		catch (FileNotFoundException e) { 
-			e.printStackTrace(); 
-		} 
-		catch (IOException e) { 
-			e.printStackTrace(); 
-		} 
-		catch (ParseException e) { 
-			e.printStackTrace(); 
+
+		} catch (ParseException | IOException e) {
+			e.printStackTrace();
 		}
-		
+
+	}
+
+	public int calculatehash(String name) {
+		int tempHash = this.hashCode();
+		if (tempHash < 0)
+			tempHash = tempHash * -1;
+		tempHash = tempHash % 32768;
+		return tempHash;
 	}
 }

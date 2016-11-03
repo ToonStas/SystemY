@@ -44,6 +44,7 @@ public class Node {
 	public String getIpAdress (){
 		return(ipAdress);
 	}
+	
 	public void calculatehash(){
 		int tempHash = this.name.hashCode();
 		if (tempHash < 0)
