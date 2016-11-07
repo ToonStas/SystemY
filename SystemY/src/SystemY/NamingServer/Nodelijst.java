@@ -51,6 +51,14 @@ public class Nodelijst {
 		
 		return val;
 	}
+	
+	public int calculateHash(String nodeNaam){ //Deze functie berekend de hash van een String als parameter.
+		int tempHash = nodeNaam.hashCode();
+		if (tempHash < 0)
+			tempHash = tempHash * -1;
+		tempHash = tempHash % 32768;
+		return tempHash;
+	}
 
 	public void removeNode(int place) {
 		listOfNodes.remove(place);

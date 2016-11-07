@@ -45,16 +45,28 @@ public class Node {
 		return(ipAdress);
 	}
 	
-	public void calculatehash(){
+	private int calculateHash(){ //Deze functie berekend de hash voor deze node zelf bij initialisatie
 		int tempHash = this.name.hashCode();
 		if (tempHash < 0)
 			tempHash = tempHash * -1;
 		tempHash = tempHash % 32768;
 		this.hash = tempHash;
-		Node.put("Hash", Integer.toString(this.hash));
+		node.put("hash",this.hash);
+		return 1;
 	}
 	
-	public int gethash(){
+	public boolean compareHash(String nodeNaam){ //Deze functie geeft true terug als de nodenamen dezelfde hashcode hebben.
+		int tempHash = nodeNaam.HashCode();
+		if (tempHash < 0)
+			tempHash = tempHash * -1;
+		tempHash = tempHash % 32768;
+		if (tempHash == this.hash)
+			return true;
+		else
+			return false;
+	}
+	
+	public int getHash(){
 		return(hash);
 	}
 	
