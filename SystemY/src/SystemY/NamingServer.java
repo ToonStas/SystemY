@@ -1,8 +1,12 @@
 package SystemY;
 
-public class NamingServer {
+import java.rmi.RemoteException;
+import java.rmi.server.UnicastRemoteObject;
 
-	public static void main(String[] args) {
+public class NamingServer extends UnicastRemoteObject implements NamingServerInterface {
+	private static final long serialVersionUID = 1L;
+
+	public NamingServer() throws RemoteException{
 		Nodelijst nodeLijst = new Nodelijst();
 		
 		nodeLijst.addNode("Matthias", "192.168.1.4");
@@ -11,6 +15,12 @@ public class NamingServer {
 		nodeLijst.writeJSON();
 		nodeLijst.readJSON();
 
+	}
+	
+	public String getFileLocation(String fileName){
+		String location = null;
+		
+		return location;
 	}
 
 }

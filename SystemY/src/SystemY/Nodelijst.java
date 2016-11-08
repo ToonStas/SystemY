@@ -7,10 +7,8 @@ import java.io.IOException;
 import java.util.Map;
 import java.util.TreeMap;
 
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
+import org.json.simple.*;
+import org.json.simple.parser.*;
 
 public class Nodelijst {
 
@@ -25,15 +23,14 @@ public class Nodelijst {
 	public int addNode(String name, String ipaddr) {
 		int val = 0;
 		int hash = calculateHash(name);
-		System.out.println(hash);
 		
 			if (listOfNodes.containsKey(hash)) {
-				System.out.println("bestaat al");
+				val = 0;
 			} else {
-				System.out.println("test");
 				NodeNamingServer node = new NodeNamingServer(name, ipaddr);
 				listOfNodes.put(node.getHash(), node.getIpAdress());
 				updateJSON(Integer.MAX_VALUE, node);
+				val = 1;
 			}
 		
 		return val;
@@ -49,7 +46,7 @@ public class Nodelijst {
 										// de node op de meegegeven index.
 	{
 		if (index == Integer.MAX_VALUE) {
-			listOfClients.add(null);
+			listOfClients.add(node.Node);
 		} else {
 			listOfClients.remove(index);
 		}
