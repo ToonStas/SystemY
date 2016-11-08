@@ -6,6 +6,8 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.TreeMap;
+
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -20,12 +22,9 @@ public class Nodelijst {
 	public static void main(String[] args) {
 		nodeLijst = new Nodelijst();
 		listOfClients = new JSONArray();
-		listOfNodes = new HashMap<>();
+		listOfNodes = new TreeMap<>();
 		nodeLijst.addNode("Matthias", "192.168.1.4");
 		nodeLijst.addNode("Floris", "192.168.1.2");
-		//nodeLijst.writeJSON();
-		//ijst.readJSON();
-		//nodeLijst.removeNode(0);
 		nodeLijst.addNode("Matthias", "192.168.1.4");
 		nodeLijst.writeJSON();
 		nodeLijst.readJSON();
@@ -46,31 +45,23 @@ public class Nodelijst {
 				System.out.println("test");
 				Node node = new Node(name, ipaddr);
 				listOfNodes.put(node.gethash(), node.getIpAdress());
-				updateJSON(Integer.MAX_VALUE);
+				updateJSON(Integer.MAX_VALUE, node);
 			}
 		
 		return val;
 	}
-	
-	public int calculateHash(String nodeNaam){ //Deze functie berekend de hash van een String als parameter.
-		int tempHash = nodeNaam.hashCode();
-		if (tempHash < 0)
-			tempHash = tempHash * -1;
-		tempHash = tempHash % 32768;
-		return tempHash;
-	}
 
 	public void removeNode(int place) {
 		listOfNodes.remove(place);
-		updateJSON(place);
+		updateJSON(place, null);
 	}
 
-	public void updateJSON(int index) // als je integermax value doorgeeft voeg
+	public void updateJSON(int index, Node node) // als je integermax value doorgeeft voeg
 										// je een node toe anders verwijder je
 										// de node op de meegegeven index.
 	{
 		if (index == Integer.MAX_VALUE) {
-			// listOfClients.add(listOfNodes.get(listOfNodes.size()-1).Node);
+			listOfClients.add(null);
 		} else {
 			listOfClients.remove(index);
 		}
