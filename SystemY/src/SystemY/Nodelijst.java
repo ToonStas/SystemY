@@ -1,4 +1,4 @@
-package SystemY.NamingServer;
+package SystemY;
 
 import java.io.File;
 import java.io.FileReader;
@@ -31,7 +31,7 @@ public class Nodelijst {
 				System.out.println("bestaat al");
 			} else {
 				System.out.println("test");
-				Node node = new Node(name, ipaddr);
+				NodeNamingServer node = new NodeNamingServer(name, ipaddr);
 				listOfNodes.put(node.getHash(), node.getIpAdress());
 				updateJSON(Integer.MAX_VALUE, node);
 			}
@@ -44,7 +44,7 @@ public class Nodelijst {
 		updateJSON(place, null);
 	}
 
-	public void updateJSON(int index, Node node) // als je integermax value doorgeeft voeg
+	public void updateJSON(int index, NodeNamingServer node) // als je integermax value doorgeeft voeg
 										// je een node toe anders verwijder je
 										// de node op de meegegeven index.
 	{

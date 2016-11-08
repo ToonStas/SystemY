@@ -1,4 +1,4 @@
-package SystemY.NamingServer;
+package SystemY;
 
 public class NamingServer {
 
