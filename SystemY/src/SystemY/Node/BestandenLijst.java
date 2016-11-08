@@ -46,5 +46,34 @@ public class BestandenLijst {
 		}
 			
 	}
+	
+	public int verwijderBestand(Bestand teVerwijderen){
+		if (lijst.contains(teVerwijderen)){
+			lijst.remove(teVerwijderen);
+			return 1;
+		}
+		else
+			return 0;
+			
+	}
+	
+	public int verwijderBestandMetNaam(String naamBestand){
+		boolean flag = false;
+		for (int i = 0; i < lijst.size(); i++){
+			if (lijst.get(i).getNaam()==naamBestand){
+				lijst.remove(i);
+				flag = true;
+			}
+		} 
+		if (flag){
+			System.out.println("Bestand succesvol verwijderd");
+			return 1;
+		}
+		else{
+			System.out.println("Bestandsnaam bestaat niet op deze node.");
+			return 0;
+		}
+		
+	}
 
 }
