@@ -2,25 +2,26 @@
 import java.io.IOException;
 import java.net.*;
 
-public class test {
+public class test{
 
 	private int port;
 	private String multicastGroup;
 	private MulticastSocket s;
 	
 	public test(){
-		port = 5000;
-		multicastGroup = "192.168.1.15";
+		port = 8769;
+		multicastGroup = "224.1.1.1";
 		try {
 			s = new MulticastSocket(port);				 		 // Create the socket and bind it to port 'port'.
 			s.joinGroup(InetAddress.getByName(multicastGroup));	 // join the multicast group
-		} catch (IOException e) {
+		} 
+		catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
 	
-	public void start()
+	public void run()
 	{
 		// Create a DatagramPacket and do a receive
 		byte buf[] = new byte[1024];
