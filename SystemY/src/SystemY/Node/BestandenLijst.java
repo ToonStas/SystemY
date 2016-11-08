@@ -75,5 +75,8 @@ public class BestandenLijst {
 		}
 		
 	}
-
+	
+	public int getSize(){
+		return lijst.size();
+	}
 }
