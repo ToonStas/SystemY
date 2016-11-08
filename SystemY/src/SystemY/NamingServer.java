@@ -7,18 +7,20 @@ public class NamingServer extends UnicastRemoteObject implements NamingServerInt
 	private static final long serialVersionUID = 1L;
 
 	public NamingServer() throws RemoteException{
+		super();
 		Nodelijst nodeLijst = new Nodelijst();
 		
 		nodeLijst.addNode("Matthias", "192.168.1.4");
 		nodeLijst.addNode("Floris", "192.168.1.2");
 		nodeLijst.addNode("Matthias", "192.168.1.4");
-		nodeLijst.writeJSON();
-		nodeLijst.readJSON();
+		//nodeLijst.writeJSON();
+		//nodeLijst.readJSON();
 
 	}
 	
 	public String getFileLocation(String fileName){
-		String location = null;
+		//TODO itereer door lijst met bestanden voor gekozen fileName en return dan het ipadres van de eigenaar
+		String location = "ipadres";
 		
 		return location;
 	}
