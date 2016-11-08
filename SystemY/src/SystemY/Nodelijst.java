@@ -46,7 +46,7 @@ public class Nodelijst {
 										// de node op de meegegeven index.
 	{
 		if (index == Integer.MAX_VALUE) {
-			listOfClients.add(node);
+			listOfClients.add(node.Node);
 		} else {
 			listOfClients.remove(index);
 		}
