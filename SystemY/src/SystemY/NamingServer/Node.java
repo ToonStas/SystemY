@@ -51,7 +51,7 @@ public class Node {
 			tempHash = tempHash * -1;
 		tempHash = tempHash % 32768;
 		this.hash = tempHash;
-		node.put("hash",this.hash);
+		node.put("hash",Integer.toString(this.hash));
 		return 1;
 	}
 	
