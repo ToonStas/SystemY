@@ -1,5 +1,6 @@
 package SystemY;
 
+import java.lang.reflect.Array;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 
@@ -19,7 +20,8 @@ public class NamingServer extends UnicastRemoteObject implements NamingServerInt
 	}
 	
 	public String getFileLocation(String fileName){
-		String location = "heksenland";
+		//TODO itereer door lijst met bestanden voor gekozen fileName en return dan het ipadres van de eigenaar
+		String location = "ipadres";
 		
 		return location;
 	}
