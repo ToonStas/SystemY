@@ -8,6 +8,7 @@ public class Bestand {
 	private String path;
 	private File bestand;
 	private int hash;
+	
 	public Bestand(String naamBestand, String pathBestand){
 		this.naam = naamBestand;
 		this.path = pathBestand;
@@ -40,9 +41,21 @@ public class Bestand {
 		return this.path;
 	}
 	
-	public void changeName(String nieuweNaam){
+	public int changeName(String nieuweNaam){ //methode voor het veranderen van de bestandsnaam, de hash wordt als parameter teruggegeven.
 		this.naam = nieuweNaam;
 		calculateHash();
+		return this.hash;
+	}
+	
+	public boolean checkName(String checkNaam){
+		int tempHash = checkNaam.hashCode();
+		if (tempHash < 0)
+			tempHash = tempHash * -1;
+		tempHash = tempHash % 32768;
+		if (tempHash == this.hash)
+			return true;
+		else
+			return false;
 	}
 
 }
