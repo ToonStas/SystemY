@@ -7,7 +7,7 @@ import org.json.simple.JSONObject;
 
 public class Node {
 
-	public  JSONObject Node = new JSONObject();
+	public  JSONObject Node = new JSONObject(); 
 	private String name;
 	private String ipAdress;
 	private int hash;
@@ -17,7 +17,7 @@ public class Node {
 	{
 		this.name = name;
 		this.ipAdress = ipAdress;
-		calculatehash();
+		calculateHash();
 		
 		node.put("Name", this.name);
 		node.put("IpAdress", this.ipAdress);

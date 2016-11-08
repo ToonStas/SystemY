@@ -44,7 +44,7 @@ public class Nodelijst {
 			} else {
 				System.out.println("test");
 				Node node = new Node(name, ipaddr);
-				listOfNodes.put(node.gethash(), node.getIpAdress());
+				listOfNodes.put(node.getHash(), node.getIpAdress());
 				updateJSON(Integer.MAX_VALUE, node);
 			}
 		
