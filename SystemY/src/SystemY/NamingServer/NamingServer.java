@@ -3,7 +3,13 @@ package SystemY.NamingServer;
 public class NamingServer {
 
 	public static void main(String[] args) {
-		// TODO Auto-generated method stub
+		Nodelijst nodeLijst = new Nodelijst();
+		
+		nodeLijst.addNode("Matthias", "192.168.1.4");
+		nodeLijst.addNode("Floris", "192.168.1.2");
+		nodeLijst.addNode("Matthias", "192.168.1.4");
+		nodeLijst.writeJSON();
+		nodeLijst.readJSON();
 
 	}
 

@@ -14,23 +14,12 @@ import org.json.simple.parser.ParseException;
 
 public class Nodelijst {
 
-	private static JSONArray listOfClients;
-	private static Map<Integer, String> listOfNodes;
-	public static Nodelijst nodeLijst;
-	
-	public static void main(String[] args) {
-		nodeLijst = new Nodelijst();
-		listOfClients = new JSONArray();
-		listOfNodes = new TreeMap<>();
-		nodeLijst.addNode("Matthias", "192.168.1.4");
-		nodeLijst.addNode("Floris", "192.168.1.2");
-		nodeLijst.addNode("Matthias", "192.168.1.4");
-		nodeLijst.writeJSON();
-		nodeLijst.readJSON();
-	}
+	private JSONArray listOfClients;
+	private Map<Integer, String> listOfNodes;
 
 	public Nodelijst() {
-		
+		listOfClients = new JSONArray();
+		listOfNodes = new TreeMap<>();
 	}
 
 	public int addNode(String name, String ipaddr) {
