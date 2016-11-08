@@ -12,6 +12,12 @@ public class NamingServer {
 		nodeLijst.readJSON();
 
 	}
+	
+	public String getFileLocation(String fileName){
+		String location = null;
+		
+		return location;
+	}
 
 }
 
