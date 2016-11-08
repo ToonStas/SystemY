@@ -2,13 +2,17 @@ package SystemY;
 
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.ArrayList;
+import java.util.Map;
+import java.util.TreeMap;
 
 public class NamingServer extends UnicastRemoteObject implements NamingServerInterface {
 	private static final long serialVersionUID = 1L;
+	private Nodelijst nodeLijst;
 
 	public NamingServer() throws RemoteException{
 		super();
-		Nodelijst nodeLijst = new Nodelijst();
+		nodeLijst = new Nodelijst();
 		
 		nodeLijst.addNode("Matthias", "192.168.1.4");
 		nodeLijst.addNode("Floris", "192.168.1.2");
@@ -21,6 +25,12 @@ public class NamingServer extends UnicastRemoteObject implements NamingServerInt
 	public String getFileLocation(String fileName){
 		//TODO itereer door lijst met bestanden voor gekozen fileName en return dan het ipadres van de eigenaar
 		String location = "ipadres";
+		int hash = nodeLijst.calculateHash(fileName);
+		TreeMap<Integer, String> listOfNodes = new TreeMap<>();
+		listOfNodes = nodeLijst.getListOfNodes();
+		
+		location = listOfNodes.floorEntry(hash).getValue();
+		
 		
 		return location;
 	}

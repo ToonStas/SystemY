@@ -100,5 +100,9 @@ public class Nodelijst {
         tempHash = tempHash % 32768;
         return tempHash;
     }
+    
+    public TreeMap<Integer, String> getListOfNodes(){
+		return (TreeMap<Integer, String>) listOfNodes;
+    }
 
 }

@@ -12,6 +12,7 @@ public class NodeNamingServer {
 	private String ipAdress;
 	private int hash;
 	private Map<String, String> node = new HashMap<String, String>();
+	private BestandenLijst bestandenLijst = new BestandenLijst();
 	
 	public NodeNamingServer (String name, String ipAdress)
 	{
@@ -72,5 +73,5 @@ public class NodeNamingServer {
 	
 	public int generateJSON(HashMap<String, String> node){
 		return 1;
-	}
+	} 
 }
