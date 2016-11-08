@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -36,7 +35,7 @@ public class Nodelijst {
 
 	public int addNode(String name, String ipaddr) {
 		int val = 0;
-		int hash = calculatehash(name);
+		int hash = calculateHash(name);
 		System.out.println(hash);
 		
 			if (listOfNodes.containsKey(hash)) {
@@ -108,11 +107,12 @@ public class Nodelijst {
 
 	}
 
-	public int calculatehash(String name) {
-		int tempHash = this.hashCode();
-		if (tempHash < 0)
-			tempHash = tempHash * -1;
-		tempHash = tempHash % 32768;
-		return tempHash;
-	}
+    public int calculateHash(String nodeNaam){ //Deze functie berekend de hash van een String als parameter.
+        int tempHash = nodeNaam.hashCode();
+        if (tempHash < 0)
+            tempHash = tempHash * -1;
+        tempHash = tempHash % 32768;
+        return tempHash;
+    }
+
 }
