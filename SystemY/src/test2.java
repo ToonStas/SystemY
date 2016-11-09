@@ -31,14 +31,13 @@ public class test2 {
 		
 		try{ 
 		br = new BufferedReader(new InputStreamReader(System.in));
-		while(true){
-			System.out.println("Naam Node: ");
-			naam = br.readLine();
-		}
+		System.out.println("Naam Node: ");
+		naam = br.readLine();
+		
 		} catch(IOException e){
 			e.printStackTrace();
 		} finally{
-			if(br != null){
+			if(naam == "\n"){
 				try{
 					br.close();
 				} catch(IOException e){
@@ -55,14 +54,12 @@ public class test2 {
 		
 		try{ 
 		br = new BufferedReader(new InputStreamReader(System.in));
-		while(true){
-			System.out.println("IP Node: ");
-			IP = br.readLine();
-		}
+		System.out.println("IP Node: ");
+		IP = br.readLine();
 		} catch(IOException e){
 			e.printStackTrace();
 		} finally{
-			if(br != null){
+			if(IP == "\n"){
 				try{
 					br.close();
 				} catch(IOException e){
