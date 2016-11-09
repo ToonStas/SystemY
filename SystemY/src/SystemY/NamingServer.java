@@ -24,13 +24,14 @@ public class NamingServer extends UnicastRemoteObject implements NamingServerInt
 		//TODO itereer door lijst met bestanden voor gekozen fileName en return dan het ipadres van de eigenaar
 		String location = "ipadres";
 		int hash = nodeLijst.calculateHash(fileName);
-		hash = 0;
 		TreeMap<Integer, NodeNamingServer> listOfNodes = new TreeMap<>();
 		listOfNodes = nodeLijst.getListOfNodes();
 		
-		location = listOfNodes.floorEntry(hash).getValue().getIpAdress(); //geeft het ipadres van de 1ste node <= de waarde van de hash
-		
-		System.out.println(location);
+		if(listOfNodes.floorEntry(hash)==null){ //geeft het ipadres van de 1ste node <= de waarde van de hash
+			location = listOfNodes.lastEntry().getValue().getIpAdress();
+		}else{
+			location = listOfNodes.floorEntry(hash).getValue().getIpAdress(); 
+		}
 		
 		return location;
 	}
