@@ -23,6 +23,7 @@ public class Nodelijst {
 	public int addNode(String name, String ipaddr) {
 		int val = 0;
 		int hash = calculateHash(name);
+		System.out.println(hash);
 		
 			if (listOfNodes.containsKey(hash)) {
 				val = 0;
