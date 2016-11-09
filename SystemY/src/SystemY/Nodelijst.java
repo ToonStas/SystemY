@@ -13,7 +13,7 @@ import org.json.simple.parser.*;
 public class Nodelijst {
 
 	private JSONArray listOfClients;
-	private Map<Integer, String> listOfNodes;
+	private Map<Integer, NodeNamingServer> listOfNodes;
 
 	public Nodelijst() {
 		listOfClients = new JSONArray();
@@ -28,7 +28,7 @@ public class Nodelijst {
 				val = 0;
 			} else {
 				NodeNamingServer node = new NodeNamingServer(name, ipaddr);
-				listOfNodes.put(node.getHash(), node.getIpAdress());
+				listOfNodes.put(node.getHash(), node);
 				updateJSON(Integer.MAX_VALUE, node);
 				val = 1;
 			}
@@ -93,7 +93,7 @@ public class Nodelijst {
 
 	}
 
-    public int calculateHash(String nodeNaam){ //Deze functie berekend de hash van een String als parameter.
+    public int calculateHash(String nodeNaam){ //Deze functie berekent de hash van een String als parameter.
         int tempHash = nodeNaam.hashCode();
         if (tempHash < 0)
             tempHash = tempHash * -1;
@@ -101,8 +101,14 @@ public class Nodelijst {
         return tempHash;
     }
     
-    public TreeMap<Integer, String> getListOfNodes(){
-		return (TreeMap<Integer, String>) listOfNodes;
+    public TreeMap<Integer, NodeNamingServer> getListOfNodes(){
+		return (TreeMap<Integer, NodeNamingServer>) listOfNodes;
+    }
+    
+    public NodeNamingServer getNode(int hash){
+		NodeNamingServer node = listOfNodes.get(hash);
+    	return node;
+    	
     }
 
 }
