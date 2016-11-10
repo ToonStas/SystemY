@@ -13,13 +13,9 @@ public class MulticastReceiverThread implements Runnable {
 		port = 8769;
 		multicastGroup = "224.1.1.1";
 		try {
-			s = new MulticastSocket(port); // Create the socket and bind it to
-											// port 'port'.
-			s.joinGroup(InetAddress.getByName(multicastGroup)); // join the
-																// multicast
-																// group
+			s = new MulticastSocket(port); // Create the socket and bind it to port 'port'.
+			s.joinGroup(InetAddress.getByName(multicastGroup)); // join the multicast group
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
@@ -46,9 +42,6 @@ public class MulticastReceiverThread implements Runnable {
 		
 		//receive another
 		run();
-		
-		//Socket sluiten?
-		//close();
 	}
 
 	public void close() {
