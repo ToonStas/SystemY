@@ -1,9 +1,9 @@
 import java.io.UnsupportedEncodingException;
 
-public class main {
+public class SenderTest {
 
 	public static void main(String[] args) throws UnsupportedEncodingException {
-		new test2();
+		new MulticastSender();
 	}
 
 }

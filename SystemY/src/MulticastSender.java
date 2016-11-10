@@ -5,13 +5,13 @@ import java.io.UnsupportedEncodingException;
 import java.net.*;
 import java.util.Arrays;
 
-public class test2 {
+public class MulticastSender {
 	
 	private int port = 8769; //Poort naar waar we verzenden
 	private String group = "224.1.1.1";
 	private MulticastSocket s;
 	
-	public test2() throws UnsupportedEncodingException{
+	public MulticastSender() throws UnsupportedEncodingException{
 		String Name;
 		String Ipadres;
 		
