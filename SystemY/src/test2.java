@@ -1,15 +1,17 @@
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
 import java.net.*;
+import java.util.Arrays;
 
 public class test2 {
 	
-	private int port = 8769; //Poort naarwaar we verzenden
+	private int port = 8769; //Poort naar waar we verzenden
 	private String group = "224.1.1.1";
 	private MulticastSocket s;
 	
-	public test2(){
+	public test2() throws UnsupportedEncodingException{
 		String Name;
 		String Ipadres;
 		
@@ -71,35 +73,29 @@ public class test2 {
 	}
 	
 	
-	public void sending(String naam, String Ip){
+	public void sending(String naam, String Ip) throws UnsupportedEncodingException{
 		//Hier moeten we de n; het IP adres verzenden
 
 		String Naamip;
 		
-		Naamip = naam + Ip;
+		Naamip = naam + " " + Ip;
 		
 		byte[] sendData = Naamip.getBytes();	//Naam in sendData1 zetten
 		
-		for(int i=0 ; i<sendData.length; i++){
+		/*for(int i=0 ; i<sendData.length; i++){
 			sendData[i] = (byte)i;
-		}
-		DatagramPacket pack = new DatagramPacket(sendData, 10);
+		}*/
 		try {
-			pack = new DatagramPacket(sendData, sendData.length,InetAddress.getByName(group), port);
-		} catch (UnknownHostException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
-		
-		try {
+			DatagramPacket pack = new DatagramPacket(sendData, sendData.length,InetAddress.getByName(group), port);
 			s.send(pack); 
 			System.out.println("Pakket is verzonden.");
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		} catch (IOException e1) {
+			e1.printStackTrace();
+			System.out.println("Pakket is niet verzonden");
 		}
 		
 	}
+	
 	public void close(){
 		s.close();
 	}	

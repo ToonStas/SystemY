@@ -1,6 +1,7 @@
 
 import java.io.IOException;
 import java.net.*;
+import java.util.Arrays;
 
 public class test{
 
@@ -36,9 +37,12 @@ public class test{
 			e.printStackTrace();
 		}
 		
+		String nameIp = new String(buf, 0, buf.length);
+		nameIp=nameIp.replaceAll(Character.toString((char)0), "");
+		
 		// Finally, let us do something useful with the data we just received,
 		// like print it on stdout :-)
-		System.out.println("Received data from: " + pack.getAddress().toString() +
+		System.out.println("Received data from: " + pack.getAddress() +
 				    ":" + pack.getPort() + " with length: " +
 				    pack.getLength());
 		System.out.write(pack.getData(),0,pack.getLength());
