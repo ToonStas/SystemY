@@ -20,20 +20,22 @@ public class Nodelijst {
 		listOfNodes = new TreeMap<>();
 	}
 
-	public int addNode(String name, String ipaddr) {
+	public int addNode(String nameIp) {
+		String[] parts = nameIp.split(" ");
+		String name = parts[0];
+		String ipaddr = parts[1];
+		
 		int val = 0;
 		int hash = calculateHash(name);
-		System.out.println(hash);
 		
-			if (listOfNodes.containsKey(hash)) {
-				val = 0;
-			} else {
-				NodeNamingServer node = new NodeNamingServer(name, ipaddr);
-				listOfNodes.put(node.getHash(), node);
-				updateJSON(Integer.MAX_VALUE, node);
-				val = 1;
-			}
-		
+		if (listOfNodes.containsKey(hash)) {
+			val = 0;
+		} else {
+			NodeNamingServer node = new NodeNamingServer(name, ipaddr);
+			listOfNodes.put(node.getHash(), node);
+			updateJSON(Integer.MAX_VALUE, node);
+			val = 1;
+		}
 		return val;
 	}
 
@@ -82,7 +84,7 @@ public class Nodelijst {
 				JSONObject jsonobject = (JSONObject) jsonarray.get(i);
 				String tempName = (String) jsonobject.get("Name");
 				String tempIpadress = (String) jsonobject.get("IpAdress");
-				addNode(tempName, tempIpadress);
+				//addNode(tempName, tempIpadress);
 			}
 			System.out.println("\nreading JSON object from file");
 			System.out.println("-----------------------");
@@ -109,7 +111,12 @@ public class Nodelijst {
     public NodeNamingServer getNode(int hash){
 		NodeNamingServer node = listOfNodes.get(hash);
     	return node;
-    	
+    }
+    
+    public void listAllNodes(){
+    	for (Map.Entry<Integer, NodeNamingServer> entry : listOfNodes.entrySet()) {
+    	     System.out.println("Hash: " + entry.getKey() + ", Ipadres: " + entry.getValue().getIpAdress() + ", Naam: " + entry.getValue().getName());
+    	}
     }
 
 }

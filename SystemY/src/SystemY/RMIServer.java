@@ -13,7 +13,7 @@ public class RMIServer {
 		try {
 			Registry reg = LocateRegistry.createRegistry(1099);
 			reg.bind(bindLocation, namingServer);
-			System.out.println("NamingServer is ready at:" + bindLocation);
+			System.out.println("NamingServer is ready at: " + bindLocation);
 			System.out.println("java RMI registry created.");
 		} catch (AlreadyBoundException e) {
 			System.out.println("java RMI registry already exists.");
