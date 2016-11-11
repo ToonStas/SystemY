@@ -3,16 +3,12 @@ package SystemY;
 import java.io.IOException;
 import java.net.*;
 
-public class MulticastReceiverThread extends Thread {
-
-	private Nodelijst nodeLijstThread;
+public class MulticastReceiverThreadClient extends Thread {
 	private int port;
 	private String multicastGroup;
 	private MulticastSocket s;
 
-	public MulticastReceiverThread(Nodelijst nodeLijst) {
-		nodeLijstThread = nodeLijst;
-		
+	public MulticastReceiverThreadClient() {		
 		port = 8769;
 		multicastGroup = "224.1.1.1";
 		try {
@@ -42,11 +38,6 @@ public class MulticastReceiverThread extends Thread {
 				+ pack.getLength());
 		System.out.write(pack.getData(), 0, pack.getLength());
 		System.out.println();
-		
-		
-		//node toevoegen aan de naming server
-		nodeLijstThread.addNode(nameIp);
-		nodeLijstThread.listAllNodes();
 		
 		//receive another
 		run();

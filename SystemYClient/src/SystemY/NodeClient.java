@@ -7,8 +7,11 @@ public class NodeClient {
 	public static void main(String argv[]) {
 		new NodeClient();
 	}
+
+	private Thread multicastReceiverThreadClient;
 	
 	public NodeClient(){
+		multicastReceiverThreadClient = new Thread(new MulticastReceiverThreadClient());
 		startUp();
 		String location = getFileLocation("test.txt");
 		System.out.println("Locatie van het bestand is: " + location);
@@ -31,6 +34,7 @@ public class NodeClient {
 	public void startUp(){
 		try {
 			new MulticastSender();
+			multicastReceiverThreadClient.start();
 		} catch (UnsupportedEncodingException e) {
 			e.printStackTrace();
 		}

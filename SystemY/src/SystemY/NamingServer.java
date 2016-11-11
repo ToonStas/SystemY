@@ -9,7 +9,7 @@ public class NamingServer extends UnicastRemoteObject implements NamingServerInt
 	private Nodelijst nodeLijst;
 	private Thread multicastReceiverThread;
 
-	//Namingserver houdt enkel een lijst van nodes bij met hierin de naam, da hash en het ipadres. Niks meer!
+	//Namingserver houdt enkel een lijst van nodes bij met hierin de naam, de hash en het ipadres. Niks meer!
 	public NamingServer() throws RemoteException{
 		super();
 		nodeLijst = new Nodelijst();
