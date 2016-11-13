@@ -2,13 +2,16 @@ package SystemY;
 
 import java.io.IOException;
 import java.net.*;
+import java.util.TreeMap;
 
 public class MulticastReceiverThreadClient extends Thread {
 	private int port;
 	private String multicastGroup;
 	private MulticastSocket s;
+	private TreeMap<Integer, String> nodeLijst;
 
-	public MulticastReceiverThreadClient() {		
+	public MulticastReceiverThreadClient(TreeMap<Integer, String> nodeLijst) {	
+		this.nodeLijst = nodeLijst;
 		port = 8769;
 		multicastGroup = "224.1.1.1";
 		try {
@@ -39,6 +42,11 @@ public class MulticastReceiverThreadClient extends Thread {
 		System.out.write(pack.getData(), 0, pack.getLength());
 		System.out.println();
 		
+		String[] parts = nameIp.split(" ");
+		nodeLijst.put(calculateHash(parts[0]), parts[1]);
+		
+		System.out.println("The nodes are: " + nodeLijst);
+		
 		//receive another
 		run();
 	}
@@ -51,5 +59,13 @@ public class MulticastReceiverThreadClient extends Thread {
 			e.printStackTrace();
 		}
 	}
+	
+	public int calculateHash(String nodeNaam){ //Deze functie berekent de hash van een String als parameter.
+        int tempHash = nodeNaam.hashCode();
+        if (tempHash < 0)
+            tempHash = tempHash * -1;
+        tempHash = tempHash % 32768;
+        return tempHash;
+    }
 
 }
