@@ -7,29 +7,34 @@ import java.net.ServerSocket;
 import java.net.Socket;
 
 public class TCPSocketHandler {
-	public int port;
-	public ServerSocket servSock = null;
+	private int port;
+	private ServerSocket servSock = null;
+	private Socket sock = null;
+	
 	public TCPSocketHandler(int socketPort){
 		port = socketPort;
-		
 	}
 	public Socket getSocket()
 	{
-		Socket sock = null;
-		try {
-			servSock = new ServerSocket(port);
+		if (sock.isClosed()){
 			try {
-				System.out.println("Attempting connection...");
-				
-				sock = servSock.accept();
+				servSock = new ServerSocket(port);
+				try {
+					System.out.println("Attempting connection...");
+					
+					this.sock = servSock.accept();
+				} catch (IOException e) {
+					System.out.println("Could nog connect to socket.");
+				}
 			} catch (IOException e) {
-				System.out.println("Could nog connect to socket");
+				// TODO Auto-generated catch block
+				System.out.println("Serversocket fail.");
 			}
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 		}
 		return sock;
+		
+		
+		
 	}
 	
 
