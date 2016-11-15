@@ -5,21 +5,25 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
+import java.net.InetAddress;
 import java.rmi.*;
 import java.util.TreeMap;
 
 public class NodeClient {
 	private TreeMap<Integer, String> nodeLijst = new TreeMap<>(); //hash, ipadres
 	private TreeMap<String, Integer> bestandenLijst = new TreeMap<>(); //filename, hash
+	private int nextNode=32768;
+	private int previousNode=0;
+	private int ownHash;
+	private Thread multicastReceiverThreadClient, tcpNotifyReceiverThread;
 
 	public static void main(String argv[]) {
 		new NodeClient();
 	}
 
-	private Thread multicastReceiverThreadClient;
-
 	public NodeClient() {
-		multicastReceiverThreadClient = new Thread(new MulticastReceiverThreadClient(nodeLijst));
+		multicastReceiverThreadClient = new Thread(new MulticastReceiverThreadClient(nodeLijst, nextNode, previousNode, ownHash, this));
+		tcpNotifyReceiverThread = new Thread(new TCPNotifyReceiverThread());
 		startUp();		
 		consoleGUI();
 	}
@@ -70,7 +74,7 @@ public class NodeClient {
 
 	private void startUp() {
 		try {
-			new MulticastSender();
+			new MulticastSender(ownHash);
 			multicastReceiverThreadClient.start();
 		} catch (UnsupportedEncodingException e) {
 			e.printStackTrace();
@@ -103,6 +107,14 @@ public class NodeClient {
 	}
 	
 	private void shutdown() { //als de client stopt
+		
+	}
+
+	public void notifyNext(int ownHash /*previous hash*/, int nextNodeHash /*next hash*/, int hash /*of node to notify*/) {
+		TCP.notifyNextAdd(ownHash, nextNodeHash, InetAddress.getByName(nodeLijst.get(hash))); //notifies the new node that his previous 
+	}
+
+	public void notifyPrevious(int previousNodeHash, int ownHash, int hash) {
 		
 	}
 }

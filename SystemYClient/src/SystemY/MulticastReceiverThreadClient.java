@@ -8,10 +8,16 @@ public class MulticastReceiverThreadClient extends Thread {
 	private int port;
 	private String multicastGroup;
 	private MulticastSocket s;
-	private TreeMap<Integer, String> nodeLijst;
+	private TreeMap<Integer, String> nodeLijst; //hash, ip
+	private int nextNode, previousNode, ownHash;
+	NodeClient nodeClient;
 
-	public MulticastReceiverThreadClient(TreeMap<Integer, String> nodeLijst) {	
+	public MulticastReceiverThreadClient(TreeMap<Integer, String> nodeLijst, int nextNode, int previousNode, int ownHash, NodeClient nodeClient) {	
 		this.nodeLijst = nodeLijst;
+		this.nextNode = nextNode;
+		this.previousNode = previousNode;
+		this.ownHash = ownHash;
+		this.nodeClient = nodeClient;
 		port = 8769;
 		multicastGroup = "224.1.1.1";
 		try {
@@ -43,10 +49,18 @@ public class MulticastReceiverThreadClient extends Thread {
 		System.out.println();
 		
 		String[] parts = nameIp.split(" ");
-		nodeLijst.put(calculateHash(parts[0]), parts[1]);
+		int hash = calculateHash(parts[0]);
+		nodeLijst.put(hash, parts[1]);
 		
-		System.out.println("The nodes are: " + nodeLijst);
-		
+		if(hash>ownHash & hash<nextNode){// if the new node lies between this node and the next node
+			//TODO notify next node with his previous and next hash: TCP.notifyNext(ownHash /*previous hash*/, nextNode /*next hash*/)
+			nodeClient.notifyNext(ownHash /*previous hash*/, nextNode /*next hash*/, hash /*of node to notify*/);
+			nextNode = hash;
+		}else if(previousNode<hash & hash<ownHash){// if the new node lies between this node and the previous node
+			//TODO notify previous with next hash and previous hash: TCP.notifyPrevious(previousNode /*previous hash*/, ownHash /*next hash*/)
+			nodeClient.notifyPrevious(previousNode /*previous hash*/, ownHash /*next hash*/, hash /*of node to notify*/);
+			previousNode = hash;
+		}
 		//receive another
 		run();
 	}
