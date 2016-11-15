@@ -20,7 +20,7 @@ public class MulticastSender {
 			address = InetAddress.getLocalHost();
 			ipAdres = address.getHostAddress() ;
 		} catch (UnknownHostException e1) {
-			e1.printStackTrace();
+			e1.printStackTrace(); 
 		} 
 	   
 		
