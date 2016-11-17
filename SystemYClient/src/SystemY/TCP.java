@@ -11,10 +11,7 @@ public class TCP {
 	public final static int SOCKET_PORT = 13267;
 	private Socket sock;
 	private ServerSocket serverSock;
-	private InetAddress ipPreviousClient;
 	private InetAddress ipThisClient;
-	private InetAddress ipNextClient;
-	private InetAddress ipNamingServer;
 	public TCP() throws IOException{
 		ipThisClient = InetAddress.getLocalHost();
 		this.sock = new Socket();
@@ -33,7 +30,7 @@ public class TCP {
 			{
 				sock.close();
 			}
-			sock = new Socket(ipThisClient,SOCKET_PORT);
+			sock = new Socket(ipNext,SOCKET_PORT);
 			System.out.println("Connecting to server");
 			BufferedWriter out = new BufferedWriter(new OutputStreamWriter(sock.getOutputStream()));
 			out.write("notifyNextAdd");
@@ -60,7 +57,7 @@ public class TCP {
 			{
 				sock.close();
 			}
-			sock = new Socket(ipThisClient,SOCKET_PORT);
+			sock = new Socket(ipPrevious,SOCKET_PORT);
 			System.out.println("Connecting to server");
 			BufferedWriter out = new BufferedWriter(new OutputStreamWriter(sock.getOutputStream()));
 			out.write("notifyPreviousAdd");
@@ -87,7 +84,7 @@ public class TCP {
 			{
 				sock.close();
 			}
-			sock = new Socket(ipThisClient,SOCKET_PORT);
+			sock = new Socket(ipPrevious,SOCKET_PORT);
 			System.out.println("Connecting to server");
 			BufferedWriter out = new BufferedWriter(new OutputStreamWriter(sock.getOutputStream()));
 			out.write("notifyNextShutdown");
@@ -112,7 +109,7 @@ public class TCP {
 			{
 				sock.close();
 			}
-			sock = new Socket(ipThisClient,SOCKET_PORT);
+			sock = new Socket(ipNext,SOCKET_PORT);
 			System.out.println("Connecting to server");
 			BufferedWriter out = new BufferedWriter(new OutputStreamWriter(sock.getOutputStream()));
 			out.write("notifyPreviousShutdown");
