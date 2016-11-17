@@ -45,7 +45,9 @@ public class MulticastReceiverThread extends Thread {
 		
 		
 		//node toevoegen aan de naming server
-		nodeLijstThread.addNode(nameIp);
+		int val = nodeLijstThread.addNode(nameIp);
+		if(val==0)
+			val =val;
 		nodeLijstThread.listAllNodes();
 		
 		//receive another
