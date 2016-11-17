@@ -18,7 +18,7 @@ public class TCP {
 		try {
 			serverSock = new ServerSocket(SOCKET_PORT);
 		} catch (IOException e) {
-			System.out.println("Couldn't create serversocket");
+			System.out.println("Couldn't create serversocket.");
 		}
 		this.listen();
 	}
