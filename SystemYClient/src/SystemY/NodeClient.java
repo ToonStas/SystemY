@@ -5,21 +5,26 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
+import java.net.InetAddress;
 import java.rmi.*;
 import java.util.TreeMap;
 
 public class NodeClient {
 	private TreeMap<Integer, String> nodeLijst = new TreeMap<>(); //hash, ipadres
 	private TreeMap<String, Integer> bestandenLijst = new TreeMap<>(); //filename, hash
+	private int nextNode=32768;
+	private int previousNode=0;
+	private int ownHash;
+	private Thread multicastReceiverThreadClient, tcpNotifyReceiverThread;
 
-	public static void main(String argv[]) {
+	public static void main(String args[]) {
 		new NodeClient();
 	}
 
-	private Thread multicastReceiverThreadClient;
-
 	public NodeClient() {
-		multicastReceiverThreadClient = new Thread(new MulticastReceiverThreadClient(nodeLijst));
+		multicastReceiverThreadClient = new Thread(new MulticastReceiverThreadClient(nodeLijst, nextNode, previousNode, ownHash, this));
+		tcpNotifyReceiverThread = new Thread(new TCPNotifyReceiverThread());
+		Object tcpSender;
 		startUp();		
 		consoleGUI();
 	}
@@ -57,8 +62,9 @@ public class NodeClient {
 	private String getFileLocation(String fileName) {
 		String location = "";
 		// TODO get IP address in discover
+		String ip = "localhost";
 		try {
-			String name = "//localhost:1099/NamingServer";
+			String name = "//"+ip+":1099/NamingServer";
 			NamingServerInterface ni = (NamingServerInterface) Naming.lookup(name);
 			location = ni.getFileLocation(fileName);
 		} catch (Exception e) {
@@ -70,7 +76,7 @@ public class NodeClient {
 
 	private void startUp() {
 		try {
-			new MulticastSender();
+			new MulticastSender(ownHash);
 			multicastReceiverThreadClient.start();
 		} catch (UnsupportedEncodingException e) {
 			e.printStackTrace();
@@ -95,14 +101,25 @@ public class NodeClient {
         String input="";
 		try {
 			input = br.readLine();
-		} catch (IOException e) {
+		} catch (IOException | NumberFormatException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+			readConsole();
 		}
 		return input;
 	}
 	
 	private void shutdown() { //als de client stopt
 		
+	}
+
+	public void notifyNext(int ownHash /*previous hash*/, int nextNodeHash /*next hash*/, int hash /*of node to notify*/) {
+		//Notifies the new node that his previous node is this node and his next node is this node's former next node
+		//tcpSender.notifyNextAdd(ownHash, nextNodeHash, InetAddress.getByName(nodeLijst.get(hash)));  
+	}
+
+	public void notifyPrevious(int previousNodeHash, int ownHash, int hash) {
+		//Notifies the new node that his previous node is this node's former previous node and his next node is this node
+		//tcpSender.notifyPrevious(previousNodeHash, ownHash, InetAddress.getByName(nodeLijst.get(hash)));
 	}
 }
