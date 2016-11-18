@@ -58,6 +58,7 @@ public class MulticastSender {
 			}
 		}
 		ownHash = calculateHash(naam);
+		System.out.println(ownHash);
 		return naam;
 	}
 

@@ -6,17 +6,19 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.net.InetAddress;
+import java.net.MalformedURLException;
 import java.rmi.*;
 import java.util.TreeMap;
 
 public class NodeClient {
 	private TreeMap<Integer, String> nodeLijst = new TreeMap<>(); //hash, ipadres
 	private TreeMap<String, Integer> bestandenLijst = new TreeMap<>(); //filename, hash
-	String ip = "localhost";
+	String ip = "192.168.1.3";
 	private int nextNode=32768;
 	private int previousNode=0;
 	private int ownHash;
 	private Thread multicastReceiverThreadClient, tcpNotifyReceiverThread;
+	NamingServerInterface ni;
 
 	public static void main(String args[]) {
 		new NodeClient();
@@ -25,8 +27,10 @@ public class NodeClient {
 	public NodeClient() {
 		multicastReceiverThreadClient = new Thread(new MulticastReceiverThreadClient(nodeLijst, nextNode, previousNode, ownHash, this));
 		tcpNotifyReceiverThread = new Thread(new TCPNotifyReceiverThread());
+		
 		TCP tcpSender;
-		startUp();		
+		startUp();
+		System.out.println(ownHash);
 		consoleGUI();
 	}
 	
@@ -64,8 +68,6 @@ public class NodeClient {
 		String location = "";
 		// TODO get IP address in discover
 		try {
-			String name = "//"+ip+":1099/NamingServer";
-			NamingServerInterface ni = (NamingServerInterface) Naming.lookup(name);
 			location = ni.getFileLocation(fileName);
 		} catch (Exception e) {
 			System.err.println("NamingServer exception: " + e.getMessage());
@@ -75,14 +77,19 @@ public class NodeClient {
 	}
 
 	private void startUp() {
+		//connect RMI to NamingServer
+		String name = "//"+ip+":1099/NamingServer";
 		try {
+			ni = (NamingServerInterface) Naming.lookup(name);
 			new MulticastSender(ownHash);
 			multicastReceiverThreadClient.start();
-		} catch (UnsupportedEncodingException e) {
+			System.out.println(ownHash);
+		} catch (MalformedURLException | RemoteException | NotBoundException | UnsupportedEncodingException e) {
 			e.printStackTrace();
-		}
+		}		
 	}
 
+	//gebeurt ook afzonderlijk in de multicastreceiverthread
 	private void addNode(int hash, String ipadres) { // Bij het opstarten van een andere node wordt deze via deze methode aan de
 													// lijst van gekende nodes toegevoegd
 		nodeLijst.put(hash, ipadres);
@@ -102,7 +109,6 @@ public class NodeClient {
 		try {
 			input = br.readLine();
 		} catch (IOException | NumberFormatException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 			readConsole();
 		}
