@@ -8,6 +8,8 @@ import java.io.UnsupportedEncodingException;
 import java.rmi.*;
 import java.util.TreeMap;
 
+import SystemY.MulticastReceiverThreadClient;
+
 public class NodeClient {
 	private TreeMap<Integer, String> nodeLijst = new TreeMap<>(); //hash, ipadres
 	private TreeMap<String, Integer> bestandenLijst = new TreeMap<>(); //filename, hash
@@ -102,26 +104,5 @@ public class NodeClient {
 		return input;
 	}
 	
-	private void shutdown(int hashnumber) { //Client (hashnumber) wants to shut down
-		int number= hashnumber;
-		int hnnext; //hashnumber of the next node
-		int hnprev; //hashnumber of the previous node
-		String ipnext;
-		String ipprev;
-		//Get next node and previous node using the current nodes hash number
-		hnnext = nodeLijst.higherKey(hashnumber); //This returns the least highest neighbour 
-		hnprev = nodeLijst.lowerKey(hashnumber);
-		ipnext = nodeLijst.get(hnnext); //Returns ID of next node
-		ipprev = nodeLijst.get(hnprev);
-		//Send ID of next node to previous node
-		//Change next node IN the previous node
-		TCP.notifyNextShutdown(hnprev, ipprev);
-		//omwisselen --> nodeLijst.put(hnnext, ipprev); //Change next node of Previous node
-		//Sent ID of previous node to next node
-		//Change previous node INT in next node
-		TCP.notifyPreviousShutdown(hnnext, ipnext);
-		//omwisselen --> nodeLijst.put(hnprev, ipnext); //Change previous node of next node
-		//Remove node
-		nodeLijst.remove(hashnumber);
-	}
+	
 }
