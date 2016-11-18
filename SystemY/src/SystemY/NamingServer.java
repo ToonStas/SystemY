@@ -28,6 +28,7 @@ public class NamingServer extends UnicastRemoteObject implements NamingServerInt
 		nodeLijst.listAllNodes();
 	}
 	
+	//ip adres opvragen van waar het bestand zich bevind
 	public String getFileLocation(String fileName){
 		String location = "ipadres";
 		int hash = nodeLijst.calculateHash(fileName);
@@ -41,6 +42,7 @@ public class NamingServer extends UnicastRemoteObject implements NamingServerInt
 		return location;
 	}
 	
+	// methode voor na te gaan of je de eerste node bent van het netwerk
 	public int amIFirst(){
 		if(listOfNodes.size()<1){
 			return 1;

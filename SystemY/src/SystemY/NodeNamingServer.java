@@ -46,7 +46,8 @@ public class NodeNamingServer {
 		return(ipAdress);
 	}
 	
-	private int calculateHash(){ //Deze functie berekend de hash voor deze node zelf bij initialisatie
+	//Deze functie berekend de hash voor deze node zelf bij initialisatie
+	private int calculateHash(){
 		int tempHash = this.name.hashCode();
 		if (tempHash < 0)
 			tempHash = tempHash * -1;
@@ -56,7 +57,8 @@ public class NodeNamingServer {
 		return 1;
 	}
 	
-	public boolean compareHash(String nodeNaam){ //Deze functie geeft true terug als de nodenamen dezelfde hashcode hebben.
+	//Deze functie geeft true terug als de nodenamen dezelfde hashcode hebben.
+	public boolean compareHash(String nodeNaam){
 		int tempHash = nodeNaam.hashCode();
 		if (tempHash < 0)
 			tempHash = tempHash * -1;

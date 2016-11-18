@@ -9,7 +9,8 @@ public class MulticastReceiverThread extends Thread {
 	private int port;
 	private String multicastGroup;
 	private MulticastSocket s;
-
+	
+	//constructor multicast reciever thread
 	public MulticastReceiverThread(Nodelijst nodeLijst) {
 		nodeLijstThread = nodeLijst;
 		
@@ -23,6 +24,7 @@ public class MulticastReceiverThread extends Thread {
 		}
 	}
 
+	//method voor het constant ontvangen en interpreteren van berichten over de multicast socket.
 	public void run() {
 		// Create a DatagramPacket and do a receive
 		byte buf[] = new byte[1024];
@@ -47,13 +49,14 @@ public class MulticastReceiverThread extends Thread {
 		//node toevoegen aan de naming server
 		int val = nodeLijstThread.addNode(nameIp);
 		if(val==0)
-			val =val;
+			val =val; //system.out.println("failed to add node")
 		nodeLijstThread.listAllNodes();
 		
 		//receive another
 		run();
 	}
 
+	//Sluiten van de multicast socket
 	public void close() {
 		try {
 			s.leaveGroup(InetAddress.getByName(multicastGroup));
