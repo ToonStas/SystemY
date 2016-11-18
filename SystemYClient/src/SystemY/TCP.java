@@ -184,4 +184,20 @@ public class TCP {
 		listener.start();
 	}
 
+	void failure(int hash, InetAddress Ip){ 
+		int failingNodeHash = 0;
+		InetAddress failingNodeIp = null;
+		int leftNeighbourHash = 0;
+		InetAddress leftNeighbourIp = null;
+		int rightNeighbourHash = 0;
+		InetAddress rightNeighbourIp = null;
+	
+		failingNodeHash = hash;
+		failingNodeIp = Ip;
+		//ask naming server for hash from neighbours of failing node
+		//send neighbours from failing node updates about there new neigbours.
+		notifyNextFailure(rightNeighbourHash,rightNeighbourIp,leftNeighbourIp);
+		notifyPreviousFailure(leftNeighbourHash,rightNeighbourIp,leftNeighbourIp);
+		// send message to naming server to delete failing node from list.
+	}
 }
