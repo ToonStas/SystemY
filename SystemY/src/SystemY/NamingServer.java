@@ -8,6 +8,7 @@ public class NamingServer extends UnicastRemoteObject implements NamingServerInt
 	private static final long serialVersionUID = 1L;
 	private Nodelijst nodeLijst;
 	private Thread multicastReceiverThread;
+	TreeMap<Integer, NodeNamingServer> listOfNodes = new TreeMap<>();
 
 	//Namingserver houdt enkel een lijst van nodes bij met hierin de naam, de hash en het ipadres. Niks meer!
 	public NamingServer() throws RemoteException{
@@ -22,14 +23,15 @@ public class NamingServer extends UnicastRemoteObject implements NamingServerInt
 		//nodeLijst.writeJSON();
 		//nodeLijst.readJSON();
 		
+		listOfNodes = nodeLijst.getListOfNodes();
+		
 		nodeLijst.listAllNodes();
 	}
 	
+	//ip adres opvragen van waar het bestand zich bevind
 	public String getFileLocation(String fileName){
 		String location = "ipadres";
 		int hash = nodeLijst.calculateHash(fileName);
-		TreeMap<Integer, NodeNamingServer> listOfNodes = new TreeMap<>();
-		listOfNodes = nodeLijst.getListOfNodes();
 		
 		if(listOfNodes.floorEntry(hash)==null){ //geeft het ipadres van de 1ste node <= de waarde van de hash
 			location = listOfNodes.lastEntry().getValue().getIpAdress();
@@ -38,6 +40,15 @@ public class NamingServer extends UnicastRemoteObject implements NamingServerInt
 		}
 		
 		return location;
+	}
+	
+	// methode voor na te gaan of je de eerste node bent van het netwerk
+	public int amIFirst(){
+		if(listOfNodes.size()<1){
+			return 1;
+		}else{
+			return 0;
+		}
 	}
 
 }

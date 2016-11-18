@@ -1,6 +1,6 @@
 package SystemY;
 
-public class FailureNode {
+public class FailingNode {
 	private int failingNode;
 	private int leftNeighbour;
 	private int rightNeighbour;
@@ -23,3 +23,4 @@ public class FailureNode {
 	}
 	
 }
+

@@ -20,6 +20,7 @@ public class Nodelijst {
 		listOfNodes = new TreeMap<>();
 	}
 
+	//het toevoegen van een node aan de nodelijst
 	public int addNode(String nameIp) {
 		String[] parts = nameIp.split(" ");
 		String name = parts[0];
@@ -39,11 +40,13 @@ public class Nodelijst {
 		return val;
 	}
 
+	//het verwijderen van een node uit de nodelijst
 	public void removeNode(int place) {
 		listOfNodes.remove(place);
 		updateJSON(place, null);
 	}
 
+	//Het up tot date houden van de nodelijst in de JSON array.
 	public void updateJSON(int index, NodeNamingServer node) // als je integermax value doorgeeft voeg
 										// je een node toe anders verwijder je
 										// de node op de meegegeven index.
@@ -55,9 +58,10 @@ public class Nodelijst {
 		}
 	}
 
+	//het wegschrijven van de JSONArray naar een file
 	public void writeJSON() {
 		try {
-			File file = new File("C:/TEMP/JSONFile.json");
+			File file = new File("C:/TEMP/JSONFile.json"); //file waar de informatie word weggeschreven.
 			file.createNewFile();
 			FileWriter fileWriter = new FileWriter(file);
 			System.out.println("\nWriting JSON object to file");
@@ -72,9 +76,10 @@ public class Nodelijst {
 		}
 	}
 
+	//het inlezen van de JSON file
 	public void readJSON() {
 		JSONParser parser = new JSONParser();
-		listOfNodes.clear();
+		listOfNodes.clear();			// eerst de huidige lijsten leeg maken zodat de ingelezen informatie hier niet dubbel in gezet word
 		listOfClients.clear();
 		try {
 			Object obj = parser.parse(new FileReader("C:/TEMP/JSONFile.json"));
@@ -95,8 +100,9 @@ public class Nodelijst {
 		}
 
 	}
-
-    public int calculateHash(String nodeNaam){ //Deze functie berekent de hash van een String als parameter.
+	
+	//Deze functie berekent de hash van een String als parameter.
+    public int calculateHash(String nodeNaam){
         int tempHash = nodeNaam.hashCode();
         if (tempHash < 0)
             tempHash = tempHash * -1;

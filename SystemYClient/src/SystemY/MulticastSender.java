@@ -58,6 +58,7 @@ public class MulticastSender {
 			}
 		}
 		ownHash = calculateHash(naam);
+		System.out.println(ownHash);
 		return naam;
 	}
 	//niet meer nodig we halen het i-adres nu zelf op
