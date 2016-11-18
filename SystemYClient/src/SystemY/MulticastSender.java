@@ -27,7 +27,7 @@ public class MulticastSender {
 		} 
 	   
 		
-		Name = ReadConsoleNaam();
+		Name = readConsoleName();
 		try {
 			s = new MulticastSocket();
 		} catch (IOException e) {
@@ -37,7 +37,7 @@ public class MulticastSender {
 		close();
 	}
 
-	private String ReadConsoleNaam() {
+	private String readConsoleName() {
 		String naam = null;
 		BufferedReader br = null;
 
@@ -61,9 +61,8 @@ public class MulticastSender {
 		System.out.println(ownHash);
 		return naam;
 	}
-
 	//niet meer nodig we halen het i-adres nu zelf op
-	private String ReadConsoleIP() {
+	private String readConsoleIP() {
 		String IP = null;
 		BufferedReader br = null;
 
