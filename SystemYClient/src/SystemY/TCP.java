@@ -40,6 +40,7 @@ public class TCP {
 			out.write(String.valueOf(nextHash));
 			out.newLine();
 			out.write(ipNext.toString());
+			System.out.println("notifyNextAdd message send.");
 			out.flush();
 			out.close();
 			sock.close();
@@ -67,6 +68,7 @@ public class TCP {
 			out.write(String.valueOf(nextHash));
 			out.newLine();
 			out.write(ipPrevious.toString());
+			System.out.println("notifyPreviousAdd message send.");
 			out.flush();
 			out.close();
 			sock.close();
@@ -92,6 +94,7 @@ public class TCP {
 			out.write(String.valueOf(previousHash));
 			out.newLine();
 			out.write(ipPrevious.toString());
+			System.out.println("notifyNextShutdown message send.");
 			out.flush();
 			out.close();
 			sock.close();
@@ -117,6 +120,7 @@ public class TCP {
 			out.write(String.valueOf(nextHash));
 			out.newLine();
 			out.write(ipNext.toString());
+			System.out.println("notifyPreviousShutdown message send.");
 			out.flush();
 			out.close();
 			sock.close();
