@@ -11,8 +11,11 @@ public class MulticastSender {
 	private int port = 8769; // Poort naar waar we verzenden
 	private String group = "224.1.1.1";
 	private MulticastSocket s;
+	private int ownHash;
 
-	public MulticastSender() throws UnsupportedEncodingException {
+	public MulticastSender(int ownHash) throws UnsupportedEncodingException {
+		this.ownHash = ownHash;
+		
 		String Name;
 		InetAddress address=null;
 		String ipAdres="";
@@ -34,7 +37,7 @@ public class MulticastSender {
 		close();
 	}
 
-	public String ReadConsoleNaam() {
+	private String ReadConsoleNaam() {
 		String naam = null;
 		BufferedReader br = null;
 
@@ -54,11 +57,13 @@ public class MulticastSender {
 				}
 			}
 		}
+		ownHash = calculateHash(naam);
+		System.out.println(ownHash);
 		return naam;
 	}
 
 	//niet meer nodig we halen het i-adres nu zelf op
-	public String ReadConsoleIP() {
+	private String ReadConsoleIP() {
 		String IP = null;
 		BufferedReader br = null;
 
@@ -80,7 +85,7 @@ public class MulticastSender {
 		return IP;
 	}
 
-	public void sending(String naam, String Ip) throws UnsupportedEncodingException {
+	private void sending(String naam, String Ip) throws UnsupportedEncodingException {
 		// Hier moeten we de n; het IP adres verzenden
 
 		String Naamip;
@@ -105,7 +110,15 @@ public class MulticastSender {
 
 	}
 
-	public void close() {
+	private void close() {
 		s.close();
 	}
+	
+	private int calculateHash(String nodeNaam){ //Deze functie berekent de hash van een String als parameter.
+        int tempHash = nodeNaam.hashCode();
+        if (tempHash < 0)
+            tempHash = tempHash * -1;
+        tempHash = tempHash % 32768;
+        return tempHash;
+    }
 }

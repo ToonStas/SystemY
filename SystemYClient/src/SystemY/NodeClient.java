@@ -5,22 +5,32 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
+import java.net.InetAddress;
+import java.net.MalformedURLException;
 import java.rmi.*;
 import java.util.TreeMap;
 
 public class NodeClient {
 	private TreeMap<Integer, String> nodeLijst = new TreeMap<>(); //hash, ipadres
 	private TreeMap<String, Integer> bestandenLijst = new TreeMap<>(); //filename, hash
+	String ip = "192.168.1.3";
+	private int nextNode=32768;
+	private int previousNode=0;
+	private int ownHash;
+	private Thread multicastReceiverThreadClient, tcpNotifyReceiverThread;
+	NamingServerInterface ni;
 
-	public static void main(String argv[]) {
+	public static void main(String args[]) {
 		new NodeClient();
 	}
 
-	private Thread multicastReceiverThreadClient;
-
 	public NodeClient() {
-		multicastReceiverThreadClient = new Thread(new MulticastReceiverThreadClient(nodeLijst));
-		startUp();		
+		multicastReceiverThreadClient = new Thread(new MulticastReceiverThreadClient(nodeLijst, nextNode, previousNode, ownHash, this));
+		tcpNotifyReceiverThread = new Thread(new TCPNotifyReceiverThread());
+		
+		TCP tcpSender;
+		startUp();
+		System.out.println(ownHash);
 		consoleGUI();
 	}
 	
@@ -58,8 +68,6 @@ public class NodeClient {
 		String location = "";
 		// TODO get IP address in discover
 		try {
-			String name = "//localhost:1099/NamingServer";
-			NamingServerInterface ni = (NamingServerInterface) Naming.lookup(name);
 			location = ni.getFileLocation(fileName);
 		} catch (Exception e) {
 			System.err.println("NamingServer exception: " + e.getMessage());
@@ -69,14 +77,19 @@ public class NodeClient {
 	}
 
 	private void startUp() {
+		//connect RMI to NamingServer
+		String name = "//"+ip+":1099/NamingServer";
 		try {
-			new MulticastSender();
+			ni = (NamingServerInterface) Naming.lookup(name);
+			new MulticastSender(ownHash);
 			multicastReceiverThreadClient.start();
-		} catch (UnsupportedEncodingException e) {
+			System.out.println(ownHash);
+		} catch (MalformedURLException | RemoteException | NotBoundException | UnsupportedEncodingException e) {
 			e.printStackTrace();
-		}
+		}		
 	}
 
+	//gebeurt ook afzonderlijk in de multicastreceiverthread
 	private void addNode(int hash, String ipadres) { // Bij het opstarten van een andere node wordt deze via deze methode aan de
 													// lijst van gekende nodes toegevoegd
 		nodeLijst.put(hash, ipadres);
@@ -95,14 +108,63 @@ public class NodeClient {
         String input="";
 		try {
 			input = br.readLine();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
+		} catch (IOException | NumberFormatException e) {
 			e.printStackTrace();
+			readConsole();
 		}
 		return input;
 	}
 	
-	private void shutdown() { //als de client stopt
-		
+	private void shutdown() { //Client (hashnumber) wants to shut down
+		int hnnext; //hashnumber of the next node
+		int hnprev; //hashnumber of the previous node
+		//Get next node and previous node using the current nodes hash number
+		hnnext = nodeLijst.higherKey(ownHash); //This returns the next neighbour 
+		hnprev = nodeLijst.lowerKey(ownHash);
+		//Send ID of next node to previous node
+		//Change next node IN the previous node
+		//if the hash is -1, the hash is not changed
+		notifyNext(hnprev, -1, hnnext);
+		//omwisselen --> nodeLijst.put(hnnext, ipprev); //Change next node of Previous node
+		//Sent ID of previous node to next node
+		//Change previous node INT in next node
+		notifyPrevious(-1, hnnext, hnprev);
+		//omwisselen --> nodeLijst.put(hnprev, ipnext); //Change previous node of next node
+		//Remove node
+	}
+	
+	//Notify next node via RMI
+	public void notifyNext(int ownHash /*previous hash*/, int nextNodeHash /*next hash*/, int hash /*of node to notify*/) {
+		//Notifies the new node that his previous node is this node and his next node is this node's former next node
+		try {
+			String name = nodeLijst.get(hash);
+			clientToClientInterface ni = (clientToClientInterface) Naming.lookup(name);
+			ni.getNotified(ownHash, nextNodeHash);
+		} catch (Exception e) {
+			System.err.println("NamingServer exception: " + e.getMessage());
+			e.printStackTrace();
+		}
+	}
+
+	public void notifyPrevious(int previousNodeHash, int ownHash, int hash) {
+		//Notifies the new node that his previous node is this node's former previous node and his next node is this node
+		try {
+			String name = nodeLijst.get(hash);
+			clientToClientInterface ni = (clientToClientInterface) Naming.lookup(name);
+			ni.getNotified(previousNodeHash, ownHash);
+		} catch (Exception e) {
+			System.err.println("NamingServer exception: " + e.getMessage());
+			e.printStackTrace();
+		}
+	}
+	
+	//Get notified via RMI
+	public void getNotified(int previousHash, int nextHash){
+		if(previousHash!=-1){
+			previousNode = previousHash;
+		}
+		if(nextHash!=-1){
+			nextNode = nextHash;
+		}
 	}
 }
