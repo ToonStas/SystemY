@@ -12,11 +12,12 @@ public class MulticastSender {
 	private String group = "224.1.1.1";
 	private MulticastSocket s;
 	private int ownHash;
+	String name;
 
-	public MulticastSender(int ownHash) throws UnsupportedEncodingException {
+	public MulticastSender(int ownHash, String name) throws UnsupportedEncodingException {
 		this.ownHash = ownHash;
 		
-		String Name;
+		this.name = name;
 		InetAddress address=null;
 		String ipAdres="";
 		try {
@@ -25,42 +26,17 @@ public class MulticastSender {
 		} catch (UnknownHostException e1) {
 			e1.printStackTrace(); 
 		} 
-	   
-		
-		Name = readConsoleName();
+	 
 		try {
 			s = new MulticastSocket();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		sending(Name, ipAdres);
+		sending(name, ipAdres);
 		close();
 	}
 
-	private String readConsoleName() {
-		String naam = null;
-		BufferedReader br = null;
 
-		try {
-			br = new BufferedReader(new InputStreamReader(System.in));
-			System.out.println("Naam Node: ");
-			naam = br.readLine();
-
-		} catch (IOException e) {
-			e.printStackTrace();
-		} finally {
-			if (naam == "\n") {
-				try {
-					br.close();
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-			}
-		}
-		ownHash = calculateHash(naam);
-		System.out.println(ownHash);
-		return naam;
-	}
 	//niet meer nodig we halen het i-adres nu zelf op
 	private String readConsoleIP() {
 		String IP = null;

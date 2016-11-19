@@ -81,7 +81,9 @@ public class NodeClient {
 		String name = "//"+ip+":1099/NamingServer";
 		try {
 			ni = (NamingServerInterface) Naming.lookup(name);
-			new MulticastSender(ownHash);
+			String nameNode = readConsoleName();
+			ownHash=calculateHash(nameNode);
+			new MulticastSender(ownHash, nameNode);
 			multicastReceiverThreadClient.start();
 			System.out.println(ownHash);
 		} catch (MalformedURLException | RemoteException | NotBoundException | UnsupportedEncodingException e) {
@@ -166,5 +168,30 @@ public class NodeClient {
 		if(nextHash!=-1){
 			nextNode = nextHash;
 		}
+	}
+	
+	private String readConsoleName() {
+		String naam = null;
+		BufferedReader br = null;
+
+		try {
+			br = new BufferedReader(new InputStreamReader(System.in));
+			System.out.println("Naam Node: ");
+			naam = br.readLine();
+
+		} catch (IOException e) {
+			e.printStackTrace();
+		} finally {
+			if (naam == "\n") {
+				try {
+					br.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		ownHash = calculateHash(naam);
+		System.out.println(ownHash);
+		return naam;
 	}
 }
