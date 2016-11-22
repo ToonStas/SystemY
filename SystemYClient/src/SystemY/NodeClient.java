@@ -66,7 +66,8 @@ public class NodeClient extends UnicastRemoteObject implements clientToClientInt
 			break;
 
 		case 3:
-			notifyNext(333, 666, 5214);
+			System.out.println("Vorige hash: "+previousNode);
+			System.out.println("Next hash: "+nextNode);
 			break;
 
 		case 4:
@@ -109,8 +110,10 @@ public class NodeClient extends UnicastRemoteObject implements clientToClientInt
 			reg.bind(bindLocation, nodeClient);
 			System.out.println("ClientRegistery is ready at: " + bindLocation);
 			System.out.println("java RMI registry created.");
-		} catch (MalformedURLException | RemoteException | NotBoundException | UnsupportedEncodingException
-				| AlreadyBoundException e) {
+		} catch (MalformedURLException | RemoteException | NotBoundException | UnsupportedEncodingException  e) {
+			e.printStackTrace();
+		} catch(AlreadyBoundException e){
+			System.out.println("Registry already in use");
 			e.printStackTrace();
 		}
 	}
@@ -190,7 +193,7 @@ public class NodeClient extends UnicastRemoteObject implements clientToClientInt
 		// previous node and his next node is this node
 		try {
 			String name = nodeLijst.get(hash);
-			clientToClientInterface ctci = (clientToClientInterface) Naming.lookup("//" + name + "1100/nodeClient");
+			clientToClientInterface ctci = (clientToClientInterface) Naming.lookup("//" + name + ":1100/nodeClient");
 			ctci.getNotified(previousNodeHash, ownHash);
 		} catch (Exception e) {
 			System.err.println("NamingServer exception: " + e.getMessage());
