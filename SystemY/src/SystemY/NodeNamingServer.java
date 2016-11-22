@@ -23,6 +23,7 @@ public class NodeNamingServer {
 		node.put("Name", this.name);
 		node.put("IpAdress", this.ipAdress);
 		node.put("Hash", Integer.toString(this.hash));
+		re_generateJSONobject();
 	}
 	
 	public int setName (String name){
@@ -40,6 +41,7 @@ public class NodeNamingServer {
 	public void setIpAdress (String ipAdress){
 		this.ipAdress = ipAdress;
 		node.put("IpAdress",this.ipAdress);
+		re_generateJSONobject();
 
 	}
 	public String getIpAdress (){
@@ -54,6 +56,7 @@ public class NodeNamingServer {
 		tempHash = tempHash % 32768;
 		this.hash = tempHash;
 		node.put("hash",Integer.toString(this.hash));
+		re_generateJSONobject();
 		return 1;
 	}
 	
@@ -73,7 +76,11 @@ public class NodeNamingServer {
 		return(hash);
 	}
 	
-	public int generateJSON(HashMap<String, String> node){
+	@SuppressWarnings("unchecked")
+	public int re_generateJSONobject(){
+		Node.put("Name", this.name);
+		Node.put("IpAdress", this.ipAdress);
+		Node.put("Hash", Integer.toString(this.hash));
 		return 1;
 	} 
 }
