@@ -66,7 +66,7 @@ public class Nodelijst {
 			FileWriter fileWriter = new FileWriter(file);
 			System.out.println("\nWriting JSON object to file");
 			System.out.println("-----------------------");
-			System.out.print(listOfClients);
+			System.out.println(listOfClients);
 			fileWriter.write(listOfClients.toJSONString());
 			fileWriter.flush();
 			fileWriter.close();
@@ -93,7 +93,7 @@ public class Nodelijst {
 			}
 			System.out.println("\nreading JSON object from file");
 			System.out.println("-----------------------");
-			System.out.print(listOfClients);
+			System.out.println(listOfClients);
 
 		} catch (ParseException | IOException e) {
 			e.printStackTrace();

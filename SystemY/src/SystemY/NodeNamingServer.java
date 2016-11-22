@@ -32,6 +32,7 @@ public class NodeNamingServer {
 			return 0;
 		else{
 			node.put("Name",this.name);
+			re_generateJSONobject();
 			return 1;
 		}
 	}
