@@ -94,8 +94,11 @@ public class NodeClient extends UnicastRemoteObject implements clientToClientInt
 		String name = "//"+ip+":1099/NamingServer";
 		try {
 			ni = (NamingServerInterface) Naming.lookup(name);
-			new MulticastSender(ownHash);
+			new MulticastSender(ownHash, name);
 			TimeUnit.SECONDS.sleep(5);
+			String nameNode = readConsoleName();
+			ownHash=calculateHash(nameNode);
+			new MulticastSender(ownHash, nameNode);
 			multicastReceiverThreadClient.start();
 			System.out.println(ownHash);
 			
@@ -190,5 +193,30 @@ public class NodeClient extends UnicastRemoteObject implements clientToClientInt
 		}
 		System.out.println("Vorige node: " +previousNode);
 		System.out.println("Vorige node: " +nextNode);
+	}
+	
+	private String readConsoleName() {
+		String naam = null;
+		BufferedReader br = null;
+
+		try {
+			br = new BufferedReader(new InputStreamReader(System.in));
+			System.out.println("Naam Node: ");
+			naam = br.readLine();
+
+		} catch (IOException e) {
+			e.printStackTrace();
+		} finally {
+			if (naam == "\n") {
+				try {
+					br.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		ownHash = calculateHash(naam);
+		System.out.println(ownHash);
+		return naam;
 	}
 }

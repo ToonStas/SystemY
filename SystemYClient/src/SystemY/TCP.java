@@ -131,6 +131,52 @@ public class TCP {
 		}
 	}
 	
+	public void notifyNextFailure(int previousHash, InetAddress ipNext, InetAddress ipPrevious){
+		try{
+			if (sock.isClosed()!=true)
+			{
+				sock.close();
+			}
+			sock = new Socket(ipNext,SOCKET_PORT);
+			System.out.println("Connecting to ..");
+			BufferedWriter out = new BufferedWriter(new OutputStreamWriter(sock.getOutputStream()));
+			out.write("notifyNextFailure");
+			out.newLine();
+			out.write(String.valueOf(previousHash));
+			out.newLine();
+			out.write(ipPrevious.toString());
+			System.out.println("notifyNextFailure message send.");
+			out.flush();
+			out.close();
+			sock.close();
+		} catch (IOException e) {
+			
+		}
+	}
+	
+	public void notifyPreviousFailure(int nextHash, InetAddress ipNext, InetAddress ipPrevious){
+		try{
+			if (sock.isClosed()!=true)
+			{
+				sock.close();
+			}
+			sock = new Socket(ipPrevious,SOCKET_PORT);
+			System.out.println("Connecting to ..");
+			BufferedWriter out = new BufferedWriter(new OutputStreamWriter(sock.getOutputStream()));
+			out.write("notifyNextFailure");
+			out.newLine();
+			out.write(String.valueOf(nextHash));
+			out.newLine();
+			out.write(ipNext.toString());
+			System.out.println("notifyPreviousFailure message send.");
+			out.flush();
+			out.close();
+			sock.close();
+		} catch (IOException e) {
+			
+		}
+	}
+	
 	
 	public void listen() throws IOException
 	{
@@ -138,4 +184,20 @@ public class TCP {
 		listener.start();
 	}
 
+	void failure(int hash, InetAddress Ip){ 
+		int failingNodeHash = 0;
+		InetAddress failingNodeIp = null;
+		int leftNeighbourHash = 0;
+		InetAddress leftNeighbourIp = null;
+		int rightNeighbourHash = 0;
+		InetAddress rightNeighbourIp = null;
+	
+		failingNodeHash = hash;
+		failingNodeIp = Ip;
+		//ask naming server for hash from neighbours of failing node
+		//send neighbours from failing node updates about there new neigbours.
+		notifyNextFailure(rightNeighbourHash,rightNeighbourIp,leftNeighbourIp);
+		notifyPreviousFailure(leftNeighbourHash,rightNeighbourIp,leftNeighbourIp);
+		// send message to naming server to delete failing node from list.
+	}
 }
