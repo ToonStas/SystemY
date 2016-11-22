@@ -11,16 +11,15 @@ import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.TreeMap;
-import java.util.concurrent.TimeUnit;
 
-public class NodeClient extends UnicastRemoteObject implements clientToClientInterface{
-	private TreeMap<Integer, String> nodeLijst = new TreeMap<>(); //hash, ipadres
-	private TreeMap<String, Integer> bestandenLijst = new TreeMap<>(); //filename, hash
-	String ip = "192.168.1.2";
-	private int nextNode=32768;
-	private int previousNode=0;
+public class NodeClient extends UnicastRemoteObject implements clientToClientInterface {
+	private TreeMap<Integer, String> nodeLijst = new TreeMap<>(); // hash, ipadres
+	private TreeMap<String, Integer> bestandenLijst = new TreeMap<>(); // filename, hash
+	String ip = "192.168.1.2"; // ip van de NamingServer
+	private int nextNode = 32768;
+	private int previousNode = 0;
 	private int ownHash;
-	private Thread multicastReceiverThreadClient, tcpNotifyReceiverThread;
+	private Thread multicastReceiverThreadClient;
 	NamingServerInterface ni;
 
 	public static void main(String args[]) {
@@ -31,40 +30,47 @@ public class NodeClient extends UnicastRemoteObject implements clientToClientInt
 		}
 	}
 
-	public NodeClient() throws RemoteException{
-		multicastReceiverThreadClient = new Thread(new MulticastReceiverThreadClient(nodeLijst, nextNode, previousNode, ownHash, this));
-		
-		startUp(this);
+	public NodeClient() throws RemoteException {
+		String nameNode = readConsoleName();
+		multicastReceiverThreadClient = new Thread(
+				new MulticastReceiverThreadClient(nodeLijst, nextNode, previousNode, ownHash, this));
+
+		startUp(this, nameNode);
+
 		System.out.println(ownHash);
-		
-		//oneindige while lus voor gui
-		while(true)
+
+		// oneindige while lus voor gui
+		while (true)
 			consoleGUI();
 	}
-	
-	private void consoleGUI(){
+
+	private void consoleGUI() {
 		System.out.println("What do you want to do?");
 		System.out.println("[1] List local files");
 		System.out.println("[2] Look for file");
-		System.out.println("[3] Notify next");
+		System.out.println("[3] Print neighbours");
 		System.out.println("[4] Exit");
-		
+
 		int input = Integer.parseInt(readConsole());
 		System.out.println("Your choice was: " + input);
-		
-		switch(input){
-			case 1 : 	checkLocalFiles(new File("C:/TEMP")); 
-						System.out.println("Local Files are: " + bestandenLijst);
+
+		switch (input) {
+		case 1:
+			checkLocalFiles(new File("C:/TEMP"));
+			System.out.println("Local Files are: " + bestandenLijst);
 			break;
-			
-			case 2 :	String location = getFileLocation("Enter file to look for: " + readConsole());
-						System.out.println("The location is: " + location);
+
+		case 2:
+			String location = getFileLocation("Enter file to look for: " + readConsole());
+			System.out.println("The location is: " + location);
 			break;
-			
-			case 3 :	notifyNext(333, 666, 5214);
+
+		case 3:
+			notifyNext(333, 666, 5214);
 			break;
-			
-			case 4 :	shutdown();
+
+		case 4:
+			shutdown();
 			break;
 		}
 	}
@@ -88,46 +94,50 @@ public class NodeClient extends UnicastRemoteObject implements clientToClientInt
 		return location;
 	}
 
-	private void startUp(NodeClient nodeClient) {
-		//connect RMI to NamingServer
-		String name = "//"+ip+":1099/NamingServer";
+	private void startUp(NodeClient nodeClient, String nameNode) {
+		// connect RMI to NamingServer
+		String name = "//" + ip + ":1099/NamingServer";
 		try {
 			ni = (NamingServerInterface) Naming.lookup(name);
-			TimeUnit.SECONDS.sleep(5);
-			String nameNode = readConsoleName();
-			ownHash=calculateHash(nameNode);
+			ownHash = calculateHash(nameNode);
 			new MulticastSender(ownHash, nameNode);
 			multicastReceiverThreadClient.start();
-			System.out.println(ownHash);
-			
-			//make registry to establish RMI between nodes
+
+			// make registry to establish RMI between nodes
 			String bindLocation = "nodeClient";
 			Registry reg = LocateRegistry.createRegistry(1100);
 			reg.bind(bindLocation, nodeClient);
 			System.out.println("ClientRegistery is ready at: " + bindLocation);
 			System.out.println("java RMI registry created.");
-		} catch (MalformedURLException | RemoteException | NotBoundException | UnsupportedEncodingException | InterruptedException | AlreadyBoundException e) {
+		} catch (MalformedURLException | RemoteException | NotBoundException | UnsupportedEncodingException
+				| AlreadyBoundException e) {
 			e.printStackTrace();
-		}		
+		}
 	}
 
-	//gebeurt ook afzonderlijk in de multicastreceiverthread
-	private void addNode(int hash, String ipadres) { // Bij het opstarten van een andere node wordt deze via deze methode aan de
-													// lijst van gekende nodes toegevoegd
+	// gebeurt ook afzonderlijk in de multicastreceiverthread
+	private void addNode(int hash, String ipadres) { // Bij het opstarten van
+														// een andere node wordt
+														// deze via deze methode
+														// aan de
+														// lijst van gekende
+														// nodes toegevoegd
 		nodeLijst.put(hash, ipadres);
 	}
 
-	private int calculateHash(String nodeNaam) { // Deze functie berekent de hash van een String als parameter.
+	private int calculateHash(String nodeNaam) { // Deze functie berekent de
+													// hash van een String als
+													// parameter.
 		int tempHash = nodeNaam.hashCode();
 		if (tempHash < 0)
 			tempHash = tempHash * -1;
 		tempHash = tempHash % 32768;
 		return tempHash;
 	}
-	
+
 	private String readConsole() {
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        String input="";
+		String input = "";
 		try {
 			input = br.readLine();
 		} catch (IOException | NumberFormatException e) {
@@ -136,31 +146,37 @@ public class NodeClient extends UnicastRemoteObject implements clientToClientInt
 		}
 		return input;
 	}
-	
-	private void shutdown() { //Client (hashnumber) wants to shut down
-		int hnnext; //hashnumber of the next node
-		int hnprev; //hashnumber of the previous node
-		//Get next node and previous node using the current nodes hash number
-		hnnext = nodeLijst.higherKey(ownHash); //This returns the next neighbour 
+
+	private void shutdown() { // Client (hashnumber) wants to shut down
+		int hnnext; // hashnumber of the next node
+		int hnprev; // hashnumber of the previous node
+		// Get next node and previous node using the current nodes hash number
+		hnnext = nodeLijst.higherKey(ownHash); // This returns the next
+												// neighbour
 		hnprev = nodeLijst.lowerKey(ownHash);
-		//Send ID of next node to previous node
-		//Change next node IN the previous node
-		//if the hash is -1, the hash is not changed
+		// Send ID of next node to previous node
+		// Change next node IN the previous node
+		// if the hash is -1, the hash is not changed
 		notifyNext(hnprev, -1, hnnext);
-		//omwisselen --> nodeLijst.put(hnnext, ipprev); //Change next node of Previous node
-		//Sent ID of previous node to next node
-		//Change previous node INT in next node
+		// omwisselen --> nodeLijst.put(hnnext, ipprev); //Change next node of
+		// Previous node
+		// Sent ID of previous node to next node
+		// Change previous node INT in next node
 		notifyPrevious(-1, hnnext, hnprev);
-		//omwisselen --> nodeLijst.put(hnprev, ipnext); //Change previous node of next node
-		//Remove node
+		// omwisselen --> nodeLijst.put(hnprev, ipnext); //Change previous node
+		// of next node
+		// Remove node
+		System.exit(0);
 	}
-	
-	//Notify next node via RMI
-	public void notifyNext(int ownHash /*previous hash*/, int nextNodeHash /*next hash*/, int hash /*of node to notify*/) {
-		//Notifies the new node that his previous node is this node and his next node is this node's former next node
+
+	// Notify next node via RMI
+	public void notifyNext(int ownHash /* previous hash */,
+			int nextNodeHash /* next hash */, int hash /* of node to notify */) {
+		// Notifies the new node that his previous node is this node and his
+		// next node is this node's former next node
 		try {
 			String name = nodeLijst.get(hash);
-			clientToClientInterface ctci = (clientToClientInterface) Naming.lookup("//"+name+":1100/nodeClient");
+			clientToClientInterface ctci = (clientToClientInterface) Naming.lookup("//" + name + ":1100/nodeClient");
 			ctci.getNotified(ownHash, nextNodeHash);
 		} catch (Exception e) {
 			System.err.println("NamingServer exception: " + e.getMessage());
@@ -168,31 +184,32 @@ public class NodeClient extends UnicastRemoteObject implements clientToClientInt
 		}
 	}
 
-	//notify previous node via RMI
+	// notify previous node via RMI
 	public void notifyPrevious(int previousNodeHash, int ownHash, int hash) {
-		//Notifies the new node that his previous node is this node's former previous node and his next node is this node
+		// Notifies the new node that his previous node is this node's former
+		// previous node and his next node is this node
 		try {
 			String name = nodeLijst.get(hash);
-			clientToClientInterface ctci = (clientToClientInterface) Naming.lookup("//"+name+"1100/nodeClient");
+			clientToClientInterface ctci = (clientToClientInterface) Naming.lookup("//" + name + "1100/nodeClient");
 			ctci.getNotified(previousNodeHash, ownHash);
 		} catch (Exception e) {
 			System.err.println("NamingServer exception: " + e.getMessage());
 			e.printStackTrace();
 		}
 	}
-	
-	//Get notified via RMI
-	public void getNotified(int previousHash, int nextHash){
-		if(previousHash!=-1){
+
+	// Get notified via RMI
+	public void getNotified(int previousHash, int nextHash) {
+		if (previousHash != -1) {
 			previousNode = previousHash;
 		}
-		if(nextHash!=-1){
+		if (nextHash != -1) {
 			nextNode = nextHash;
 		}
-		System.out.println("Vorige node: " +previousNode);
-		System.out.println("Vorige node: " +nextNode);
+		System.out.println("Vorige node: " + previousNode);
+		System.out.println("Volgende node: " + nextNode);
 	}
-	
+
 	private String readConsoleName() {
 		String naam = null;
 		BufferedReader br = null;
