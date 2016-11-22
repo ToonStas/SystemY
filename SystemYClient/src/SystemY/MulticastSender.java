@@ -15,7 +15,6 @@ public class MulticastSender {
 
 	public MulticastSender(int ownHash, String name) throws UnsupportedEncodingException {
 		this.ownHash = ownHash;
-		
 		this.name = name;
 		InetAddress address=null;
 		String ipAdres="";
@@ -36,7 +35,7 @@ public class MulticastSender {
 	}
 
 
-	//niet meer nodig we halen het i-adres nu zelf op
+	//niet meer nodig we halen het ipadres nu zelf op
 	private String readConsoleIP() {
 		String IP = null;
 		BufferedReader br = null;

@@ -5,7 +5,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
-import java.net.InetAddress;
 import java.net.MalformedURLException;
 import java.rmi.*;
 import java.rmi.registry.LocateRegistry;
@@ -94,7 +93,6 @@ public class NodeClient extends UnicastRemoteObject implements clientToClientInt
 		String name = "//"+ip+":1099/NamingServer";
 		try {
 			ni = (NamingServerInterface) Naming.lookup(name);
-			new MulticastSender(ownHash, name);
 			TimeUnit.SECONDS.sleep(5);
 			String nameNode = readConsoleName();
 			ownHash=calculateHash(nameNode);
@@ -104,9 +102,9 @@ public class NodeClient extends UnicastRemoteObject implements clientToClientInt
 			
 			//make registry to establish RMI between nodes
 			String bindLocation = "nodeClient";
-			Registry reg = LocateRegistry.createRegistry(1099);
+			Registry reg = LocateRegistry.createRegistry(1100);
 			reg.bind(bindLocation, nodeClient);
-			System.out.println("NamingServer is ready at: " + bindLocation);
+			System.out.println("ClientRegistery is ready at: " + bindLocation);
 			System.out.println("java RMI registry created.");
 		} catch (MalformedURLException | RemoteException | NotBoundException | UnsupportedEncodingException | InterruptedException | AlreadyBoundException e) {
 			e.printStackTrace();
