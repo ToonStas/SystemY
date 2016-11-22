@@ -20,7 +20,7 @@ public class NamingServer extends UnicastRemoteObject implements NamingServerInt
 		nodeLijst.addNode("Matthias 192.168.1.4");
 		nodeLijst.addNode("Floris 192.168.1.2");
 		int val = nodeLijst.addNode("Matthias 192.168.1.4");
-		//nodeLijst.writeJSON();
+		nodeLijst.writeJSON();
 		//nodeLijst.readJSON();
 		
 		listOfNodes = nodeLijst.getListOfNodes();
