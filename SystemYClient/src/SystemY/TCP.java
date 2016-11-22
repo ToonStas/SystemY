@@ -17,10 +17,8 @@ import java.net.Socket;
 
 public class TCP {
 	public final static int SOCKET_PORT = 13267;
-	private ServerSocket serverSock;
-	private InetAddress ipThisClient;
 
-	public TCP() throws IOException {
+	public TCP() {
 
 	}
 
@@ -69,18 +67,19 @@ public class TCP {
 		return file;
 	}
 
+	
 	public void SendFile(File fileToSend, InetAddress IPDestination) throws IOException {
 		File file = fileToSend;
 		InetAddress IPDest = IPDestination;
 		FileInputStream fis = null;
 		BufferedInputStream bis = null;
 		OutputStream os = null;
-		ServerSocket servsock = null;
 		Socket sock = null;
 
-		while (sock = null) {
-			System.out.println("Waiting...");
-			try {
+		
+		System.out.println("Waiting...");
+		try {
+			while (true){
 				sock = new Socket(IPDest, SOCKET_PORT);
 				System.out.println("Accepted connection : " + sock);
 				// send file
@@ -93,21 +92,21 @@ public class TCP {
 				os.write(mybytearray, 0, mybytearray.length);
 				os.flush();
 				System.out.println("Done.");
-			} finally {
-				if (bis != null)
-					bis.close();
-				if (os != null)
-					os.close();
-				if (sock != null)
-					sock.close();
 			}
+		} finally {
+			if (bis != null)
+				bis.close();
+			if (os != null)
+				os.close();
+			if (sock != null)
+				sock.close();
 		}
-
 	}
 
-	public void listen() throws IOException {
-		Thread listener = new Thread(new TCPServerSocketListener(SOCKET_PORT, this.sock, this.serverSock));
-		listener.start();
-	}
+
+	//public void listen() throws IOException {
+	//	Thread listener = new Thread(new TCPServerSocketListener(SOCKET_PORT, this.sock, this.serverSock));
+	//	listener.start();
+	//}
 
 }
