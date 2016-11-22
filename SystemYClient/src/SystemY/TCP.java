@@ -1,7 +1,15 @@
 package SystemY;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.net.InetAddress;
 import java.net.ServerSocket;
@@ -9,195 +17,97 @@ import java.net.Socket;
 
 public class TCP {
 	public final static int SOCKET_PORT = 13267;
-	private Socket sock;
 	private ServerSocket serverSock;
 	private InetAddress ipThisClient;
-	public TCP() throws IOException{
-		ipThisClient = InetAddress.getLocalHost();
-		this.sock = new Socket();
+
+	public TCP() throws IOException {
+
+	}
+
+	public File ReceiveFile(InetAddress IPSender, int fileSize) throws IOException {
+		InetAddress IPSend = IPSender;
+		int size = fileSize;
+		int bytesRead;
+		int current;
+		FileOutputStream fos = null;
+		BufferedOutputStream bos = null;
+		File file = null;
+		Socket sock = null;
+		ServerSocket servSock = null;
 		try {
-			serverSock = new ServerSocket(SOCKET_PORT);
-		} catch (IOException e) {
-			System.out.println("Couldn't create serversocket.");
-		}
-		this.listen();
-	}
-	
-	public void notifyNextAdd(int previousHash, int nextHash, InetAddress ipNext)
-	{
-		try {
-			if (sock.isClosed()!=true)
-			{
-				sock.close();
+			servSock = new ServerSocket(SOCKET_PORT);
+			try {
+				sock = servSock.accept();
+				System.out.println("Succesful TCP connection with " + IPSend.toString() + " .");
+				byte[] byteArray = new byte[size];
+				InputStream in = sock.getInputStream();
+				fos = new FileOutputStream(file);
+				bos = new BufferedOutputStream(fos);
+				bytesRead = in.read(byteArray, 0, byteArray.length);
+				current = bytesRead;
+				do {
+					bytesRead = in.read(byteArray, current, (byteArray.length - current));
+					if (bytesRead >= 0)
+						current += bytesRead;
+				} while (bytesRead > -1);
+				bos.write(byteArray, 0, current);
+				bos.flush();
+
+			} finally {
+				if (fos != null)
+					fos.close();
+				if (bos != null)
+					bos.close();
+				if (sock != null)
+					sock.close();
 			}
-			sock = new Socket(ipNext,SOCKET_PORT);
-			System.out.println("Connecting to server");
-			BufferedWriter out = new BufferedWriter(new OutputStreamWriter(sock.getOutputStream()));
-			out.write("notifyNextAdd");
-			out.newLine();
-			out.write(String.valueOf(previousHash));
-			out.newLine();
-			out.write(String.valueOf(nextHash));
-			out.newLine();
-			out.write(ipNext.toString());
-			System.out.println("notifyNextAdd message send.");
-			out.flush();
-			out.close();
-			sock.close();
-			
-			
-		} catch (IOException e) {
-			
+		} finally {
+			if (servSock != null)
+				servSock.close();
 		}
+
+		return file;
 	}
-	
-	public void notifyPreviousAdd(int previousHash, int nextHash, InetAddress ipPrevious)
-	{
-		try {
-			if (sock.isClosed()!=true)
-			{
-				sock.close();
+
+	public void SendFile(File fileToSend, InetAddress IPDestination) throws IOException {
+		File file = fileToSend;
+		InetAddress IPDest = IPDestination;
+		FileInputStream fis = null;
+		BufferedInputStream bis = null;
+		OutputStream os = null;
+		ServerSocket servsock = null;
+		Socket sock = null;
+
+		while (sock = null) {
+			System.out.println("Waiting...");
+			try {
+				sock = new Socket(IPDest, SOCKET_PORT);
+				System.out.println("Accepted connection : " + sock);
+				// send file
+				byte[] mybytearray = new byte[(int) file.length()];
+				fis = new FileInputStream(file);
+				bis = new BufferedInputStream(fis);
+				bis.read(mybytearray, 0, mybytearray.length);
+				os = sock.getOutputStream();
+				System.out.println("Sending " + file.toString() + "(" + mybytearray.length + " bytes)");
+				os.write(mybytearray, 0, mybytearray.length);
+				os.flush();
+				System.out.println("Done.");
+			} finally {
+				if (bis != null)
+					bis.close();
+				if (os != null)
+					os.close();
+				if (sock != null)
+					sock.close();
 			}
-			sock = new Socket(ipPrevious,SOCKET_PORT);
-			System.out.println("Connecting to server");
-			BufferedWriter out = new BufferedWriter(new OutputStreamWriter(sock.getOutputStream()));
-			out.write("notifyPreviousAdd");
-			out.newLine();
-			out.write(String.valueOf(previousHash));
-			out.newLine();
-			out.write(String.valueOf(nextHash));
-			out.newLine();
-			out.write(ipPrevious.toString());
-			System.out.println("notifyPreviousAdd message send.");
-			out.flush();
-			out.close();
-			sock.close();
-			
-			
-		} catch (IOException e) {
-			
 		}
+
 	}
-	
-	public void notifyNextShutdown(int previousHash, InetAddress ipPrevious)
-	{
-		try {
-			if (sock.isClosed()!=true)
-			{
-				sock.close();
-			}
-			sock = new Socket(ipPrevious,SOCKET_PORT);
-			System.out.println("Connecting to server");
-			BufferedWriter out = new BufferedWriter(new OutputStreamWriter(sock.getOutputStream()));
-			out.write("notifyNextShutdown");
-			out.newLine();
-			out.write(String.valueOf(previousHash));
-			out.newLine();
-			out.write(ipPrevious.toString());
-			System.out.println("notifyNextShutdown message send.");
-			out.flush();
-			out.close();
-			sock.close();
-			
-			
-		} catch (IOException e) {
-			
-		}
-	}
-	
-	public void notifyPreviousShutdown(int nextHash, InetAddress ipNext)
-	{
-		try {
-			if (sock.isClosed()!=true)
-			{
-				sock.close();
-			}
-			sock = new Socket(ipNext,SOCKET_PORT);
-			System.out.println("Connecting to server");
-			BufferedWriter out = new BufferedWriter(new OutputStreamWriter(sock.getOutputStream()));
-			out.write("notifyPreviousShutdown");
-			out.newLine();
-			out.write(String.valueOf(nextHash));
-			out.newLine();
-			out.write(ipNext.toString());
-			System.out.println("notifyPreviousShutdown message send.");
-			out.flush();
-			out.close();
-			sock.close();
-			
-			
-		} catch (IOException e) {
-			
-		}
-	}
-	
-	public void notifyRightFailure(int leftHash, InetAddress ipNext, InetAddress ipPrevious){
-		try{
-			if (sock.isClosed()!=true)
-			{
-				sock.close();
-			}
-			sock = new Socket(ipNext,SOCKET_PORT);
-			System.out.println("Connecting to ..");
-			BufferedWriter out = new BufferedWriter(new OutputStreamWriter(sock.getOutputStream()));
-			out.write("notifyNextFailure");
-			out.newLine();
-			out.write(String.valueOf(leftHash));
-			out.newLine();
-			out.write(ipPrevious.toString());
-			System.out.println("notifyNextFailure message send.");
-			out.flush();
-			out.close();
-			sock.close();
-		} catch (IOException e) {
-			
-		}
-	}
-	
-	public void notifyLeftFailure(int rightHash, InetAddress ipNext, InetAddress ipPrevious){
-		try{
-			if (sock.isClosed()!=true)
-			{
-				sock.close();
-			}
-			sock = new Socket(ipPrevious,SOCKET_PORT);
-			System.out.println("Connecting to ..");
-			BufferedWriter out = new BufferedWriter(new OutputStreamWriter(sock.getOutputStream()));
-			out.write("notifyNextFailure");
-			out.newLine();
-			out.write(String.valueOf(rightHash));
-			out.newLine();
-			out.write(ipNext.toString());
-			System.out.println("notifyPreviousFailure message send.");
-			out.flush();
-			out.close();
-			sock.close();
-		} catch (IOException e) {
-			
-		}
-	}
-	
-	
-	public void listen() throws IOException
-	{
+
+	public void listen() throws IOException {
 		Thread listener = new Thread(new TCPServerSocketListener(SOCKET_PORT, this.sock, this.serverSock));
 		listener.start();
 	}
 
-	void failure(InetAddress Ip){
-		InetAddress failingNodeIp = null;
-		int leftNeighbourHash = 0;
-		InetAddress leftNeighbourIp = null;
-		int rightNeighbourHash = 0;
-		InetAddress rightNeighbourIp = null;
-	
-		failingNodeIp = Ip;
-		//ask naming server for hash and IP from neighbours of failing node
-		//...
-		//send neighbours from failing node updates about there new neigbours.
-		notifyRightFailure(leftNeighbourHash,rightNeighbourIp,leftNeighbourIp);
-		notifyLeftFailure(rightNeighbourHash,rightNeighbourIp,leftNeighbourIp);
-		// send message to naming server to delete failing node from list.
-		//...
-	}
 }
