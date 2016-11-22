@@ -131,7 +131,7 @@ public class TCP {
 		}
 	}
 	
-	public void notifyNextFailure(int previousHash, InetAddress ipNext, InetAddress ipPrevious){
+	public void notifyRightFailure(int leftHash, InetAddress ipNext, InetAddress ipPrevious){
 		try{
 			if (sock.isClosed()!=true)
 			{
@@ -142,7 +142,7 @@ public class TCP {
 			BufferedWriter out = new BufferedWriter(new OutputStreamWriter(sock.getOutputStream()));
 			out.write("notifyNextFailure");
 			out.newLine();
-			out.write(String.valueOf(previousHash));
+			out.write(String.valueOf(leftHash));
 			out.newLine();
 			out.write(ipPrevious.toString());
 			System.out.println("notifyNextFailure message send.");
@@ -154,7 +154,7 @@ public class TCP {
 		}
 	}
 	
-	public void notifyPreviousFailure(int nextHash, InetAddress ipNext, InetAddress ipPrevious){
+	public void notifyLeftFailure(int rightHash, InetAddress ipNext, InetAddress ipPrevious){
 		try{
 			if (sock.isClosed()!=true)
 			{
@@ -165,7 +165,7 @@ public class TCP {
 			BufferedWriter out = new BufferedWriter(new OutputStreamWriter(sock.getOutputStream()));
 			out.write("notifyNextFailure");
 			out.newLine();
-			out.write(String.valueOf(nextHash));
+			out.write(String.valueOf(rightHash));
 			out.newLine();
 			out.write(ipNext.toString());
 			System.out.println("notifyPreviousFailure message send.");
@@ -184,20 +184,20 @@ public class TCP {
 		listener.start();
 	}
 
-	void failure(int hash, InetAddress Ip){ 
-		int failingNodeHash = 0;
+	void failure(InetAddress Ip){
 		InetAddress failingNodeIp = null;
 		int leftNeighbourHash = 0;
 		InetAddress leftNeighbourIp = null;
 		int rightNeighbourHash = 0;
 		InetAddress rightNeighbourIp = null;
 	
-		failingNodeHash = hash;
 		failingNodeIp = Ip;
-		//ask naming server for hash from neighbours of failing node
+		//ask naming server for hash and IP from neighbours of failing node
+		//...
 		//send neighbours from failing node updates about there new neigbours.
-		notifyNextFailure(rightNeighbourHash,rightNeighbourIp,leftNeighbourIp);
-		notifyPreviousFailure(leftNeighbourHash,rightNeighbourIp,leftNeighbourIp);
+		notifyRightFailure(leftNeighbourHash,rightNeighbourIp,leftNeighbourIp);
+		notifyLeftFailure(rightNeighbourHash,rightNeighbourIp,leftNeighbourIp);
 		// send message to naming server to delete failing node from list.
+		//...
 	}
 }

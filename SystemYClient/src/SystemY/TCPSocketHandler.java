@@ -72,27 +72,27 @@ public class TCPSocketHandler extends Thread {
 				System.out.println("Next Hash: "+nextHash);
 				System.out.println("IP next: "+ipNext.toString());
 			} 
-			else if (nextLine == "notifyNextFailure")
+			else if (nextLine == "notifyRightFailure")
 			{
-				int previousHash = Integer.parseInt(in.readLine());
-				InetAddress ipPrevious = InetAddress.getByName(in.readLine());
+				int leftHash = Integer.parseInt(in.readLine());
+				InetAddress ipLeft = InetAddress.getByName(in.readLine());
 				
 				//action
-				System.out.println("notifyNextFailure message received: ");
+				System.out.println("notifyRightFailure message received: ");
 				System.out.println("------------------------------------");
-				System.out.println("Previous Hash: "+previousHash);
-				System.out.println("IP previous: "+ipPrevious.toString());
+				System.out.println("Left client's Hash: "+leftHash);
+				System.out.println("IP left client: "+ipLeft.toString());
 			}
-			else if (nextLine == "notifyPreviousFailure")
+			else if (nextLine == "notifyLeftFailure")
 			{
-				int nextHash = Integer.parseInt(in.readLine());
-				InetAddress ipNext = InetAddress.getByName(in.readLine());
+				int rightHash = Integer.parseInt(in.readLine());
+				InetAddress ipRight = InetAddress.getByName(in.readLine());
 				
 				//action
 				System.out.println("notifyPreviousFailure message received: ");
 				System.out.println("------------------------------------");
-				System.out.println("Previous Hash: "+nextHash);
-				System.out.println("IP previous: "+ipNext.toString());
+				System.out.println("Previous Hash: "+rightHash);
+				System.out.println("IP previous: "+ipRight.toString());
 			}
 			else
 			{
