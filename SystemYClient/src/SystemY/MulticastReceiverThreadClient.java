@@ -2,6 +2,7 @@ package SystemY;
 
 import java.io.IOException;
 import java.net.*;
+import java.rmi.RemoteException;
 import java.util.TreeMap;
 
 public class MulticastReceiverThreadClient extends Thread {
@@ -52,15 +53,23 @@ public class MulticastReceiverThreadClient extends Thread {
 		int hash = calculateHash(parts[0]);
 		nodeLijst.put(hash, parts[1]);
 		
-		if(hash>ownHash & hash<nextNode){// if the new node lies between this node and the next node
-			//TODO notify next node with his previous and next hash: TCP.notifyNext(ownHash /*previous hash*/, nextNode /*next hash*/)
-			nodeClient.notifyNext(ownHash /*previous hash*/, nextNode /*next hash*/, hash /*of node to notify*/);
-			nextNode = hash;
-		}else if(previousNode<hash & hash<ownHash){// if the new node lies between this node and the previous node
-			//TODO notify previous with next hash and previous hash: TCP.notifyPrevious(previousNode /*previous hash*/, ownHash /*next hash*/)
-			nodeClient.notifyPrevious(previousNode /*previous hash*/, ownHash /*next hash*/, hash /*of node to notify*/);
-			previousNode = hash;
+		//Check if this node is the first node, if so iet shouldnt replace its first and last node and it shoudnt notify other nodes.
+		try {
+			if(nodeClient.ni.amIFirst() == 0){
+				if(hash>ownHash & hash<nextNode){// if the new node lies between this node and the next node
+					//TODO notify next node with his previous and next hash: TCP.notifyNext(ownHash /*previous hash*/, nextNode /*next hash*/)
+					nodeClient.notifyNext(ownHash /*previous hash*/, nextNode /*next hash*/, hash /*of node to notify*/);
+					nextNode = hash;
+				}else if(previousNode<hash & hash<ownHash){// if the new node lies between this node and the previous node
+					//TODO notify previous with next hash and previous hash: TCP.notifyPrevious(previousNode /*previous hash*/, ownHash /*next hash*/)
+					nodeClient.notifyPrevious(previousNode /*previous hash*/, ownHash /*next hash*/, hash /*of node to notify*/);
+					previousNode = hash;
+				}
+			}
+		} catch (RemoteException e) {
+			e.printStackTrace();
 		}
+			
 		//receive another
 		run();
 	}

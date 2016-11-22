@@ -8,12 +8,16 @@ import java.io.UnsupportedEncodingException;
 import java.net.InetAddress;
 import java.net.MalformedURLException;
 import java.rmi.*;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
+import java.rmi.server.UnicastRemoteObject;
 import java.util.TreeMap;
+import java.util.concurrent.TimeUnit;
 
-public class NodeClient {
+public class NodeClient extends UnicastRemoteObject implements clientToClientInterface{
 	private TreeMap<Integer, String> nodeLijst = new TreeMap<>(); //hash, ipadres
 	private TreeMap<String, Integer> bestandenLijst = new TreeMap<>(); //filename, hash
-	String ip = "192.168.1.3";
+	String ip = "192.168.1.2";
 	private int nextNode=32768;
 	private int previousNode=0;
 	private int ownHash;
@@ -21,23 +25,29 @@ public class NodeClient {
 	NamingServerInterface ni;
 
 	public static void main(String args[]) {
-		new NodeClient();
+		try {
+			new NodeClient();
+		} catch (RemoteException e) {
+			e.printStackTrace();
+		}
 	}
 
-	public NodeClient() {
+	public NodeClient() throws RemoteException{
 		multicastReceiverThreadClient = new Thread(new MulticastReceiverThreadClient(nodeLijst, nextNode, previousNode, ownHash, this));
-		tcpNotifyReceiverThread = new Thread(new TCPNotifyReceiverThread());
 		
-		TCP tcpSender;
-		startUp();
+		startUp(this);
 		System.out.println(ownHash);
-		consoleGUI();
+		
+		//oneindige while lus voor gui
+		while(true)
+			consoleGUI();
 	}
 	
 	private void consoleGUI(){
 		System.out.println("What do you want to do?");
 		System.out.println("[1] List local files");
 		System.out.println("[2] Look for file");
+		System.out.println("[3] Notify next");
 		System.out.println("[4] Exit");
 		
 		int input = Integer.parseInt(readConsole());
@@ -50,6 +60,9 @@ public class NodeClient {
 			
 			case 2 :	String location = getFileLocation("Enter file to look for: " + readConsole());
 						System.out.println("The location is: " + location);
+			break;
+			
+			case 3 :	notifyNext(333, 666, 5214);
 			break;
 			
 			case 4 :	shutdown();
@@ -70,21 +83,29 @@ public class NodeClient {
 		try {
 			location = ni.getFileLocation(fileName);
 		} catch (Exception e) {
-			System.err.println("NamingServer exception: " + e.getMessage());
+			System.err.println("NodeClient exception: " + e.getMessage());
 			e.printStackTrace();
 		}
 		return location;
 	}
 
-	private void startUp() {
+	private void startUp(NodeClient nodeClient) {
 		//connect RMI to NamingServer
 		String name = "//"+ip+":1099/NamingServer";
 		try {
 			ni = (NamingServerInterface) Naming.lookup(name);
 			new MulticastSender(ownHash);
+			TimeUnit.SECONDS.sleep(5);
 			multicastReceiverThreadClient.start();
 			System.out.println(ownHash);
-		} catch (MalformedURLException | RemoteException | NotBoundException | UnsupportedEncodingException e) {
+			
+			//make registry to establish RMI between nodes
+			String bindLocation = "nodeClient";
+			Registry reg = LocateRegistry.createRegistry(1099);
+			reg.bind(bindLocation, nodeClient);
+			System.out.println("NamingServer is ready at: " + bindLocation);
+			System.out.println("java RMI registry created.");
+		} catch (MalformedURLException | RemoteException | NotBoundException | UnsupportedEncodingException | InterruptedException | AlreadyBoundException e) {
 			e.printStackTrace();
 		}		
 	}
@@ -138,20 +159,21 @@ public class NodeClient {
 		//Notifies the new node that his previous node is this node and his next node is this node's former next node
 		try {
 			String name = nodeLijst.get(hash);
-			clientToClientInterface ni = (clientToClientInterface) Naming.lookup(name);
-			ni.getNotified(ownHash, nextNodeHash);
+			clientToClientInterface ctci = (clientToClientInterface) Naming.lookup("//"+name+":1100/nodeClient");
+			ctci.getNotified(ownHash, nextNodeHash);
 		} catch (Exception e) {
 			System.err.println("NamingServer exception: " + e.getMessage());
 			e.printStackTrace();
 		}
 	}
 
+	//notify previous node via RMI
 	public void notifyPrevious(int previousNodeHash, int ownHash, int hash) {
 		//Notifies the new node that his previous node is this node's former previous node and his next node is this node
 		try {
 			String name = nodeLijst.get(hash);
-			clientToClientInterface ni = (clientToClientInterface) Naming.lookup(name);
-			ni.getNotified(previousNodeHash, ownHash);
+			clientToClientInterface ctci = (clientToClientInterface) Naming.lookup("//"+name+"1100/nodeClient");
+			ctci.getNotified(previousNodeHash, ownHash);
 		} catch (Exception e) {
 			System.err.println("NamingServer exception: " + e.getMessage());
 			e.printStackTrace();
@@ -166,5 +188,7 @@ public class NodeClient {
 		if(nextHash!=-1){
 			nextNode = nextHash;
 		}
+		System.out.println("Vorige node: " +previousNode);
+		System.out.println("Vorige node: " +nextNode);
 	}
 }

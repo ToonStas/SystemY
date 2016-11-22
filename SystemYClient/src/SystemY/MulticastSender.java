@@ -93,12 +93,7 @@ public class MulticastSender {
 		Naamip = naam + " " + Ip;
 
 		byte[] sendData = Naamip.getBytes(); // Naam in sendData1 zetten
-
-		/*
-		 * for(int i=0 ; i<sendData.length; i++){ 
-		 * sendData[i] = (byte)i;
-		 * }
-		 */
+		
 		try {
 			DatagramPacket pack = new DatagramPacket(sendData, sendData.length, InetAddress.getByName(group), port);
 			s.send(pack);
