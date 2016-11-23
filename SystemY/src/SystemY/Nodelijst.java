@@ -31,7 +31,7 @@ public class Nodelijst {
 		
 		if (listOfNodes.containsKey(hash)) {
 			val = 0;
-		} else {
+		} else if(name != "Server") {
 			NodeNamingServer node = new NodeNamingServer(name, ipaddr);
 			listOfNodes.put(node.getHash(), node);
 			updateJSON(Integer.MAX_VALUE, node);

@@ -17,6 +17,8 @@ public class NamingServer extends UnicastRemoteObject implements NamingServerInt
 		multicastReceiverThread = new Thread(new MulticastReceiverThread(nodeLijst));
 		multicastReceiverThread.start();
 		
+		MulticastSenderNamingServer multicastSenderNamingServer = new MulticastSenderNamingServer();
+		
 		nodeLijst.writeJSON();
 		//nodeLijst.readJSON();
 		
