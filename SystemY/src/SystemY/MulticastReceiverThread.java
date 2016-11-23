@@ -5,14 +5,14 @@ import java.net.*;
 
 public class MulticastReceiverThread extends Thread {
 
-	private Nodelijst nodeLijstThread;
+	private Nodelijst nodeLijst;
 	private int port;
 	private String multicastGroup;
 	private MulticastSocket s;
 	
 	//constructor multicast reciever thread
 	public MulticastReceiverThread(Nodelijst nodeLijst) {
-		nodeLijstThread = nodeLijst;
+		this.nodeLijst = nodeLijst;
 		
 		port = 8769;
 		multicastGroup = "224.1.1.1";
@@ -47,10 +47,10 @@ public class MulticastReceiverThread extends Thread {
 		
 		
 		//node toevoegen aan de naming server
-		int val = nodeLijstThread.addNode(nameIp);
+		int val = nodeLijst.addNode(nameIp);
 		if(val==0)
-			val =val; //system.out.println("failed to add node")
-		nodeLijstThread.listAllNodes();
+			System.out.println("failed to add node");
+		nodeLijst.listAllNodes();
 		
 		//receive another
 		run();
