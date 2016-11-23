@@ -15,7 +15,6 @@ import java.util.TreeMap;
 public class NodeClient extends UnicastRemoteObject implements clientToClientInterface {
 	private TreeMap<Integer, String> nodeLijst = new TreeMap<>(); // hash, ipadres
 	private TreeMap<String, Integer> bestandenLijst = new TreeMap<>(); // filename, hash
-	String ip = "192.168.1.2"; // ip van de NamingServer
 	private int nextNode = 32768;
 	private int previousNode = 0;
 	private int ownHash;
@@ -98,7 +97,7 @@ public class NodeClient extends UnicastRemoteObject implements clientToClientInt
 
 	private void startUp(NodeClient nodeClient, String nameNode) {
 		// connect RMI to NamingServer
-		String name = "//" + ip + ":1099/NamingServer";
+		String name = "//" + serverIP + ":1099/NamingServer";
 		try {
 			ni = (NamingServerInterface) Naming.lookup(name);
 			ownHash = calculateHash(nameNode);

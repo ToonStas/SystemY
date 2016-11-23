@@ -12,7 +12,7 @@ public class MulticastSenderNamingServer {
 	private int port = 8769; // Poort naar waar we verzenden
 	private String group = "224.1.1.1";
 	private MulticastSocket s;
-	String name="Server";
+	String name= "Server";
 	InetAddress address=null;
 	String ipAddress="";
 
@@ -44,7 +44,7 @@ public class MulticastSenderNamingServer {
 					e.printStackTrace();
 				}
 			}
-		}, 10, 15, TimeUnit.SECONDS); //initialDelay, period, timeunit
+		}, 0, 15, TimeUnit.SECONDS); //initialDelay, period, timeunit
 		
 
 	}

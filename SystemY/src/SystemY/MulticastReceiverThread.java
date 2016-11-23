@@ -49,7 +49,7 @@ public class MulticastReceiverThread extends Thread {
 		//node toevoegen aan de naming server
 		int val = nodeLijst.addNode(nameIp);
 		if(val==0)
-			System.out.println("failed to add node");
+			System.out.println("Node already exists");
 		nodeLijst.listAllNodes();
 		
 		//receive another

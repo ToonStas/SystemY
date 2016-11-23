@@ -30,8 +30,11 @@ public class Nodelijst {
 		int hash = calculateHash(name);
 		
 		if (listOfNodes.containsKey(hash)) {
-			val = 0;
-		} else if(name != "Server") {
+			val = 0;//node already exists
+		} else if(hash == 25757){
+			//if it is the server himself
+			val = 2;
+		} else if(hash != 25757) {  //25757 is hash van de naam "Server"
 			NodeNamingServer node = new NodeNamingServer(name, ipaddr);
 			listOfNodes.put(node.getHash(), node);
 			updateJSON(Integer.MAX_VALUE, node);
