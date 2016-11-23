@@ -195,7 +195,7 @@ public class NodeClient extends UnicastRemoteObject implements clientToClientInt
 		try {
 			String name = nodeLijst.get(hash);
 			clientToClientInterface ctci = (clientToClientInterface) Naming.lookup("//" + name + ":1100/nodeClient");
-			ctci.getNotified(previousNodeHash, ownHash);
+			ctci.getNotified(hash, ownHash);
 		} catch (Exception e) {
 			System.err.println("NamingServer exception: " + e.getMessage());
 			e.printStackTrace();

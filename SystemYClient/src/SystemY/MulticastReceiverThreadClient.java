@@ -71,7 +71,7 @@ public class MulticastReceiverThreadClient extends Thread {
 					nodeClient.notifyPrevious(previousNode /*previous hash*/, ownHash /*next hash*/, hash /*of node to notify*/);
 					previousNode = hash;
 				}
-			}else{
+			}else if(nodeClient.ni.amIFirst() == 1){
 				nextNode = 32769;
 				previousNode = -1;
 			}
