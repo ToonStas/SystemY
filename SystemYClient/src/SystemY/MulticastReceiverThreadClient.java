@@ -12,13 +12,15 @@ public class MulticastReceiverThreadClient extends Thread {
 	private TreeMap<Integer, String> nodeLijst; //hash, ip
 	private int nextNode, previousNode, ownHash;
 	NodeClient nodeClient;
+	String serverIP;
 
-	public MulticastReceiverThreadClient(TreeMap<Integer, String> nodeLijst, int nextNode, int previousNode, int ownHash, NodeClient nodeClient) {	
+	public MulticastReceiverThreadClient(TreeMap<Integer, String> nodeLijst, int nextNode, int previousNode, int ownHash, NodeClient nodeClient, String serverIP) {	
 		this.nodeLijst = nodeLijst;
 		this.nextNode = nextNode;
 		this.previousNode = previousNode;
 		this.ownHash = ownHash;
 		this.nodeClient = nodeClient;
+		this.serverIP = serverIP;
 		port = 8769;
 		multicastGroup = "224.1.1.1";
 		try {
@@ -51,9 +53,13 @@ public class MulticastReceiverThreadClient extends Thread {
 		
 		String[] parts = nameIp.split(" ");
 		int hash = calculateHash(parts[0]);
-		nodeLijst.put(hash, parts[1]);
+		if(parts[0]=="Server"){
+			String serverIP = parts[1];
+		}else{
+			nodeLijst.put(hash, parts[1]);
+		}
 		
-		//Check if this node is the first node, if so iet shouldnt replace its first and last node and it shoudnt notify other nodes.
+		//Check if this node is the first node, if so it shouldnt replace its first and last node and it shoudnt notify other nodes.
 		try {
 			if(nodeClient.ni.amIFirst() == 0){
 				if(hash>ownHash & hash<nextNode){// if the new node lies between this node and the next node
@@ -65,6 +71,9 @@ public class MulticastReceiverThreadClient extends Thread {
 					nodeClient.notifyPrevious(previousNode /*previous hash*/, ownHash /*next hash*/, hash /*of node to notify*/);
 					previousNode = hash;
 				}
+			}else{
+				nextNode = 32769;
+				previousNode = -1;
 			}
 		} catch (RemoteException e) {
 			e.printStackTrace();

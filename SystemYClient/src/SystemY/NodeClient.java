@@ -21,6 +21,7 @@ public class NodeClient extends UnicastRemoteObject implements clientToClientInt
 	private int ownHash;
 	private Thread multicastReceiverThreadClient;
 	NamingServerInterface ni;
+	String serverIP;
 
 	public static void main(String args[]) {
 		try {
@@ -33,7 +34,7 @@ public class NodeClient extends UnicastRemoteObject implements clientToClientInt
 	public NodeClient() throws RemoteException {
 		String nameNode = readConsoleName();
 		multicastReceiverThreadClient = new Thread(
-				new MulticastReceiverThreadClient(nodeLijst, nextNode, previousNode, ownHash, this));
+				new MulticastReceiverThreadClient(nodeLijst, nextNode, previousNode, ownHash, this, serverIP));
 
 		startUp(this, nameNode);
 
@@ -66,7 +67,7 @@ public class NodeClient extends UnicastRemoteObject implements clientToClientInt
 			break;
 
 		case 3:
-			System.out.println("Vorige hash: "+previousNode);
+			System.out.println("Previous hash: "+previousNode);
 			System.out.println("Next hash: "+nextNode);
 			break;
 
