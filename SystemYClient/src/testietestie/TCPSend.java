@@ -27,6 +27,7 @@ public class TCPSend {
 		}
 	}
 	
+	@SuppressWarnings("resource")
 	public static void SendFile(File fileToSend, InetAddress IPDestination) throws IOException {
 		File file = fileToSend;
 		InetAddress IPDest = IPDestination;
