@@ -16,7 +16,7 @@ public class TCPreceive {
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 		try {
-			int i = ReceiveFile(InetAddress.getLocalHost(), 1200000, "C:/Temp/eenliedje.mp3");
+			int i = ReceiveFile(InetAddress.getLocalHost(), 12000000, "C:/Temp/eenliedje.mp3");
 			if (i == 0) {
 				System.out.println("file doesnt exist");
 			} else {
