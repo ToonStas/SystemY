@@ -13,16 +13,14 @@ public class MulticastReceiverThreadClient extends Thread {
 	private TreeMap<Integer, String> nodeLijst; //hash, ip
 	private int nextNode, previousNode, ownHash;
 	NodeClient nodeClient;
-	String serverIP;
-	boolean goAhead;
+	 volatile boolean goAhead;
 
-	public MulticastReceiverThreadClient(TreeMap<Integer, String> nodeLijst, int nextNode, int previousNode, int ownHash, NodeClient nodeClient, String serverIP, boolean goAhead) {	
+	public MulticastReceiverThreadClient(TreeMap<Integer, String> nodeLijst, int nextNode, int previousNode, int ownHash, NodeClient nodeClient, boolean goAhead) {	
 		this.nodeLijst = nodeLijst;
 		this.nextNode = nextNode;
 		this.previousNode = previousNode;
 		this.ownHash = ownHash;
 		this.nodeClient = nodeClient;
-		this.serverIP = serverIP;
 		this.goAhead = goAhead;
 		port = 8769;
 		multicastGroup = "224.1.1.1";
@@ -56,9 +54,8 @@ public class MulticastReceiverThreadClient extends Thread {
 		
 		String[] parts = nameIp.split(" ");
 		int hash = calculateHash(parts[0]);
-		//System.out.println(hash);
 		if(hash== 25757){
-			serverIP = parts[1];
+			nodeClient.setServerIP(parts[0]);
 		}else{
 			nodeLijst.put(hash, parts[1]);
 			//Check if this node is the first node, if so it shouldnt replace its first and last node and it shoudnt notify other nodes.

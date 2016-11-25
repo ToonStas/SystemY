@@ -22,7 +22,7 @@ public class NodeClient extends UnicastRemoteObject implements clientToClientInt
 	private Thread multicastReceiverThreadClient;
 	NamingServerInterface ni;
 	String serverIP;
-	boolean goAhead = false; //the thread should wait untill the interface has been made before communicating via it
+	volatile boolean goAhead = false; //the thread should wait untill the interface has been made before communicating via it
 
 	public static void main(String args[]) {
 		try {
@@ -35,7 +35,7 @@ public class NodeClient extends UnicastRemoteObject implements clientToClientInt
 	public NodeClient() throws RemoteException {
 		String nameNode = readConsoleName();
 		multicastReceiverThreadClient = new Thread(
-				new MulticastReceiverThreadClient(nodeLijst, nextNode, previousNode, ownHash, this, serverIP, goAhead));
+				new MulticastReceiverThreadClient(nodeLijst, nextNode, previousNode, ownHash, this, goAhead));
 
 		startUp(this, nameNode);
 
@@ -104,7 +104,6 @@ public class NodeClient extends UnicastRemoteObject implements clientToClientInt
 			while(serverIP == null){
 				//wait untill we know the servers ip
 				TimeUnit.SECONDS.sleep(2);
-				System.out.println(serverIP);
 			}
 			new MulticastSender(ownHash, nameNode);
 			String name = "//" + serverIP + ":1099/NamingServer";
@@ -245,5 +244,10 @@ public class NodeClient extends UnicastRemoteObject implements clientToClientInt
 		ownHash = calculateHash(naam);
 		System.out.println(ownHash);
 		return naam;
+	}
+
+	public void setServerIP(String IP) {
+		serverIP = IP;
+		
 	}
 }
