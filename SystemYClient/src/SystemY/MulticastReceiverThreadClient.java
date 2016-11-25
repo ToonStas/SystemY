@@ -56,7 +56,8 @@ public class MulticastReceiverThreadClient extends Thread {
 		
 		String[] parts = nameIp.split(" ");
 		int hash = calculateHash(parts[0]);
-		if(parts[0]=="Server"){
+		//System.out.println(hash);
+		if(hash== 25757){
 			serverIP = parts[1];
 		}else{
 			nodeLijst.put(hash, parts[1]);
@@ -65,6 +66,7 @@ public class MulticastReceiverThreadClient extends Thread {
 				//wait untill the class nodeClietn says the interface is made and you can continue
 				while(goAhead == false){
 					//wait
+					System.out.println(goAhead);
 					TimeUnit.SECONDS.sleep(2);
 				}
 				if(nodeClient.ni.amIFirst() == 0){

@@ -100,12 +100,13 @@ public class NodeClient extends UnicastRemoteObject implements clientToClientInt
 	private void startUp(NodeClient nodeClient, String nameNode) {
 		// connect RMI to NamingServer
 		try {
-			new MulticastSender(ownHash, nameNode);
 			multicastReceiverThreadClient.start();
 			while(serverIP == null){
 				//wait untill we know the servers ip
 				TimeUnit.SECONDS.sleep(2);
+				System.out.println(serverIP);
 			}
+			new MulticastSender(ownHash, nameNode);
 			String name = "//" + serverIP + ":1099/NamingServer";
 			ni = (NamingServerInterface) Naming.lookup(name);
 			ownHash = calculateHash(nameNode);
