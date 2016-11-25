@@ -61,28 +61,21 @@ public class MulticastReceiverThreadClient extends Thread {
 			try {
 				if(nodeClient.ni.amIFirst() == 0){
 					if(hash>ownHash & hash<nextNode){// if the new node lies between this node and the next node
-						if(nextNode >= 32768){
-							nodeClient.notifyNext(ownHash,32768,hash); //Notify that next node is 32768
-							nextNode = 32768;
 						}else{
 						//TODO notify next node with his previous and next hash: TCP.notifyNext(ownHash /*previous hash*/, nextNode /*next hash*/)
 						nodeClient.notifyNext(ownHash /*previous hash*/, nextNode /*next hash*/, hash /*of node to notify*/);
 						nextNode = hash;
 						}
 					}else if(previousNode<hash & hash<ownHash){// if the new node lies between this node and the previous node
-						if(previousNode <= 0){
-							nodeClient.notifyPrevious(0, ownHash, hash); //Notify that previous node is 0
-							previousNode = 0;
 						}else{
 						//TODO notify previous with next hash and previous hash: TCP.notifyPrevious(previousNode /*previous hash*/, ownHash /*next hash*/)
 						nodeClient.notifyPrevious(previousNode /*previous hash*/, ownHash /*next hash*/, hash /*of node to notify*/);
 						previousNode = hash;
 						}
+				if(nodeClient.ni.amIFirst() == 1){
+					nodeClient.notifyPrevious(-1,hash,hash);
+					nodeClient.notifyPrevious(-1,hash,hash);
 					}
-				}else if(nodeClient.ni.amIFirst() == 1){
-					nextNode = 32769;
-					previousNode = -1;
-				}
 			} catch (RemoteException e) {
 				e.printStackTrace();
 			}
