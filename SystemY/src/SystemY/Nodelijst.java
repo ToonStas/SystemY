@@ -4,6 +4,13 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+import java.rmi.AlreadyBoundException;
+import java.rmi.Naming;
+import java.rmi.RemoteException;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -38,9 +45,34 @@ public class Nodelijst {
 			NodeNamingServer node = new NodeNamingServer(name, ipaddr);
 			listOfNodes.put(node.getHash(), node);
 			updateJSON(Integer.MAX_VALUE, node);
+			
+			//make an RMI interface for the server to RMI with the node
+			makeRMI(name, node, ipaddr);
+			NamingServerToClientInterface nodeInterface = node.getInterface();
+			String serverIP;
+			try {
+				serverIP = InetAddress.getLocalHost().getHostAddress();
+				nodeInterface.setServerIP(serverIP);
+			} catch (UnknownHostException | RemoteException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
 			val = 1;
 		}
 		return val;
+	}
+
+	private void makeRMI(String name, NodeNamingServer node, String ipaddr) {
+		String location = "//"+ipaddr+"/Client"+name;
+		try {
+			NamingServerToClientInterface ntci = (NamingServerToClientInterface) Naming.lookup(location);
+			node.addInterface(ntci);
+		} catch (Exception e) {
+			System.err.println("Exception: " + e.getMessage());
+			e.printStackTrace();
+		}
+		
 	}
 
 	//het verwijderen van een node uit de nodelijst

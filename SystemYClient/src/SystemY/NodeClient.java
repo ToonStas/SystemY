@@ -13,7 +13,7 @@ import java.rmi.server.UnicastRemoteObject;
 import java.util.TreeMap;
 import java.util.concurrent.TimeUnit;
 
-public class NodeClient extends UnicastRemoteObject implements clientToClientInterface {
+public class NodeClient extends UnicastRemoteObject implements clientToClientInterface, NamingServerToClientInterface{
 	private TreeMap<Integer, String> nodeLijst = new TreeMap<>(); // hash, ipadres
 	private TreeMap<String, Integer> bestandenLijst = new TreeMap<>(); // filename, hash
 	private int nextNode = 32768;
@@ -100,12 +100,20 @@ public class NodeClient extends UnicastRemoteObject implements clientToClientInt
 	private void startUp(NodeClient nodeClient, String nameNode) {
 		// connect RMI to NamingServer
 		try {
+			//make registry to establish communication of server to client
+			String bindLocation = "namingServer";
+			Registry reg = LocateRegistry.createRegistry(1200);
+			reg.bind(bindLocation, nodeClient);
+			System.out.println("Namingserver registry is ready at: " + bindLocation);
+			System.out.println("java RMI registry created.");
+			
 			multicastReceiverThreadClient.start();
-			while(serverIP == null){
-				//wait untill we know the servers ip
-				TimeUnit.SECONDS.sleep(2);
-			}
 			new MulticastSender(ownHash, nameNode);
+			while(serverIP == null){
+				//wait until we know the servers ip
+				TimeUnit.SECONDS.sleep(2);
+				System.out.println(serverIP);
+			}
 			String name = "//" + serverIP + ":1099/NamingServer";
 			ni = (NamingServerInterface) Naming.lookup(name);
 			ownHash = calculateHash(nameNode);
@@ -114,11 +122,13 @@ public class NodeClient extends UnicastRemoteObject implements clientToClientInt
 			goAhead = true;
 
 			// make registry to establish RMI between nodes
-			String bindLocation = "nodeClient";
-			Registry reg = LocateRegistry.createRegistry(1100);
+			bindLocation = "nodeClient";
+			reg = LocateRegistry.createRegistry(1100);
 			reg.bind(bindLocation, nodeClient);
 			System.out.println("ClientRegistery is ready at: " + bindLocation);
 			System.out.println("java RMI registry created.");
+
+			
 		} catch (MalformedURLException | RemoteException | NotBoundException | UnsupportedEncodingException  e) {
 			e.printStackTrace();
 		} catch(AlreadyBoundException | InterruptedException e){
@@ -136,7 +146,7 @@ public class NodeClient extends UnicastRemoteObject implements clientToClientInt
 		nodeLijst.put(hash, ipadres);
 	}
 
-	private int calculateHash(String nodeNaam) { // Deze functie berekent de
+	public int calculateHash(String nodeNaam) { // Deze functie berekent de
 													// hash van een String als
 													// parameter.
 		int tempHash = nodeNaam.hashCode();
@@ -248,6 +258,10 @@ public class NodeClient extends UnicastRemoteObject implements clientToClientInt
 
 	public void setServerIP(String IP) {
 		serverIP = IP;
-		
+	}
+
+	//return the list of files the node has
+	public TreeMap getFileList() throws RemoteException {
+		return bestandenLijst;
 	}
 }

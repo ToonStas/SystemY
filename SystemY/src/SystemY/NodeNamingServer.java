@@ -1,11 +1,12 @@
 package SystemY;
 
+import java.rmi.Remote;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.json.simple.JSONObject;
 
-public class NodeNamingServer {
+public class NodeNamingServer implements Remote {
 
 	public  JSONObject Node = new JSONObject(); 
 	private String name;
@@ -13,6 +14,7 @@ public class NodeNamingServer {
 	private int hash;
 	private Map<String, String> node = new HashMap<String, String>();
 	private BestandenLijst bestandenLijst = new BestandenLijst();
+	private NamingServerToClientInterface clientInterface;
 	
 	public NodeNamingServer (String name, String ipAdress)
 	{
@@ -83,5 +85,14 @@ public class NodeNamingServer {
 		Node.put("IpAdress", this.ipAdress);
 		Node.put("Hash", Integer.toString(this.hash));
 		return 1;
+	}
+
+	public void addInterface(NamingServerToClientInterface ntci) {
+		clientInterface = ntci;
+		
+	}
+
+	public NamingServerToClientInterface getInterface() {
+		return clientInterface;
 	} 
 }
