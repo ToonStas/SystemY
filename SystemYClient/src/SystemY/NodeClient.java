@@ -11,6 +11,7 @@ import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.TreeMap;
+import java.util.concurrent.TimeUnit;
 
 public class NodeClient extends UnicastRemoteObject implements clientToClientInterface {
 	private TreeMap<Integer, String> nodeLijst = new TreeMap<>(); // hash, ipadres
@@ -21,6 +22,7 @@ public class NodeClient extends UnicastRemoteObject implements clientToClientInt
 	private Thread multicastReceiverThreadClient;
 	NamingServerInterface ni;
 	String serverIP;
+	boolean goAhead = false; //the thread should wait untill the interface has been made before communicating via it
 
 	public static void main(String args[]) {
 		try {
@@ -33,7 +35,7 @@ public class NodeClient extends UnicastRemoteObject implements clientToClientInt
 	public NodeClient() throws RemoteException {
 		String nameNode = readConsoleName();
 		multicastReceiverThreadClient = new Thread(
-				new MulticastReceiverThreadClient(nodeLijst, nextNode, previousNode, ownHash, this, serverIP));
+				new MulticastReceiverThreadClient(nodeLijst, nextNode, previousNode, ownHash, this, serverIP, goAhead));
 
 		startUp(this, nameNode);
 
@@ -102,11 +104,14 @@ public class NodeClient extends UnicastRemoteObject implements clientToClientInt
 			multicastReceiverThreadClient.start();
 			while(serverIP == null){
 				//wait untill we know the servers ip
-				int sum=0; sum++;
+				TimeUnit.SECONDS.sleep(2);
 			}
 			String name = "//" + serverIP + ":1099/NamingServer";
 			ni = (NamingServerInterface) Naming.lookup(name);
 			ownHash = calculateHash(nameNode);
+			
+			//the interface has been made so the thread can continue
+			goAhead = true;
 
 			// make registry to establish RMI between nodes
 			String bindLocation = "nodeClient";
@@ -116,15 +121,14 @@ public class NodeClient extends UnicastRemoteObject implements clientToClientInt
 			System.out.println("java RMI registry created.");
 		} catch (MalformedURLException | RemoteException | NotBoundException | UnsupportedEncodingException  e) {
 			e.printStackTrace();
-		} catch(AlreadyBoundException e){
+		} catch(AlreadyBoundException | InterruptedException e){
 			System.out.println("Registry already in use");
 			e.printStackTrace();
 		}
 	}
 
 	// gebeurt ook afzonderlijk in de multicastreceiverthread
-	private void addNode(int hash, String ipadres) { // Bij het opstarten van
-														// een andere node wordt
+	private void addNode(int hash, String ipadres) { // Bij het opstarten van een andere node wordt
 														// deze via deze methode
 														// aan de
 														// lijst van gekende

@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.net.*;
 import java.rmi.RemoteException;
 import java.util.TreeMap;
+import java.util.concurrent.TimeUnit;
 
 public class MulticastReceiverThreadClient extends Thread {
 	private int port;
@@ -13,14 +14,16 @@ public class MulticastReceiverThreadClient extends Thread {
 	private int nextNode, previousNode, ownHash;
 	NodeClient nodeClient;
 	String serverIP;
+	boolean goAhead;
 
-	public MulticastReceiverThreadClient(TreeMap<Integer, String> nodeLijst, int nextNode, int previousNode, int ownHash, NodeClient nodeClient, String serverIP) {	
+	public MulticastReceiverThreadClient(TreeMap<Integer, String> nodeLijst, int nextNode, int previousNode, int ownHash, NodeClient nodeClient, String serverIP, boolean goAhead) {	
 		this.nodeLijst = nodeLijst;
 		this.nextNode = nextNode;
 		this.previousNode = previousNode;
 		this.ownHash = ownHash;
 		this.nodeClient = nodeClient;
 		this.serverIP = serverIP;
+		this.goAhead = goAhead;
 		port = 8769;
 		multicastGroup = "224.1.1.1";
 		try {
@@ -59,6 +62,11 @@ public class MulticastReceiverThreadClient extends Thread {
 			nodeLijst.put(hash, parts[1]);
 			//Check if this node is the first node, if so it shouldnt replace its first and last node and it shoudnt notify other nodes.
 			try {
+				//wait untill the class nodeClietn says the interface is made and you can continue
+				while(goAhead == false){
+					//wait
+					TimeUnit.SECONDS.sleep(2);
+				}
 				if(nodeClient.ni.amIFirst() == 0){
 					if(hash>ownHash & hash<nextNode){// if the new node lies between this node and the next node
 						}else{
@@ -76,7 +84,7 @@ public class MulticastReceiverThreadClient extends Thread {
 					nodeClient.notifyPrevious(-1,hash,hash);
 					nodeClient.notifyPrevious(-1,hash,hash);
 					}
-			} catch (RemoteException e) {
+			} catch (RemoteException | InterruptedException e) {
 				e.printStackTrace();
 			}
 		}
