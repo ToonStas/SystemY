@@ -101,14 +101,14 @@ public class NodeClient extends UnicastRemoteObject implements clientToClientInt
 		// connect RMI to NamingServer
 		try {
 			//make registry to establish communication of server to client
-			String bindLocation = "namingServer";
+			String bindLocation = "Client"+nameNode;
 			Registry reg = LocateRegistry.createRegistry(1200);
 			reg.bind(bindLocation, nodeClient);
 			System.out.println("Namingserver registry is ready at: " + bindLocation);
 			System.out.println("java RMI registry created.");
-			
-			multicastReceiverThreadClient.start();
+
 			new MulticastSender(ownHash, nameNode);
+			multicastReceiverThreadClient.start();
 			while(serverIP == null){
 				//wait until we know the servers ip
 				TimeUnit.SECONDS.sleep(2);
@@ -261,7 +261,7 @@ public class NodeClient extends UnicastRemoteObject implements clientToClientInt
 	}
 
 	//return the list of files the node has
-	public TreeMap getFileList() throws RemoteException {
+	public TreeMap<String, Integer> getFileList() throws RemoteException {
 		return bestandenLijst;
 	}
 }

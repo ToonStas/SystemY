@@ -89,7 +89,6 @@ public class NodeNamingServer implements Remote {
 
 	public void addInterface(NamingServerToClientInterface ntci) {
 		clientInterface = ntci;
-		
 	}
 
 	public NamingServerToClientInterface getInterface() {

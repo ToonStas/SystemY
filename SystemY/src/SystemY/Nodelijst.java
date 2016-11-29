@@ -47,14 +47,14 @@ public class Nodelijst {
 			updateJSON(Integer.MAX_VALUE, node);
 			
 			//make an RMI interface for the server to RMI with the node
-			makeRMI(name, node, ipaddr);
+			makeRMI(node);
 			NamingServerToClientInterface nodeInterface = node.getInterface();
 			String serverIP;
 			try {
 				serverIP = InetAddress.getLocalHost().getHostAddress();
 				nodeInterface.setServerIP(serverIP);
 			} catch (UnknownHostException | RemoteException e) {
-				// TODO Auto-generated catch block
+				System.out.println("Couldn't set serverIP address: ");
 				e.printStackTrace();
 			}
 			
@@ -63,16 +63,15 @@ public class Nodelijst {
 		return val;
 	}
 
-	private void makeRMI(String name, NodeNamingServer node, String ipaddr) {
-		String location = "//"+ipaddr+"/Client"+name;
+	private void makeRMI(NodeNamingServer node) {
+		String location = "//"+node.getIpAdress()+"/Client"+node.getName();
 		try {
 			NamingServerToClientInterface ntci = (NamingServerToClientInterface) Naming.lookup(location);
 			node.addInterface(ntci);
 		} catch (Exception e) {
-			System.err.println("Exception: " + e.getMessage());
+			System.err.println("Exception: Couldn't make NamingServerToClientInterface" + e.getMessage());
 			e.printStackTrace();
 		}
-		
 	}
 
 	//het verwijderen van een node uit de nodelijst
