@@ -43,7 +43,14 @@ public class NamingServer extends UnicastRemoteObject implements NamingServerInt
 	
 	//Ask where the file with fileName should be placed
 	public String askLocation(String fileName){
-		String location = listOfNodes.floorEntry(nodeLijst.calculateHash(fileName)).getValue().getIpAdress(); 
+		String location = "ipadres";
+		int hash = nodeLijst.calculateHash(fileName);
+		
+		if(listOfNodes.floorEntry(hash)==null){ //geeft het ipadres van de 1ste node <= de waarde van de hash
+			location = listOfNodes.lastEntry().getValue().getIpAdress();
+		}else{
+			location = listOfNodes.floorEntry(hash).getValue().getIpAdress(); 
+		}
 		return location;
 	}
 	

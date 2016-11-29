@@ -86,9 +86,8 @@ public class MulticastReceiverThreadClient extends Thread {
 																// the previous
 																// node
 			} else {
-				// TODO notify previous with next hash and previous hash: TCP.notifyPrevious(previousNode /*previous hash*/, ownHash /*next hash*/)
-				nodeClient.notifyPrevious(previousNode /* previous hash */,
-						ownHash /* next hash */, hash /* of node to notify */);
+				//nodeClient.notifyPrevious(previousNode /* previous hash */,
+				//		-1 /* next hash */, hash /* of node to notify */); //next hash -1 because notify only what his previous should be
 				previousNode = hash;
 			}
 			if (nodeClient.ni.amIFirst() == 1) {
