@@ -65,6 +65,7 @@ public class TCP {
 						bos.close();
 					if (sock != null)
 						sock.close();
+						
 				}
 			}
 		} finally {

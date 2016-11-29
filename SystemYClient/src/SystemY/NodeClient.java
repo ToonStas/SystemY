@@ -79,7 +79,11 @@ public class NodeClient extends UnicastRemoteObject implements clientToClientInt
 			String Filelocation = ni.askLocation((readConsole()));
 			System.out.println("The location is: " + Filelocation);
 			break;	
-
+			
+		case 666:
+			System.out.println("The number of the Beast");
+			break;
+			
 		case 9:
 			shutdown();
 			break;
