@@ -195,7 +195,23 @@ public class NodeClient extends UnicastRemoteObject implements clientToClientInt
 		// omwisselen --> nodeLijst.put(hnprev, ipnext); //Change previous node
 		// of next node
 		// Remove node
+		//remove this node from nodelijst
+		//--notifyLeavingNode(ownHash);
 		System.exit(0);
+	}
+
+	private void failure(int failingHash){
+		int hnnext; // hashnumber of the next node
+		int hnprev; // hashnumber of the previous node
+		// Get next node and previous node using the current nodes hash number
+		hnnext = nodeLijst.higherKey(failingHash); // This returns the next neighbour
+		hnprev = nodeLijst.lowerKey(failingHash); // This returns the previous neighbour
+		//send the next node the hash of te new previous node
+		notifyNext(hnprev,-1,hnnext);
+		//send the previous node the hash of the new next node
+		notifyPrevious(-1, hnnext, hnprev);
+		//remove failing node from nodelijst
+		//--notifyLeavingNode(failingHash);
 	}
 
 	// Notify next node via RMI
