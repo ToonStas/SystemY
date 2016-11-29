@@ -91,8 +91,7 @@ public class MulticastReceiverThreadClient extends Thread {
 				previousNode = hash;
 			}
 			if (nodeClient.ni.amIFirst() == 1) {
-				nodeClient.notifyPrevious(-1, hash, hash);
-				nodeClient.notifyPrevious(-1, hash, hash);
+				nodeClient.notifyPrevious(hash, hash, hash); //only adjust yourself so one of the methods is fine
 			}
 		} catch (RemoteException | InterruptedException e) {
 			e.printStackTrace();
