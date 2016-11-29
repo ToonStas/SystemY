@@ -64,12 +64,12 @@ public class Nodelijst {
 	}
 
 	private void makeRMI(NodeNamingServer node) {
-		String location = "//"+node.getIpAdress()+"/Client"+node.getName();
+		String location = "//"+node.getIpAdress()+":1200/Client"+node.getName();
 		try {
 			NamingServerToClientInterface ntci = (NamingServerToClientInterface) Naming.lookup(location);
 			node.addInterface(ntci);
 		} catch (Exception e) {
-			System.err.println("Exception: Couldn't make NamingServerToClientInterface" + e.getMessage());
+			System.err.println("Exception: Couldn't make NamingServerToClientInterface: " + e.getMessage());
 			e.printStackTrace();
 		}
 	}

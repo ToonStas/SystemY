@@ -46,12 +46,13 @@ public class NodeClient extends UnicastRemoteObject implements clientToClientInt
 			consoleGUI();
 	}
 
-	private void consoleGUI() {
+	private void consoleGUI() throws RemoteException {
 		System.out.println("What do you want to do?");
 		System.out.println("[1] List local files");
 		System.out.println("[2] Look for file");
 		System.out.println("[3] Print neighbours");
-		System.out.println("[4] Exit");
+		System.out.println("[4] Ask Location");
+		System.out.println("[9] Exit");
 
 		int input = Integer.parseInt(readConsole());
 		System.out.println("Your choice was: " + input);
@@ -63,7 +64,8 @@ public class NodeClient extends UnicastRemoteObject implements clientToClientInt
 			break;
 
 		case 2:
-			String location = getFileLocation("Enter file to look for: " + readConsole());
+			System.out.println("Enter file to look for: ");
+			String location = getFileLocation(readConsole());
 			System.out.println("The location is: " + location);
 			break;
 
@@ -71,8 +73,14 @@ public class NodeClient extends UnicastRemoteObject implements clientToClientInt
 			System.out.println("Previous hash: "+previousNode);
 			System.out.println("Next hash: "+nextNode);
 			break;
-
+			
 		case 4:
+			System.out.println("Enter file to ask for: ");
+			String Filelocation = ni.askLocation((readConsole()));
+			System.out.println("The location is: " + Filelocation);
+			break;	
+
+		case 9:
 			shutdown();
 			break;
 		}
@@ -87,7 +95,6 @@ public class NodeClient extends UnicastRemoteObject implements clientToClientInt
 
 	private String getFileLocation(String fileName) {
 		String location = "";
-		// TODO get IP address in discover
 		try {
 			location = ni.getFileLocation(fileName);
 		} catch (Exception e) {
@@ -112,8 +119,9 @@ public class NodeClient extends UnicastRemoteObject implements clientToClientInt
 			while(serverIP == null){
 				//wait until we know the servers ip
 				TimeUnit.SECONDS.sleep(2);
-				System.out.println(serverIP);
+				//System.out.println(serverIP);
 			}
+			//make interface for comm with namingserver
 			String name = "//" + serverIP + ":1099/NamingServer";
 			ni = (NamingServerInterface) Naming.lookup(name);
 			ownHash = calculateHash(nameNode);
