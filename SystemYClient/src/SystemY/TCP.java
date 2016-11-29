@@ -22,8 +22,7 @@ public class TCP {
 
 	}
 
-	public int ReceiveFile(InetAddress IPSender, int fileSize, String fileName) throws IOException {
-		InetAddress IPSend = IPSender;
+	public int ReceiveFile(int fileSize, String fileName) throws IOException {
 		int size = fileSize;
 		int bytesRead;
 		int current;
@@ -37,7 +36,7 @@ public class TCP {
 			while (true) {
 				try {
 					sock = servSock.accept();
-					System.out.println("Succesful TCP connection with " + IPSend.toString() + " .");
+					System.out.println("Succesful TCP connection with " + sock.getInetAddress().toString() + " .");
 					byte[] byteArray = new byte[size];
 					InputStream in = sock.getInputStream();
 					fos = new FileOutputStream(name);
@@ -65,9 +64,12 @@ public class TCP {
 			if (servSock != null)
 				servSock.close();
 		}
-	}
 
-	public void SendFile(File fileToSend, InetAddress IPDestination) throws IOException {
+	}
+	
+
+	@SuppressWarnings("resource")
+	public int SendFile(File fileToSend, InetAddress IPDestination) throws IOException {
 		File file = fileToSend;
 		InetAddress IPDest = IPDestination;
 		FileInputStream fis = null;
@@ -75,9 +77,10 @@ public class TCP {
 		OutputStream os = null;
 		Socket sock = null;
 
+		
 		System.out.println("Waiting...");
 		try {
-			while (true) {
+			while (true){
 				sock = new Socket(IPDest, SOCKET_PORT);
 				System.out.println("Accepted connection : " + sock);
 				// send file
