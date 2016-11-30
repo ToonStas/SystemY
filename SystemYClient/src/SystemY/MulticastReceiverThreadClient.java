@@ -65,6 +65,7 @@ public class MulticastReceiverThreadClient extends Thread {
 			// wait until the class nodeClient says the interface is made and you can continue
 			while (goAhead == false) {
 				// wait
+				goAhead = nodeClient.getGoAhead();
 				TimeUnit.SECONDS.sleep(2);
 			}
 			if (nodeClient.ni.amIFirst() == 0) {
