@@ -20,7 +20,7 @@ import org.json.simple.parser.*;
 public class Nodelijst {
 
 	private JSONArray listOfClients;
-	private Map<Integer, NodeNamingServer> listOfNodes;
+	private Map<Integer, NodeNamingServer> listOfNodes; //hash, node
 
 	public Nodelijst() {
 		listOfClients = new JSONArray();
@@ -75,9 +75,9 @@ public class Nodelijst {
 	}
 
 	//het verwijderen van een node uit de nodelijst
-	public void removeNode(int place) {
-		listOfNodes.remove(place);
-		updateJSON(place, null);
+	public void removeNode(int hash) {
+		listOfNodes.remove(hash);
+		updateJSON(hash, null);
 	}
 
 	//Het up tot date houden van de nodelijst in de JSON array.

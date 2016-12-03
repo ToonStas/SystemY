@@ -4,7 +4,7 @@ import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.TreeMap;
 
-public class NamingServer extends UnicastRemoteObject implements NamingServerInterface {
+public class NamingServer extends UnicastRemoteObject implements ClientToNamingServerInterface {
 	private static final long serialVersionUID = 1L;
 	private Nodelijst nodeLijst;
 	private Thread multicastReceiverThread;
@@ -46,7 +46,8 @@ public class NamingServer extends UnicastRemoteObject implements NamingServerInt
 		String location = "ipadres";
 		int hash = nodeLijst.calculateHash(fileName);
 		
-		if(listOfNodes.floorEntry(hash)==null){ //geeft het ipadres van de 1ste node <= de waarde van de hash
+		//give ip of the first node <= hash of the filename
+		if(listOfNodes.floorEntry(hash)==null){ //if there is no lowest node, return the highest node
 			location = listOfNodes.lastEntry().getValue().getIpAdress();
 		}else{
 			location = listOfNodes.floorEntry(hash).getValue().getIpAdress(); 
@@ -61,6 +62,32 @@ public class NamingServer extends UnicastRemoteObject implements NamingServerInt
 		}else{
 			return 0;
 		}
+	}
+	
+	//return the neigbours of a node specified by hashNode
+	public int[] getNeigbours(int hashNode) throws RemoteException {
+		int[] neighbours = new int[1]; //neigbours[0] = previous, 1 = next
+		
+		//give hash of the first node < given hash
+		if(listOfNodes.floorEntry(hashNode-1)==null){ //if there is no lowest node, return the highest node
+			neighbours[0] = listOfNodes.lastEntry().getValue().getHash();
+		}else{
+			neighbours[0] = listOfNodes.floorEntry(hashNode-1).getValue().getHash(); //give the hash of the node below the failing one
+		}
+		
+		if(listOfNodes.higherEntry(hashNode) == null){ //if there is no higher hash
+			neighbours[1] = listOfNodes.firstEntry().getValue().getHash();
+		}else{
+			neighbours[1] = listOfNodes.higherEntry(hashNode).getValue().getHash();
+		}
+			
+		return neighbours;
+	}
+
+	//delete a node specified by hashNode
+	//this method should be invoked by a different node when it detects the failing of another node
+	public void deleteNode(int hashNode) throws RemoteException {
+		nodeLijst.removeNode(hashNode);
 	}
 
 }
