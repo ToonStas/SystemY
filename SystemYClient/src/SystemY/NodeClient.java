@@ -15,7 +15,7 @@ import java.util.concurrent.TimeUnit;
 
 public class NodeClient extends UnicastRemoteObject implements clientToClientInterface, NamingServerToClientInterface{
 	private TreeMap<Integer, String> nodeLijst = new TreeMap<>(); // hash, ipadres
-	private TreeMap<String, Integer> bestandenLijst = new TreeMap<>(); // filename, hash
+	private TreeMap<String, Integer> fileList = new TreeMap<>(); // filename, hash
 	private int nextNode = 32768; //hash for next node, initializes on max
 	private int previousNode = 0; //hash for previous node, initializes on min
 	private int ownHash; //hash of this node
@@ -28,25 +28,27 @@ public class NodeClient extends UnicastRemoteObject implements clientToClientInt
 		try {
 			new NodeClient();
 		} catch (RemoteException e) {
+			System.out.println("Couldn't creat Client");
 			e.printStackTrace();
 		}
 	}
 
-	public NodeClient() throws RemoteException {
+	public NodeClient() throws RemoteException{
 		String nameNode = readConsoleName();
 		multicastReceiverThreadClient = new Thread(
 				new MulticastReceiverThreadClient(nodeLijst, nextNode, previousNode, ownHash, this, goAhead));
 
 		startUp(this, nameNode);
 
-		System.out.println(ownHash);
+		System.out.println("This nodes hash is: "+ownHash);
 
-		// oneindige while lus voor gui
+		// infinite while loop for the gui
 		while (true)
-			consoleGUI();
+			consoleGUI(); 
 	}
-
-	private void consoleGUI() throws RemoteException {
+	
+	//start the consolegui
+	private void consoleGUI() {
 		System.out.println("What do you want to do?");
 		System.out.println("[1] List local files");
 		System.out.println("[2] Look for file");
@@ -60,7 +62,7 @@ public class NodeClient extends UnicastRemoteObject implements clientToClientInt
 		switch (input) {
 		case 1:
 			checkLocalFiles(new File("C:/TEMP"));
-			System.out.println("Local Files are: " + bestandenLijst);
+			System.out.println("Local Files are: " + fileList);
 			break;
 
 		case 2:
@@ -75,9 +77,14 @@ public class NodeClient extends UnicastRemoteObject implements clientToClientInt
 			break;
 			
 		case 4:
-			System.out.println("Enter file to ask for: ");
-			String Filelocation = ni.askLocation((readConsole()));
-			System.out.println("The location is: " + Filelocation);
+			try {
+				System.out.println("Enter file to ask for: ");
+				String Filelocation = ni.askLocation((readConsole()));
+				System.out.println("The location is: " + Filelocation);
+			} catch (RemoteException e) {
+				System.out.println("Couldn't get location. ");
+				e.printStackTrace();
+			}
 			break;	
 			
 		case 666:
@@ -99,16 +106,15 @@ public class NodeClient extends UnicastRemoteObject implements clientToClientInt
 			Registry reg = LocateRegistry.createRegistry(1200);
 			reg.bind(bindLocation, nodeClient);
 			System.out.println("Namingserver registry is ready at: " + bindLocation);
-			System.out.println("java RMI registry created.");
 
 			new MulticastSender(ownHash, nameNode);
 			multicastReceiverThreadClient.start();
 			while(serverIP == null){
 				//wait until we know the servers ip
 				TimeUnit.SECONDS.sleep(2);
-				//System.out.println(serverIP);
 			}
-			//make interface for comm with namingserver
+			
+			//make interface for communication with namingserver
 			String name = "//" + serverIP + ":1099/NamingServer";
 			ni = (ClientToNamingServerInterface) Naming.lookup(name);
 			ownHash = calculateHash(nameNode);
@@ -121,31 +127,31 @@ public class NodeClient extends UnicastRemoteObject implements clientToClientInt
 			reg = LocateRegistry.createRegistry(1100);
 			reg.bind(bindLocation, nodeClient);
 			System.out.println("ClientRegistery is ready at: " + bindLocation);
-			System.out.println("java RMI registry created.");
 
 			
-		} catch (MalformedURLException | RemoteException | NotBoundException | UnsupportedEncodingException  e) {
+		} catch (MalformedURLException | RemoteException | NotBoundException | UnsupportedEncodingException | InterruptedException e) {
 			e.printStackTrace();
-		} catch(AlreadyBoundException | InterruptedException e){
+		} catch(AlreadyBoundException e){
 			System.out.println("Registry already in use");
 			e.printStackTrace();
 		}
 	}
 
-
+	//puts all local files in fileList: name, hash
 	private void checkLocalFiles(File dir) {
 		File[] filesList = dir.listFiles();
 		for (File f : filesList) {
-			bestandenLijst.put(f.getName(), calculateHash(f.getName()));
+			fileList.put(f.getName(), calculateHash(f.getName()));
 		}
 	}
-
+	
+	//returns the location where a file should be located and returns the ip
 	private String getFileLocation(String fileName) {
 		String location = "";
 		try {
 			location = ni.getFileLocation(fileName);
-		} catch (Exception e) {
-			System.err.println("NodeClient exception: " + e.getMessage());
+		} catch (RemoteException e) {
+			System.err.println("NodeClient couldn't fetch filelocation: " + e.getMessage());
 			e.printStackTrace();
 		}
 		return location;
@@ -233,8 +239,14 @@ public class NodeClient extends UnicastRemoteObject implements clientToClientInt
 			String name = nodeLijst.get(hash);
 			clientToClientInterface ctci = (clientToClientInterface) Naming.lookup("//" + name + ":1100/nodeClient");
 			ctci.getNotified(ownHash, nextNodeHash);
-		} catch (Exception e) {
+		} catch (RemoteException e) {
 			System.err.println("NamingServer exception: " + e.getMessage());
+			failure(hash); //when we can't connect to the node we assume it failed.
+			e.printStackTrace();
+		} catch (MalformedURLException e) {
+			e.printStackTrace();
+		} catch (NotBoundException e) {
+			System.out.println("Registry not bound");
 			e.printStackTrace();
 		}
 	}
@@ -247,8 +259,14 @@ public class NodeClient extends UnicastRemoteObject implements clientToClientInt
 			String name = nodeLijst.get(hash);
 			clientToClientInterface ctci = (clientToClientInterface) Naming.lookup("//" + name + ":1100/nodeClient");
 			ctci.getNotified(hash, ownHash);
-		} catch (Exception e) {
+		} catch (RemoteException e) {
 			System.err.println("NamingServer exception: " + e.getMessage());
+			failure(hash); //when we can't connect to the node we assume it failed.
+			e.printStackTrace();
+		} catch (MalformedURLException e) {
+			e.printStackTrace();
+		} catch (NotBoundException e) {
+			System.out.println("Registry not bound");
 			e.printStackTrace();
 		}
 	}
@@ -297,8 +315,8 @@ public class NodeClient extends UnicastRemoteObject implements clientToClientInt
 	}
 
 	//return the list of files the node has
-	public TreeMap<String, Integer> getFileList() throws RemoteException {
-		return bestandenLijst;
+	public TreeMap<String, Integer> getFileList(){
+		return fileList;
 	}
 
 	//for the thread to know when an RMI has been set up with the namingserver
