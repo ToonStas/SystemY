@@ -294,4 +294,9 @@ public class NodeClient extends UnicastRemoteObject implements clientToClientInt
 	public TreeMap<String, Integer> getFileList() throws RemoteException {
 		return bestandenLijst;
 	}
+
+	public boolean getGoAhead() {
+		return goAhead;
+	}
+
 }
