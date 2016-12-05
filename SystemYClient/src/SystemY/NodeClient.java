@@ -14,7 +14,6 @@ import java.util.TreeMap;
 import java.util.concurrent.TimeUnit;
 
 public class NodeClient extends UnicastRemoteObject implements clientToClientInterface, NamingServerToClientInterface{
-	private TreeMap<Integer, String> nodeLijst = new TreeMap<>(); // hash, ipadres
 	private TreeMap<String, Integer> fileList = new TreeMap<>(); // filename, hash
 	private int nextNode = 32768; //hash for next node, initializes on max
 	private int previousNode = 0; //hash for previous node, initializes on min
@@ -28,7 +27,7 @@ public class NodeClient extends UnicastRemoteObject implements clientToClientInt
 		try {
 			new NodeClient();
 		} catch (RemoteException e) {
-			System.out.println("Couldn't creat Client");
+			System.out.println("Couldn't create Client");
 			e.printStackTrace();
 		}
 	}
@@ -36,14 +35,14 @@ public class NodeClient extends UnicastRemoteObject implements clientToClientInt
 	public NodeClient() throws RemoteException{
 		String nameNode = readConsoleName();
 		multicastReceiverThreadClient = new Thread(
-				new MulticastReceiverThreadClient(nodeLijst, nextNode, previousNode, ownHash, this, goAhead));
+				new MulticastReceiverThreadClient(nextNode, previousNode, ownHash, this, goAhead));
 
 		startUp(this, nameNode);
 
 		System.out.println("This nodes hash is: "+ownHash);
 
 		// infinite while loop for the gui
-		while (true)
+		while (true) 
 			consoleGUI(); 
 	}
 	
@@ -156,12 +155,6 @@ public class NodeClient extends UnicastRemoteObject implements clientToClientInt
 		}
 		return location;
 	}
-
-	
-	//add node to list of known nodes, also happens in multicastreceiverthread
-	private void addNode(int hash, String ipadres) { 
-		nodeLijst.put(hash, ipadres);
-	}
 	
 	//calculate hash for a certain name
 	public int calculateHash(String nodeNaam) {
@@ -188,31 +181,16 @@ public class NodeClient extends UnicastRemoteObject implements clientToClientInt
 	
 	//method to call when the node wants to shut down
 	private void shutdown() {
-		int hnnext; // hashnumber of the next node
-		int hnprev; // hashnumber of the previous node
-		// Get next node and previous node using the current nodes hash number
-		hnnext = nodeLijst.higherKey(ownHash); // This returns the next neighbour
-		hnprev = nodeLijst.lowerKey(ownHash);
-		// Send ID of next node to previous node
-		// Change next node IN the previous node
-		// if the hash is -1, the hash is not changed
-		notifyNext(hnprev, -1, hnnext);
-		// omwisselen --> nodeLijst.put(hnnext, ipprev); //Change next node of
-		// Previous node
-		// Sent ID of previous node to next node
-		// Change previous node INT in next node
-		notifyPrevious(-1, hnnext, hnprev);
-		// omwisselen --> nodeLijst.put(hnprev, ipnext); //Change previous node
-		// of next node
-		// Remove node
-		//remove this node from nodelijst
-		//--notifyLeavingNode(ownHash);
+		//Tell nextNode his previous, is what yout previous was
+		// if the hash is -1, the hash is not changed in the recipient node
+		notifyNext(previousNode, -1, nextNode);
+		// Tell previousNode his next, is what your next was
+		notifyPrevious(-1, nextNode, previousNode);
 		System.exit(0);
 	}
 	
 	//when a connectionexception occurs when communicting with another node this method should be invoked
 	//ask nameserver next and previous of failing node, update these nodes with gained info
-	//
 	private void failure(int failingHash){
 		int[] neighbours = new int[1];
 		// Get next node and previous node using the current nodes hash number
@@ -227,17 +205,23 @@ public class NodeClient extends UnicastRemoteObject implements clientToClientInt
 		
 		//send the previous node the hash of the new next node
 		notifyPrevious(-1, neighbours[1], neighbours[0]);
-		//TODO remove failing node from other nodelists?
 	}
 
 	// Notify next node via RMI
-	public void notifyNext(int ownHash /* previous hash */,
-			int nextNodeHash /* next hash */, int hash /* of node to notify */) {
-		// Notifies the new node that his previous node is this node and his
-		// next node is this node's former next node
+	public void notifyNext(int ownHash /* previous hash */, int nextNodeHash /* next hash */, int hash /* of node to notify */) {
+		// Notifies the node (hash) that his previous node is this node and his next node is this node's former next node
+		
+		
+		String ip="";
 		try {
-			String name = nodeLijst.get(hash);
-			clientToClientInterface ctci = (clientToClientInterface) Naming.lookup("//" + name + ":1100/nodeClient");
+			ip = ni.getIP(hash);
+		} catch (RemoteException e1) {
+			System.out.println("Couldn't fetch IP from Namingserver");
+			e1.printStackTrace();
+		}
+		
+		try {
+			clientToClientInterface ctci = (clientToClientInterface) Naming.lookup("//" + ip + ":1100/nodeClient");
 			ctci.getNotified(ownHash, nextNodeHash);
 		} catch (RemoteException e) {
 			System.err.println("NamingServer exception: " + e.getMessage());
@@ -255,9 +239,19 @@ public class NodeClient extends UnicastRemoteObject implements clientToClientInt
 	public void notifyPrevious(int previousNodeHash, int ownHash, int hash) {
 		// Notifies the new node that his previous node is this node's former
 		// previous node and his next node is this node
+		
+
+		String ip="";
 		try {
-			String name = nodeLijst.get(hash);
-			clientToClientInterface ctci = (clientToClientInterface) Naming.lookup("//" + name + ":1100/nodeClient");
+			ip = ni.getIP(hash);
+		} catch (RemoteException e1) {
+			System.out.println("Couldn't fetch IP from Namingserver");
+			e1.printStackTrace();
+		}
+		
+		
+		try {
+			clientToClientInterface ctci = (clientToClientInterface) Naming.lookup("//" + ip + ":1100/nodeClient");
 			ctci.getNotified(hash, ownHash);
 		} catch (RemoteException e) {
 			System.err.println("NamingServer exception: " + e.getMessage());

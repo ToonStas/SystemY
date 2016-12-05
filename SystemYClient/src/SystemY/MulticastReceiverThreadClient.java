@@ -10,14 +10,14 @@ public class MulticastReceiverThreadClient extends Thread {
 	private int port;
 	private String multicastGroup;
 	private MulticastSocket s;
-	private TreeMap<Integer, String> nodeLijst; // hash, ip
+	//private TreeMap<Integer, String> nodeLijst; // hash, ip
 	private int nextNode, previousNode, ownHash;
 	NodeClient nodeClient;
-	volatile boolean goAhead;
+	volatile boolean goAhead; 
 
-	public MulticastReceiverThreadClient(TreeMap<Integer, String> nodeLijst, int nextNode, int previousNode,
+	public MulticastReceiverThreadClient(int nextNode, int previousNode,
 			int ownHash, NodeClient nodeClient, boolean goAhead) {
-		this.nodeLijst = nodeLijst;
+		//this.nodeLijst = nodeLijst;
 		this.nextNode = nextNode;
 		this.previousNode = previousNode;
 		this.ownHash = ownHash;
@@ -34,7 +34,7 @@ public class MulticastReceiverThreadClient extends Thread {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-	}
+	} 
 
 	public void run() {
 		// Create a DatagramPacket and do a receive
@@ -58,7 +58,6 @@ public class MulticastReceiverThreadClient extends Thread {
 
 		String[] parts = nameIp.split(" ");
 		int hash = nodeClient.calculateHash(parts[0]);
-		nodeLijst.put(hash, parts[1]);
 		// Check if this node is the first node, if so it shouldn't replace its
 		// first and last node and it shouldn't notify other nodes.
 		try {
