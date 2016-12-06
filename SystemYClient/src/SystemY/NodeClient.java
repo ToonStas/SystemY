@@ -319,5 +319,10 @@ public class NodeClient extends UnicastRemoteObject implements clientToClientInt
 	public boolean getGoAhead() {
 		return goAhead;
 	}
+	
+	public void setNeighbours(int previous, int next){
+		previousNode = previous;
+		nextNode = next;
+	}
 
 }

@@ -67,7 +67,7 @@ public class MulticastReceiverThreadClient extends Thread {
 				goAhead = nodeClient.getGoAhead();
 				TimeUnit.SECONDS.sleep(2);
 			}
-			//if the nod isn't first
+			//if the node isn't first
 			if (nodeClient.ni.amIFirst() == 0) {
 				if (hash > ownHash & hash < nextNode) {// if the new node lies between this node and the next node
 					// TODO notify next node with his previous and next hash
@@ -79,7 +79,7 @@ public class MulticastReceiverThreadClient extends Thread {
 					previousNode = hash;
 				}
 			}else if (nodeClient.ni.amIFirst() == 1) {
-				nodeClient.notifyPrevious(hash, hash, hash); //only adjust yourself so one of the methods is fine
+				nodeClient.setNeighbours(ownHash, ownHash);
 			}
 		} catch (RemoteException | InterruptedException e) {
 			e.printStackTrace();

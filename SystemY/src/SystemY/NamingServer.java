@@ -57,8 +57,13 @@ public class NamingServer extends UnicastRemoteObject implements ClientToNamingS
 	
 	// methode voor na te gaan of je de eerste node bent van het netwerk
 	public int amIFirst(){
+		//if node is first
 		if(listOfNodes.size()==1){
 			return 1;
+		//if node is second
+		}else if(listOfNodes.size()==2){
+			return 2;
+		//if node is after that
 		}else{
 			return 0;
 		}
@@ -91,6 +96,7 @@ public class NamingServer extends UnicastRemoteObject implements ClientToNamingS
 	}
 
 	public String getIP(int hash){
+			System.out.println(listOfNodes.get(hash).getIpAdress());
 		return listOfNodes.get(hash).getIpAdress();	
 	}
 
