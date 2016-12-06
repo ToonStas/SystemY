@@ -16,110 +16,25 @@ import java.net.ServerSocket;
 import java.net.Socket;
 
 public class TCP {
-	public final static int SOCKET_PORT = 13267;
-
+	private final static int SOCKET_PORT = 13267;
+	private Thread receiveThread;
+	private Thread sendThread;
 	public TCP() {
-
+		;
 	}
 
-	public int ReceiveFile(int fileSize, String filePath) throws IOException {
-		int size = fileSize;
-		int bytesRead;
-		int current;
-		String fileName = filePath;
-		FileOutputStream fos = null;
-		BufferedOutputStream bos = null;
-		Socket sock = null;
-		ServerSocket servSock = null;
-		try {
-			servSock = new ServerSocket(SOCKET_PORT);
-			while (true) {
-				try {
-					sock = servSock.accept();
-					System.out.println("Succesful TCP connection with " + sock.getInetAddress().toString() + " .");
-					byte[] byteArray = new byte[size];
-					InputStream in = sock.getInputStream();
-					fos = new FileOutputStream(fileName);
-					bos = new BufferedOutputStream(fos);
-					bytesRead = in.read(byteArray, 0, byteArray.length);
-					current = bytesRead;
-					do {
-						bytesRead = in.read(byteArray, current, (byteArray.length - current));
-						if (bytesRead >= 0)
-							current += bytesRead;
-					} while (bytesRead > -1);
-					bos.write(byteArray, 0, current);
-					bos.flush();
-					File file = new File(fileName);
-					if (file.exists()){
-						return 1;
-					}
-					else {
-						return 0;
-					}
-
-				} finally {
-					if (fos != null)
-						fos.close();
-					if (bos != null)
-						bos.close();
-					if (sock != null)
-						sock.close();
-						
-				}
-			}
-		} finally {
-			if (servSock != null)
-				servSock.close();
-		}
-		
-		
-		
-		
-
+	public void ReceiveFile(int fileSize, String filePath) throws IOException {
+		receiveThread = new Thread (new TCPReceiveThread(SOCKET_PORT, fileSize, filePath));
+		receiveThread.start();
 	}
 	
 
-	@SuppressWarnings("resource")
-	public int SendFile(File fileToSend, InetAddress IPDestination) throws IOException {
-		File file = fileToSend;
-		InetAddress IPDest = IPDestination;
-		FileInputStream fis = null;
-		BufferedInputStream bis = null;
-		OutputStream os = null;
-		Socket sock = null;
 
-		
-		System.out.println("Waiting...");
-		try {
-			while (true){
-				sock = new Socket(IPDest, SOCKET_PORT);
-				System.out.println("Accepted connection : " + sock);
-				// send file
-				byte[] mybytearray = new byte[(int) file.length()];
-				fis = new FileInputStream(file);
-				bis = new BufferedInputStream(fis);
-				bis.read(mybytearray, 0, mybytearray.length);
-				os = sock.getOutputStream();
-				System.out.println("Sending " + file.toString() + "(" + mybytearray.length + " bytes)");
-				os.write(mybytearray, 0, mybytearray.length);
-				os.flush();
-				System.out.println("Done.");
-			}
-		} finally {
-			if (bis != null)
-				bis.close();
-			if (os != null)
-				os.close();
-			if (sock != null)
-				sock.close();
-		}
+	public void SendFile(File fileToSend, InetAddress IPDestination) throws IOException {
+		sendThread = new Thread (new TCPSendThread(SOCKET_PORT, fileToSend, IPDestination));
+		sendThread.start();
 	}
 
-	// public void listen() throws IOException {
-	// Thread listener = new Thread(new TCPServerSocketListener(SOCKET_PORT,
-	// this.sock, this.serverSock));
-	// listener.start();
-	// }
+
 
 }
