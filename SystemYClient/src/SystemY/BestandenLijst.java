@@ -4,31 +4,33 @@ import java.util.ArrayList;
 
 //klasse voor een lijst van bestanden van een node in te bewaren
 public class BestandenLijst {
-	private ArrayList<Bestand> lijst = null; 
+	private ArrayList<Bestand> lijst = null;
 	
 	public BestandenLijst(){
 		lijst = new ArrayList<Bestand>();
 		
 	}
 	
-	public int addBestand(String naamBestand, String pathBestand){
+	//methode voor het tovoegen van een bestand aan de lijst
+	public int addBestand(String naamBestand, String pathBestand, int hashOwner, int hashReplicationNode){
 		boolean flag = false;
 		for (int i = 0;i<lijst.size();i++){
 			if (lijst.get(i).checkName(naamBestand)){
 				flag = true;
 			}
 		}
-		if (flag){
+		if (flag){ 
 			System.out.println("De bestandsnaam heeft dezelfde hash als een bestaand bestand op deze node.");
 			return 0;
 		}
 		else {	
-			lijst.add(new Bestand(naamBestand, pathBestand));
+			lijst.add(new Bestand(naamBestand, pathBestand, hashOwner, hashReplicationNode));
 			System.out.println("bestand is toegevoegd");
 			return 1;
 		}
 	}
 	
+	//D.m.v. bestandsnaam bestand opvragen als deze voorkomt.
 	public Bestand getBestand(String naamBestand){
 		Bestand testBestand = null;
 		for (int i = 0; i < lijst.size(); i++){
@@ -47,6 +49,7 @@ public class BestandenLijst {
 			
 	}
 	
+	//meegegeven bestand verwijderen uit lijst
 	public int verwijderBestand(Bestand teVerwijderen){
 		if (lijst.contains(teVerwijderen)){
 			lijst.remove(teVerwijderen);
@@ -54,9 +57,9 @@ public class BestandenLijst {
 		}
 		else
 			return 0;
-			
 	}
 	
+	//bestand verwijderen op basis van naam
 	public int verwijderBestandMetNaam(String naamBestand){
 		boolean flag = false;
 		for (int i = 0; i < lijst.size(); i++){

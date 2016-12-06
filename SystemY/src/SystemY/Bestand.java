@@ -8,12 +8,16 @@ public class Bestand {
 	private String path;
 	private File bestand;
 	private int hash;
+	private int hashOwner;
+	private int hashReplicationNode;
 	
-	public Bestand(String naamBestand, String pathBestand){
+	public Bestand(String naamBestand, String pathBestand, int hashOwner, int hashReplicationNode){
 		this.naam = naamBestand;
 		this.path = pathBestand;
 		bestand = new File(this.path);
 		calculateHash();
+		this.hashOwner = hashOwner;
+		this. hashReplicationNode = hashReplicationNode;
 	}
 	
 	//Deze functie berekend de hash voor deze node zelf bij initialisatie
@@ -28,6 +32,14 @@ public class Bestand {
 	
 	public int getHash(){
 		return this.hash;
+	}
+	
+	public int getHashOwner(){
+		return this.hashOwner;
+	}
+	
+	public int getHashReplicationNode(){
+		return this.hashReplicationNode;
 	}
 	
 	public String getNaam(){
@@ -60,5 +72,4 @@ public class Bestand {
 		else
 			return false;
 	}
-
 }
