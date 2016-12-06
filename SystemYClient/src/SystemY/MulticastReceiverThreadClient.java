@@ -15,14 +15,10 @@ public class MulticastReceiverThreadClient extends Thread {
 	NodeClient nodeClient;
 	volatile boolean goAhead; 
 
-	public MulticastReceiverThreadClient(int nextNode, int previousNode,
-			int ownHash, NodeClient nodeClient, boolean goAhead) {
+	public MulticastReceiverThreadClient(int ownHash, NodeClient nodeClient) {
 		//this.nodeLijst = nodeLijst;
-		this.nextNode = nextNode;
-		this.previousNode = previousNode;
 		this.ownHash = ownHash;
 		this.nodeClient = nodeClient;
-		this.goAhead = goAhead;
 		port = 8769;
 		multicastGroup = "224.1.1.1";
 		try {
@@ -58,6 +54,11 @@ public class MulticastReceiverThreadClient extends Thread {
 
 		String[] parts = nameIp.split(" ");
 		int hash = nodeClient.calculateHash(parts[0]);
+		
+		//always have the most recent next and previous node
+		previousNode = nodeClient.getPreviousNode();
+		nextNode = nodeClient.getNextNode();
+		
 		// Check if this node is the first node, if so it shouldn't replace its
 		// first and last node and it shouldn't notify other nodes.
 		try {
@@ -67,18 +68,19 @@ public class MulticastReceiverThreadClient extends Thread {
 				goAhead = nodeClient.getGoAhead();
 				TimeUnit.SECONDS.sleep(2);
 			}
+			//if the node isn't first
 			if (nodeClient.ni.amIFirst() == 0) {
 				if (hash > ownHash & hash < nextNode) {// if the new node lies between this node and the next node
 					// TODO notify next node with his previous and next hash
 					nodeClient.notifyNext(ownHash /* previous hash */, nextNode /* next hash */, hash /* of node to notify */);
-					nextNode = hash;
+					nodeClient.setNext(hash);
 				} else if (previousNode < hash & hash < ownHash) {// if the new node lies between this node and the previous node
 					//nodeClient.notifyPrevious(previousNode /* previous hash */,
 					//		-1 /* next hash */, hash /* of node to notify */); //next hash -1 because notify only what his previous should be
-					previousNode = hash;
+					nodeClient.setPrevious(hash);
 				}
 			}else if (nodeClient.ni.amIFirst() == 1) {
-				nodeClient.notifyPrevious(hash, hash, hash); //only adjust yourself so one of the methods is fine
+				nodeClient.setNeighbours(ownHash, ownHash);
 			}
 		} catch (RemoteException | InterruptedException e) {
 			e.printStackTrace();

@@ -57,22 +57,27 @@ public class NamingServer extends UnicastRemoteObject implements ClientToNamingS
 	
 	// methode voor na te gaan of je de eerste node bent van het netwerk
 	public int amIFirst(){
-		if(listOfNodes.size()<1){
+		//if node is first
+		if(listOfNodes.size()==1){
 			return 1;
+		//if node is second
+		}else if(listOfNodes.size()==2){
+			return 2;
+		//if node is after that
 		}else{
 			return 0;
 		}
 	}
 	
 	//return the neigbours of a node specified by hashNode
-	public int[] getNeigbours(int hashNode) throws RemoteException {
-		int[] neighbours = new int[1]; //neigbours[0] = previous, 1 = next
+	public int[] getNeigbours(int hashNode){
+		int[] neighbours = new int[2]; //neigbours[0] = previous, 1 = next
 		
 		//give hash of the first node < given hash
 		if(listOfNodes.floorEntry(hashNode-1)==null){ //if there is no lowest node, return the highest node
 			neighbours[0] = listOfNodes.lastEntry().getValue().getHash();
 		}else{
-			neighbours[0] = listOfNodes.floorEntry(hashNode-1).getValue().getHash(); //give the hash of the node below the failing one
+			neighbours[0] = listOfNodes.floorEntry(hashNode-1).getValue().getHash(); //give the hash of the node below 
 		}
 		
 		if(listOfNodes.higherEntry(hashNode) == null){ //if there is no higher hash
@@ -86,8 +91,12 @@ public class NamingServer extends UnicastRemoteObject implements ClientToNamingS
 
 	//delete a node specified by hashNode
 	//this method should be invoked by a different node when it detects the failing of another node
-	public void deleteNode(int hashNode) throws RemoteException {
+	public void deleteNode(int hashNode){
 		nodeLijst.removeNode(hashNode);
+	}
+
+	public String getIP(int hashNode){
+		return listOfNodes.get(hashNode).getIpAdress();	
 	}
 
 }
