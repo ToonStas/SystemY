@@ -13,6 +13,7 @@ public class TCPSendThread extends Thread {
 	private File file;
 	private InetAddress IPDest;
 	
+	//Thread who sends a file
 	public TCPSendThread(int SocketPort, File fileToSend, InetAddress IPDestination){
 		SOCKET_PORT = SocketPort;
 		file = fileToSend;

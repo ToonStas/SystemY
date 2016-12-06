@@ -14,6 +14,8 @@ public class TCPReceiveThread extends Thread {
 	private int size;
 	private String path;
 	
+	
+	//Thread who receives a file
 	public TCPReceiveThread(int Socket_Port, int fileSize, String filePath){
 		SOCKET_PORT = Socket_Port;
 		size = fileSize;
