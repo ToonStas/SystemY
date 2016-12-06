@@ -15,8 +15,8 @@ import java.util.concurrent.TimeUnit;
 
 public class NodeClient extends UnicastRemoteObject implements clientToClientInterface, NamingServerToClientInterface{
 	private TreeMap<String, Integer> fileList = new TreeMap<>(); // filename, hash
-	private int nextNode = 32768; //hash for next node, initializes on max
-	private int previousNode = 0; //hash for previous node, initializes on min
+	private int nextNode; //hash for next node
+	private int previousNode; //hash for previous node
 	private int ownHash; //hash of this node
 	private Thread multicastReceiverThreadClient; //threaed to receive multicasts by other nodes
 	ClientToNamingServerInterface ni; 
@@ -71,8 +71,7 @@ public class NodeClient extends UnicastRemoteObject implements clientToClientInt
 			break;
 
 		case 3:
-			ni.getNeigbours(ownHash)[0]=previousNode;
-			ni.getNeigbours(ownHash)[1]=nextNode;
+			System.out.println(ni.getNeigbours(ownHash));
 			System.out.println("Previous hash: "+previousNode);
 			System.out.println("Next hash: "+nextNode);
 			break;
@@ -189,6 +188,12 @@ public class NodeClient extends UnicastRemoteObject implements clientToClientInt
 		notifyNext(previousNode, -1, nextNode);
 		// Tell previousNode his next, is what your next was
 		notifyPrevious(-1, nextNode, previousNode);
+		try {
+			ni.deleteNode(ownHash);
+		} catch (RemoteException e) {
+			System.out.println("Couldn't delete this node from namingserver.");
+			e.printStackTrace();
+		}
 		System.exit(0);
 	}
 	
