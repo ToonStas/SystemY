@@ -47,7 +47,7 @@ public class NodeClient extends UnicastRemoteObject implements clientToClientInt
 	}
 	
 	//start the consolegui
-	private void consoleGUI() {
+	private void consoleGUI() throws RemoteException {
 		System.out.println("What do you want to do?");
 		System.out.println("[1] List local files");
 		System.out.println("[2] Look for file");
@@ -71,6 +71,8 @@ public class NodeClient extends UnicastRemoteObject implements clientToClientInt
 			break;
 
 		case 3:
+			ni.getNeigbours(ownHash)[0]=previousNode;
+			ni.getNeigbours(ownHash)[1]=nextNode;
 			System.out.println("Previous hash: "+previousNode);
 			System.out.println("Next hash: "+nextNode);
 			break;
