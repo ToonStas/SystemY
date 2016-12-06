@@ -35,7 +35,7 @@ public class NodeClient extends UnicastRemoteObject implements clientToClientInt
 	public NodeClient() throws RemoteException{
 		String nameNode = readConsoleName();
 		multicastReceiverThreadClient = new Thread(
-				new MulticastReceiverThreadClient(nextNode, previousNode, ownHash, this, goAhead));
+				new MulticastReceiverThreadClient(ownHash, this));
 
 		startUp(this, nameNode);
 
@@ -327,6 +327,14 @@ public class NodeClient extends UnicastRemoteObject implements clientToClientInt
 
 	public void setPrevious(int hash) {
 		previousNode=hash;
+	}
+
+	public int getPreviousNode() {
+		return previousNode;
+	}
+
+	public int getNextNode() {
+		return nextNode;
 	}
 
 }

@@ -15,14 +15,10 @@ public class MulticastReceiverThreadClient extends Thread {
 	NodeClient nodeClient;
 	volatile boolean goAhead; 
 
-	public MulticastReceiverThreadClient(int nextNode, int previousNode,
-			int ownHash, NodeClient nodeClient, boolean goAhead) {
+	public MulticastReceiverThreadClient(int ownHash, NodeClient nodeClient) {
 		//this.nodeLijst = nodeLijst;
-		this.nextNode = nextNode;
-		this.previousNode = previousNode;
 		this.ownHash = ownHash;
 		this.nodeClient = nodeClient;
-		this.goAhead = goAhead;
 		port = 8769;
 		multicastGroup = "224.1.1.1";
 		try {
@@ -58,6 +54,11 @@ public class MulticastReceiverThreadClient extends Thread {
 
 		String[] parts = nameIp.split(" ");
 		int hash = nodeClient.calculateHash(parts[0]);
+		
+		//always have the most recent next and previous node
+		previousNode = nodeClient.getPreviousNode();
+		nextNode = nodeClient.getNextNode();
+		
 		// Check if this node is the first node, if so it shouldn't replace its
 		// first and last node and it shouldn't notify other nodes.
 		try {
