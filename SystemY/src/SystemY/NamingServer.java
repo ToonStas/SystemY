@@ -90,4 +90,8 @@ public class NamingServer extends UnicastRemoteObject implements ClientToNamingS
 		nodeLijst.removeNode(hashNode);
 	}
 
+	public void getIP(int hash) throws RemoteException {
+		listOfNodes.get(hash).getIpAdress();	
+	}
+
 }
