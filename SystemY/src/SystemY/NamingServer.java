@@ -57,7 +57,7 @@ public class NamingServer extends UnicastRemoteObject implements ClientToNamingS
 	
 	// methode voor na te gaan of je de eerste node bent van het netwerk
 	public int amIFirst(){
-		if(listOfNodes.size()<1){
+		if(listOfNodes.size()==1){
 			return 1;
 		}else{
 			return 0;
