@@ -86,6 +86,9 @@ public class NamingServer extends UnicastRemoteObject implements ClientToNamingS
 			neighbours[1] = listOfNodes.higherEntry(hashNode).getValue().getHash();
 		}
 			
+		System.out.println(neighbours[0]);
+		System.out.println(neighbours[1]);
+		
 		return neighbours;
 	}
 
@@ -95,6 +98,7 @@ public class NamingServer extends UnicastRemoteObject implements ClientToNamingS
 		nodeLijst.removeNode(hashNode);
 	}
 
+	//returns the ip for the node with hash: hashNode
 	public String getIP(int hashNode){
 		return listOfNodes.get(hashNode).getIpAdress();	
 	}
