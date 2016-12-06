@@ -72,7 +72,7 @@ public class NamingServer extends UnicastRemoteObject implements ClientToNamingS
 		if(listOfNodes.floorEntry(hashNode-1)==null){ //if there is no lowest node, return the highest node
 			neighbours[0] = listOfNodes.lastEntry().getValue().getHash();
 		}else{
-			neighbours[0] = listOfNodes.floorEntry(hashNode-1).getValue().getHash(); //give the hash of the node below the failing one
+			neighbours[0] = listOfNodes.floorEntry(hashNode-1).getValue().getHash(); //give the hash of the node below 
 		}
 		
 		if(listOfNodes.higherEntry(hashNode) == null){ //if there is no higher hash

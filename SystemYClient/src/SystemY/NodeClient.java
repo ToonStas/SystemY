@@ -208,7 +208,7 @@ public class NodeClient extends UnicastRemoteObject implements clientToClientInt
 	}
 
 	// Notify next node via RMI
-	public void notifyNext(int ownHash /* previous hash */, int nextNodeHash /* next hash */, int hash /* of node to notify */) {
+	public void notifyNext(int ownHash /*previous hash*/, int nextNodeHash /*next hash*/, int hash /*of node to notify*/) {
 		// Notifies the node (hash) that his previous node is this node and his next node is this node's former next node
 		
 		
@@ -248,7 +248,9 @@ public class NodeClient extends UnicastRemoteObject implements clientToClientInt
 			System.out.println("Couldn't fetch IP from Namingserver");
 			e1.printStackTrace();
 		}
-		
+		if(ip==""){
+			System.out.println("Fout");
+		}
 		
 		try {
 			clientToClientInterface ctci = (clientToClientInterface) Naming.lookup("//" + ip + ":1100/nodeClient");
