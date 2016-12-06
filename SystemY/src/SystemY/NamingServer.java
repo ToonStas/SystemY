@@ -65,7 +65,7 @@ public class NamingServer extends UnicastRemoteObject implements ClientToNamingS
 	}
 	
 	//return the neigbours of a node specified by hashNode
-	public int[] getNeigbours(int hashNode) throws RemoteException {
+	public int[] getNeigbours(int hashNode){
 		int[] neighbours = new int[1]; //neigbours[0] = previous, 1 = next
 		
 		//give hash of the first node < given hash
@@ -86,12 +86,12 @@ public class NamingServer extends UnicastRemoteObject implements ClientToNamingS
 
 	//delete a node specified by hashNode
 	//this method should be invoked by a different node when it detects the failing of another node
-	public void deleteNode(int hashNode) throws RemoteException {
+	public void deleteNode(int hashNode){
 		nodeLijst.removeNode(hashNode);
 	}
 
-	public void getIP(int hash) throws RemoteException {
-		listOfNodes.get(hash).getIpAdress();	
+	public String getIP(int hash){
+		return listOfNodes.get(hash).getIpAdress();	
 	}
 
 }
