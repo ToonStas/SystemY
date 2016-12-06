@@ -117,6 +117,7 @@ public class NodeClient extends UnicastRemoteObject implements clientToClientInt
 			String name = "//" + serverIP + ":1099/NamingServer";
 			ni = (ClientToNamingServerInterface) Naming.lookup(name);
 			ownHash = calculateHash(nameNode);
+			System.out.println(ni.getIP(ownHash));
 			
 			//the interface has been made so the multicastreceiverthread can continue
 			goAhead = true;
@@ -192,7 +193,7 @@ public class NodeClient extends UnicastRemoteObject implements clientToClientInt
 	//when a connectionexception occurs when communicting with another node this method should be invoked
 	//ask nameserver next and previous of failing node, update these nodes with gained info
 	private void failure(int failingHash){
-		int[] neighbours = new int[1];
+		int[] neighbours = new int[2];
 		// Get next node and previous node using the current nodes hash number
 		try {
 			neighbours = ni.getNeigbours(failingHash);// return previous 0 end next 1 neighbour
@@ -210,7 +211,6 @@ public class NodeClient extends UnicastRemoteObject implements clientToClientInt
 	// Notify next node via RMI
 	public void notifyNext(int ownHash /*previous hash*/, int nextNodeHash /*next hash*/, int hash /*of node to notify*/) {
 		// Notifies the node (hash) that his previous node is this node and his next node is this node's former next node
-		
 		
 		String ip="";
 		try {
@@ -240,16 +240,12 @@ public class NodeClient extends UnicastRemoteObject implements clientToClientInt
 		// Notifies the new node that his previous node is this node's former
 		// previous node and his next node is this node
 		
-
 		String ip="";
 		try {
 			ip = ni.getIP(hash);
 		} catch (RemoteException e1) {
 			System.out.println("Couldn't fetch IP from Namingserver");
 			e1.printStackTrace();
-		}
-		if(ip==""){
-			System.out.println("Fout");
 		}
 		
 		try {

@@ -71,7 +71,7 @@ public class NamingServer extends UnicastRemoteObject implements ClientToNamingS
 	
 	//return the neigbours of a node specified by hashNode
 	public int[] getNeigbours(int hashNode){
-		int[] neighbours = new int[1]; //neigbours[0] = previous, 1 = next
+		int[] neighbours = new int[2]; //neigbours[0] = previous, 1 = next
 		
 		//give hash of the first node < given hash
 		if(listOfNodes.floorEntry(hashNode-1)==null){ //if there is no lowest node, return the highest node
@@ -95,9 +95,8 @@ public class NamingServer extends UnicastRemoteObject implements ClientToNamingS
 		nodeLijst.removeNode(hashNode);
 	}
 
-	public String getIP(int hash){
-			System.out.println(listOfNodes.get(hash).getIpAdress());
-		return listOfNodes.get(hash).getIpAdress();	
+	public String getIP(int hashNode){
+		return listOfNodes.get(hashNode).getIpAdress();	
 	}
 
 }
