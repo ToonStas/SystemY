@@ -321,4 +321,12 @@ public class NodeClient extends UnicastRemoteObject implements clientToClientInt
 		nextNode = next;
 	}
 
+	public void setNext(int hash) {
+		nextNode=hash;
+	}
+
+	public void setPrevious(int hash) {
+		previousNode=hash;
+	}
+
 }
