@@ -109,8 +109,4 @@ public class NamingServer extends UnicastRemoteObject implements ClientToNamingS
 		return listOfNodes.get(hashNode).getIpAdress();	
 	}
 
-	public void printNames() throws RemoteException {
-		nodeLijst.listAllNodes();
-	}
-
 }
