@@ -59,35 +59,38 @@ public class MulticastReceiverThreadClient extends Thread {
 		previousNode = nodeClient.getPreviousNode();
 		nextNode = nodeClient.getNextNode();
 		
-		// Check if this node is the first node, if so it shouldn't replace its
-		// first and last node and it shouldn't notify other nodes.
-		try {
-			// wait until the class nodeClient says the interface is made and you can continue
-			while (goAhead == false) {
-				// wait
-				goAhead = nodeClient.getGoAhead();
-				TimeUnit.SECONDS.sleep(2);
-			}
-			//if the node isn't first
-			if (nodeClient.ni.amIFirst() == 0) {
-				if (hash > ownHash & hash < nextNode) {// if the new node lies between this node and the next node
-					// TODO notify next node with his previous and next hash
-					nodeClient.notifyNext(ownHash /* previous hash */, nextNode /* next hash */, hash /* of node to notify */);
-					nodeClient.setNext(hash);
-				} else if (previousNode < hash & hash < ownHash) {// if the new node lies between this node and the previous node
-					//nodeClient.notifyPrevious(previousNode /* previous hash */,
-					//		-1 /* next hash */, hash /* of node to notify */); //next hash -1 because notify only what his previous should be
-					nodeClient.setPrevious(hash);
+		//if hash == 25757 we know it's the server, so wwe shouldn't get it as a neighbour
+		if(hash!=25757){
+			// Check if this node is the first node, if so it shouldn't replace its
+			// first and last node and it shouldn't notify other nodes.
+			try {
+				// wait until the class nodeClient says the interface is made and you can continue
+				while (goAhead == false) {
+					// wait
+					goAhead = nodeClient.getGoAhead();
+					TimeUnit.SECONDS.sleep(2);
 				}
-			//the node is first
-			}else if (nodeClient.ni.amIFirst() == 1) {
-				nodeClient.setNeighbours(ownHash, ownHash);
-			//the node is second
-			}else if (nodeClient.ni.amIFirst() == 2) {
-				nodeClient.setNeighbours(hash, hash);
+				//if the node isn't first
+				if (nodeClient.ni.amIFirst() == 0) {
+					if (hash > ownHash & hash < nextNode) {// if the new node lies between this node and the next node
+						// TODO notify next node with his previous and next hash
+						nodeClient.notifyNext(ownHash /* previous hash */, nextNode /* next hash */, hash /* of node to notify */);
+						nodeClient.setNext(hash);
+					} else if (previousNode < hash & hash < ownHash) {// if the new node lies between this node and the previous node
+						//nodeClient.notifyPrevious(previousNode /* previous hash */,
+						//		-1 /* next hash */, hash /* of node to notify */); //next hash -1 because notify only what his previous should be
+						nodeClient.setPrevious(hash);
+					}
+				//the node is first
+				}else if (nodeClient.ni.amIFirst() == 1) {
+					nodeClient.setNeighbours(ownHash, ownHash);
+				//the node is second
+				}else if (nodeClient.ni.amIFirst() == 2) {
+					nodeClient.setNeighbours(hash, hash);
+				}
+			} catch (RemoteException | InterruptedException e) {
+				e.printStackTrace();
 			}
-		} catch (RemoteException | InterruptedException e) {
-			e.printStackTrace();
 		}
 
 		// receive another
