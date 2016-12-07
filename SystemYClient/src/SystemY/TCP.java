@@ -12,7 +12,7 @@ public class TCP {
 		
 	}
 	
-	//Starts a thread who receives a file.
+	//Starts a thread who receives a file if the thread is not busy handling another receive request.
 	public int ReceiveFile(int fileSize, String filePath) throws IOException {
 		if (receiveThread.isAlive()){
 			System.out.println("The thread is still busy with receiving another file.");
@@ -25,7 +25,7 @@ public class TCP {
 		}
 	}
 	
-	//Starts a thread who sends a file.
+	//Starts a thread who sends a file if the thread is not busy handling another send request.
 	public int SendFile(File fileToSend, InetAddress IPDestination) throws IOException {
 		if (sendThread.isAlive()){
 			System.out.println("The thread is still busy with sending another file.");
@@ -37,7 +37,5 @@ public class TCP {
 			return 1;
 		}
 	}
-
-
 
 }
