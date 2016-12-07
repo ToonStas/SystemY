@@ -13,13 +13,21 @@ public class TCP {
 	}
 	
 	//Starts a thread who receives a file.
-	public void ReceiveFile(int fileSize, String filePath) throws IOException {
-		receiveThread = new Thread (new TCPReceiveThread(SOCKET_PORT, fileSize, filePath));
-		receiveThread.start();
+	public int ReceiveFile(int fileSize, String filePath) throws IOException {
+		if (receiveThread.isAlive()){
+			System.out.println("The thread is still busy with receiving another file.");
+			return 0;
+		}
+		else {
+			receiveThread = new Thread (new TCPReceiveThread(SOCKET_PORT, fileSize, filePath));
+			receiveThread.start();
+			return 1;
+		}
 	}
 	
 	//Starts a thread who sends a file.
-	public void SendFile(File fileToSend, InetAddress IPDestination) throws IOException {
+	public int SendFile(File fileToSend, InetAddress IPDestination) throws IOException {
+		if (send)
 		sendThread = new Thread (new TCPSendThread(SOCKET_PORT, fileToSend, IPDestination));
 		sendThread.start();
 	}
