@@ -183,11 +183,19 @@ public class NodeClient extends UnicastRemoteObject implements clientToClientInt
 	
 	//method to call when the node wants to shut down
 	private void shutdown() {
-		//Tell nextNode his previous, is what yout previous was
-		// if the hash is -1, the hash is not changed in the recipient node
-		notifyNext(previousNode, -1, nextNode);
-		// Tell previousNode his next, is what your next was
-		notifyPrevious(-1, nextNode, previousNode);
+		//if you're the first (and this case last) node, you shouldn't notify yourself)
+		try {
+			if(ni.amIFirst()!=1){
+				//Tell nextNode his previous, is what yout previous was
+				// if the hash is -1, the hash is not changed in the recipient node
+				notifyNext(previousNode, -1, nextNode);
+				// Tell previousNode his next, is what your next was
+				notifyPrevious(-1, nextNode, previousNode);
+			}
+		} catch (RemoteException e1) {
+			System.out.println("Can't get amIFirst");
+			e1.printStackTrace();
+		}	
 		try {
 			ni.deleteNode(ownHash);
 		} catch (RemoteException e) {

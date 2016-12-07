@@ -1,12 +1,16 @@
 package SystemY;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.TreeMap;
 
 public class NamingServer extends UnicastRemoteObject implements ClientToNamingServerInterface {
 	private static final long serialVersionUID = 1L;
-	private Nodelijst nodeLijst;
+	Nodelijst nodeLijst;
 	private Thread multicastReceiverThread;
 	TreeMap<Integer, NodeNamingServer> listOfNodes = new TreeMap<>();
 
@@ -24,8 +28,10 @@ public class NamingServer extends UnicastRemoteObject implements ClientToNamingS
 		
 		listOfNodes = nodeLijst.getListOfNodes();
 		
-		nodeLijst.listAllNodes();
+		
 	}
+	
+	
 	
 	//ip adres opvragen van waar het bestand zich bevind
 	public String getFileLocation(String fileName){

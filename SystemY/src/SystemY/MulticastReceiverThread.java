@@ -50,8 +50,7 @@ public class MulticastReceiverThread extends Thread {
 		int val = nodeLijst.addNode(nameIp);
 		if(val==0)
 			System.out.println("Node already exists");
-		nodeLijst.listAllNodes();
-		
+			
 		//receive another
 		run();
 	}
