@@ -89,7 +89,9 @@ public class NodeClient extends UnicastRemoteObject implements clientToClientInt
 			break;	
 			
 		case 5:
-			System.out.println("Send Nudes");
+			System.out.println("------------");
+			System.out.println("|Send Nudes|");
+			System.out.println("------------");
 			break;
 			
 		case 666:
