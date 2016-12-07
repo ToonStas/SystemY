@@ -71,6 +71,7 @@ public class NodeClient extends UnicastRemoteObject implements clientToClientInt
 			break;
 
 		case 3:
+			refreshNeighbours();
 			System.out.println("Previous hash: "+previousNode);
 			System.out.println("Next hash: "+nextNode);
 			break;
@@ -341,6 +342,21 @@ public class NodeClient extends UnicastRemoteObject implements clientToClientInt
 
 	public int getNextNode() {
 		return nextNode;
+	}
+	
+	//make sure your neighbours are correct,
+	//Should be invoke everytime you try to connect with neighbours
+	public void refreshNeighbours() {
+		int[] neighbours = new int[2];
+		try {
+			neighbours=ni.getNeigbours(ownHash);
+			previousNode = neighbours[0];
+			nextNode = neighbours[1];
+		} catch (RemoteException e) {
+			System.out.println("Couldn't refresh neighbours");
+			e.printStackTrace();
+		}
+		
 	}
 
 }
