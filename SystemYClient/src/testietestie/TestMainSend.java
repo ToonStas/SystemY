@@ -11,7 +11,7 @@ public class TestMainSend {
 		// TODO Auto-generated method stub
 		TCP tcp = new TCP();
 		File file = new File("C:/java/lieke.mp3");
-		InetAddress address = InetAddress.getLocalHost();
+		InetAddress address = InetAddress.getByName("192.168.0.4");
 		
 		;
 		for (int i = 0;i<5;i++){

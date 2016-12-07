@@ -10,11 +10,23 @@ public class TestMainReceive {
 	public static void main(String[] args) throws IOException, InterruptedException {
 		// TODO Auto-generated method stub
 				TCP tcp = new TCP();
-				for (int i = 0;i<5;i++){
-					while (tcp.ReceiveFile(100000000, "C:/java/lieke"+i+".mp3")==0){
-						TimeUnit.SECONDS.sleep(1);
-					}
+				
+				while (tcp.ReceiveFile(100000000, "C:/java/lieke2.mp3")==0){
+					TimeUnit.SECONDS.sleep(1);
 				}
+				while (tcp.ReceiveFile(100000000, "C:/java/lieke3.mp3")==0){
+					TimeUnit.SECONDS.sleep(1);
+				}
+				while (tcp.ReceiveFile(100000000, "C:/java/lieke4.mp3")==0){
+					TimeUnit.SECONDS.sleep(1);
+				}
+				while (tcp.ReceiveFile(100000000, "C:/java/lieke5.mp3")==0){
+					TimeUnit.SECONDS.sleep(1);
+				}
+				while (tcp.ReceiveFile(100000000, "C:/java/lieke6.mp3")==0){
+					TimeUnit.SECONDS.sleep(1);
+				}
+				
 
 	}
 
