@@ -13,7 +13,6 @@ public class NodeNamingServer implements Remote {
 	private String ipAdress;
 	private int hash;
 	private Map<String, String> node = new HashMap<String, String>();
-	private BestandenLijst bestandenLijst = new BestandenLijst();
 	private NamingServerToClientInterface clientInterface;
 	
 	public NodeNamingServer (String name, String ipAdress)
