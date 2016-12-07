@@ -98,9 +98,6 @@ public class Nodelijst {
 			File file = new File("C:/TEMP/JSONFile.json"); //file waar de informatie word weggeschreven.
 			file.createNewFile();
 			FileWriter fileWriter = new FileWriter(file);
-			System.out.println("\nWriting JSON object to file");
-			System.out.println("-----------------------");
-			System.out.println(listOfClients);
 			fileWriter.write(listOfClients.toJSONString());
 			fileWriter.flush();
 			fileWriter.close();

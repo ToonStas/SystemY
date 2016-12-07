@@ -40,10 +40,10 @@ public class MulticastReceiverThread extends Thread {
 		nameIp = nameIp.replaceAll(Character.toString((char) 0), "");
 
 		//Print out the received data with the info
-		System.out.println("Received data from: " + pack.getAddress() + ":" + pack.getPort() + " with length: "
-				+ pack.getLength());
-		System.out.write(pack.getData(), 0, pack.getLength());
-		System.out.println();
+		//System.out.println("Received data from: " + pack.getAddress() + ":" + pack.getPort() + " with length: "
+		//		+ pack.getLength());
+		//System.out.write(pack.getData(), 0, pack.getLength());
+		//System.out.println();
 		
 		
 		//node toevoegen aan de naming server

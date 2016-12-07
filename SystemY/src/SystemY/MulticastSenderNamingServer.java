@@ -61,7 +61,7 @@ public class MulticastSenderNamingServer {
 		try {
 			DatagramPacket pack = new DatagramPacket(sendData, sendData.length, InetAddress.getByName(group), port);
 			s.send(pack);
-			System.out.println("Pakket is verzonden.");
+			//System.out.println("Pakket is verzonden.");
 		} catch (IOException e1) {
 			e1.printStackTrace();
 			System.out.println("Pakket is niet verzonden");

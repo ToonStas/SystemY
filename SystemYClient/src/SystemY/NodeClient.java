@@ -71,7 +71,9 @@ public class NodeClient extends UnicastRemoteObject implements clientToClientInt
 			break;
 
 		case 3:
-			System.out.println(ni.getNeigbours(ownHash));
+			int[] neighbours = new int[2];
+			neighbours = ni.getNeigbours(ownHash);
+			setNeighbours(neighbours[0], neighbours[1]);
 			System.out.println("Previous hash: "+previousNode);
 			System.out.println("Next hash: "+nextNode);
 			break;
