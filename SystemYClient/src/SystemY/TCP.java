@@ -13,13 +13,13 @@ public class TCP {
 	}
 	
 	//Starts a thread who receives a file if the thread is not busy handling another receive request.
-	public int ReceiveFile(int fileSize, String filePath) throws IOException {
+	public int ReceiveFile(String filePath) throws IOException {
 		if (receiveThread != null && receiveThread.isAlive()){
 			System.out.println("The thread is still busy with receiving another file.");
 			return 0;
 		}
 		else {
-			receiveThread = new Thread (new TCPReceiveThread(SOCKET_PORT, fileSize, filePath));
+			receiveThread = new Thread (new TCPReceiveThread(SOCKET_PORT, 100000000, filePath));
 			receiveThread.start();
 			return 1;
 		}
