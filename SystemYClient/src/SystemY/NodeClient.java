@@ -53,6 +53,7 @@ public class NodeClient extends UnicastRemoteObject implements clientToClientInt
 		System.out.println("[2] Look for file");
 		System.out.println("[3] Print neighbours");
 		System.out.println("[4] Ask Location");
+		System.out.println("[5] Print Nodes");
 		System.out.println("[9] Exit");
 
 		int input = Integer.parseInt(readConsole());
@@ -86,6 +87,10 @@ public class NodeClient extends UnicastRemoteObject implements clientToClientInt
 				e.printStackTrace();
 			}
 			break;	
+			
+		case 5:
+			ni.printNames();
+			break;
 			
 		case 666:
 			System.out.println("------------------------");
