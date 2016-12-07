@@ -31,7 +31,7 @@ public class TCPReceiveThread extends Thread {
 		ServerSocket servSock = null;
 		try {
 			servSock = new ServerSocket(SOCKET_PORT);
-			while (true) {
+			
 				try {
 					sock = servSock.accept();
 					System.out.println("Succesful TCP connection with " + sock.getInetAddress().toString() + ", ready for receiving file.");
@@ -64,7 +64,7 @@ public class TCPReceiveThread extends Thread {
 					if (sock != null)
 						sock.close();	
 				}
-			}
+			
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

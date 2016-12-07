@@ -29,7 +29,7 @@ public class TCPSendThread extends Thread {
 		
 		System.out.println("Waiting...");
 		try {
-			while (true){
+			
 				sock = new Socket(IPDest, SOCKET_PORT);
 				System.out.println("Accepted connection : " + sock);
 				// send file
@@ -42,7 +42,7 @@ public class TCPSendThread extends Thread {
 				os.write(mybytearray, 0, mybytearray.length);
 				os.flush();
 				System.out.println("Done.");
-			}
+			
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
