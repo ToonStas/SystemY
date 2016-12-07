@@ -239,6 +239,7 @@ public class NodeClient extends UnicastRemoteObject implements clientToClientInt
 			ip = ni.getIP(hash);
 		} catch (RemoteException e1) {
 			System.out.println("Couldn't fetch IP from Namingserver");
+			failure(hash); //when we can't fetch te ip it's likely the node shut down unexpectedly
 			e1.printStackTrace();
 		}
 		
@@ -267,6 +268,7 @@ public class NodeClient extends UnicastRemoteObject implements clientToClientInt
 			ip = ni.getIP(hash);
 		} catch (RemoteException e1) {
 			System.out.println("Couldn't fetch IP from Namingserver");
+			failure(hash); //when we can't fetch te ip it's likely the node shut down unexpectedly
 			e1.printStackTrace();
 		}
 		
