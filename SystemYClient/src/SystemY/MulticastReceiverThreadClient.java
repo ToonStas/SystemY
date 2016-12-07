@@ -79,8 +79,12 @@ public class MulticastReceiverThreadClient extends Thread {
 					//		-1 /* next hash */, hash /* of node to notify */); //next hash -1 because notify only what his previous should be
 					nodeClient.setPrevious(hash);
 				}
+			//the node is first
 			}else if (nodeClient.ni.amIFirst() == 1) {
 				nodeClient.setNeighbours(ownHash, ownHash);
+			//the node is second
+			}else if (nodeClient.ni.amIFirst() == 2) {
+				nodeClient.setNeighbours(hash, hash);
 			}
 		} catch (RemoteException | InterruptedException e) {
 			e.printStackTrace();
