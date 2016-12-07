@@ -27,9 +27,15 @@ public class TCP {
 	
 	//Starts a thread who sends a file.
 	public int SendFile(File fileToSend, InetAddress IPDestination) throws IOException {
-		if (send)
-		sendThread = new Thread (new TCPSendThread(SOCKET_PORT, fileToSend, IPDestination));
-		sendThread.start();
+		if (sendThread.isAlive()){
+			System.out.println("The thread is still busy with sending another file.");
+			return 0;
+		}
+		else {
+			sendThread = new Thread (new TCPSendThread(SOCKET_PORT, fileToSend, IPDestination));
+			sendThread.start();
+			return 1;
+		}
 	}
 
 
