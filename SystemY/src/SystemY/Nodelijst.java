@@ -13,6 +13,7 @@ import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.function.Predicate;
 
 import org.json.simple.*;
 import org.json.simple.parser.*;
@@ -21,7 +22,7 @@ public class Nodelijst {
 
 	private JSONArray listOfClients;
 	private Map<Integer, NodeNamingServer> listOfNodes; //hash, node
-
+	
 	public Nodelijst() {
 		listOfClients = new JSONArray();
 		listOfNodes = new TreeMap<>();
@@ -81,13 +82,14 @@ public class Nodelijst {
 	}
 
 	//Het up tot date houden van de nodelijst in de JSON array.
-	public void updateJSON(int index, NodeNamingServer node) // als je integermax value doorgeeft voeg
+	public void updateJSON(int hash, NodeNamingServer node) // als je integermax value doorgeeft voeg
 										// je een node toe anders verwijder je
 										// de node op de meegegeven index.
 	{
-		if (index == Integer.MAX_VALUE) {
+		if (hash == Integer.MAX_VALUE) {
 			listOfClients.add(node.Node);
 		} else {
+			int index = listOfClients.indexOf(node.Node.containsValue(hash));
 			listOfClients.remove(index);
 		}
 	}
