@@ -17,7 +17,7 @@ public class Bestand {
 		bestand = new File(this.path);
 		calculateHash();
 		this.hashOwner = hashOwner;
-		this. hashReplicationNode = hashReplicationNode;
+		this.hashReplicationNode = hashReplicationNode;
 	}
 	
 	//Deze functie berekend de hash voor deze node zelf bij initialisatie
