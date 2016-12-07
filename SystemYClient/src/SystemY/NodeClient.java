@@ -15,6 +15,7 @@ import java.util.concurrent.TimeUnit;
 
 public class NodeClient extends UnicastRemoteObject implements clientToClientInterface, NamingServerToClientInterface{
 	private TreeMap<String, Integer> fileList = new TreeMap<>(); // filename, hash
+	private BestandenLijst bestandenLijst = new BestandenLijst();
 	private int nextNode; //hash for next node
 	private int previousNode; //hash for previous node
 	private int ownHash; //hash of this node
@@ -151,6 +152,22 @@ public class NodeClient extends UnicastRemoteObject implements clientToClientInt
 		for (File f : filesList) {
 			fileList.put(f.getName(), calculateHash(f.getName()));
 		}
+	}
+	// toevoegen van alle bestanden in lokale folder
+	@SuppressWarnings("unused")
+	private void loadFilesStartUp() throws NumberFormatException, RemoteException
+	{
+		File dir = new File("C:/TEMP");
+		for (File f : dir.listFiles()) {
+			bestandenLijst.addBestand(f.getName(),dir.toString(),ownHash,Integer.valueOf(ni.askLocation(f.getName())));
+		}
+	}
+	// toevoegen van één bestand van de lokale folder (filename + extentie)
+	@SuppressWarnings("unused")
+	private void loadFile(String fileName) throws NumberFormatException, RemoteException
+	{
+		File dir = new File("C:/TEMP");
+		bestandenLijst.addBestand(fileName,dir.toString(),ownHash,Integer.valueOf(ni.askLocation(fileName)));
 	}
 	
 	//returns the location where a file should be located and returns the ip
