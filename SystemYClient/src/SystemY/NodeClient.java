@@ -10,6 +10,7 @@ import java.rmi.*;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.ArrayList;
 import java.util.TreeMap;
 import java.util.concurrent.TimeUnit;
 
@@ -23,6 +24,10 @@ public class NodeClient extends UnicastRemoteObject implements clientToClientInt
 	ClientToNamingServerInterface ni; 
 	String serverIP;
 	volatile boolean goAhead = false; //the thread should wait untill the interface has been made before communicating via it
+	Thread agent; //our agent
+	TreeMap<String, Boolean> allFiles = new TreeMap<>(); //name, isLocked; has all files in the system provided by the agent
+	ArrayList<String> owned = new ArrayList<>(); //contains all files this node is the owner of
+	ArrayList<String> locked = new ArrayList<>(); //contains all locked files in this node
 
 	public static void main(String args[]) {
 		try {
@@ -154,7 +159,6 @@ public class NodeClient extends UnicastRemoteObject implements clientToClientInt
 		}
 	}
 	// toevoegen van alle bestanden in lokale folder
-	@SuppressWarnings("unused")
 	private void loadFilesStartUp() throws NumberFormatException, RemoteException
 	{
 		File dir = new File("C:/TEMP");
@@ -163,7 +167,6 @@ public class NodeClient extends UnicastRemoteObject implements clientToClientInt
 		}
 	}
 	// toevoegen van één bestand van de lokale folder (filename + extentie)
-	@SuppressWarnings("unused")
 	private void loadFile(String fileName) throws NumberFormatException, RemoteException
 	{
 		File dir = new File("C:/TEMP");
@@ -349,6 +352,8 @@ public class NodeClient extends UnicastRemoteObject implements clientToClientInt
 
 	//return the list of files the node has
 	public TreeMap<String, Integer> getFileList(){
+		//make sure we have the latest files
+		checkLocalFiles(new File("C:/TEMP"));
 		return fileList;
 	}
 
@@ -391,6 +396,20 @@ public class NodeClient extends UnicastRemoteObject implements clientToClientInt
 			e.printStackTrace();
 		}
 		
+	}
+	
+	public Integer getOwnHash(){return ownHash;}
+	
+	public void activateAgent(){
+		agent = new Thread(new Agent(this));
+	}
+	
+	public void setAllFiles(TreeMap<String, Boolean> allFiles){
+		this.allFiles = allFiles;
+	}
+	
+	public void setLocked(ArrayList<String> locked){
+		this.locked = locked;
 	}
 
 }
