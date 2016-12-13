@@ -106,6 +106,7 @@ public class Nodelijst {
 			fileWriter.write(listOfClients.toJSONString());
 			fileWriter.flush();
 			fileWriter.close();
+			System.out.println(listOfClients);
 
 		} catch (IOException e) {
 			e.printStackTrace();
