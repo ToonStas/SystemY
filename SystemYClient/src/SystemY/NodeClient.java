@@ -11,11 +11,12 @@ import java.rmi.*;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
-import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.TreeMap;
 import java.util.concurrent.TimeUnit;
 
 public class NodeClient extends UnicastRemoteObject implements clientToClientInterface, NamingServerToClientInterface{
+	private static final long serialVersionUID = 1L;
 	private TreeMap<String, Integer> fileList = new TreeMap<>(); // filename, hash
 	private BestandenLijst bestandenLijst = new BestandenLijst();
 	private int nextNode; //hash for next node
@@ -27,9 +28,11 @@ public class NodeClient extends UnicastRemoteObject implements clientToClientInt
 	volatile boolean goAhead = false; //the thread should wait untill the interface has been made before communicating via it
 	Thread agent; //our agent
 	TreeMap<String, Boolean> allFiles = new TreeMap<>(); //name, isLocked; has all files in the system provided by the agent
-	ArrayList<String> owned = new ArrayList<>(); //contains all files this node is the owner of
-	ArrayList<String> locked = new ArrayList<>(); //contains all locked files in this node
+	HashSet<String> owned = new HashSet<>(); //contains all files this node is the owner of
+	HashSet<String> locked = new HashSet<>(); //contains all files that should be locked
+	HashSet<String> unLocked = new HashSet<>(); //contains all files that should be unlocked
 	private TCP tcp = new TCP();
+	
 	public static void main(String args[]) {
 		try {
 			new NodeClient();
@@ -412,8 +415,8 @@ public class NodeClient extends UnicastRemoteObject implements clientToClientInt
 		this.allFiles = allFiles;
 	}
 	
-	public void setLocked(ArrayList<String> locked){
-		this.locked = locked;
+	public void setLocked(HashSet<String> locked2){
+		this.locked = locked2;
 	}
 	
 	public void sendFile(Bestand fileToSend){
@@ -455,6 +458,15 @@ public class NodeClient extends UnicastRemoteObject implements clientToClientInt
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+	}
+
+	public void setOwned(HashSet<String> owned) {
+		this.owned = owned;
+		
+	}
+
+	public HashSet<String> getUnlocked() {
+		return unLocked;
 	}
 
 }
