@@ -54,6 +54,11 @@ public class Bestand {
 		return this.path;
 	}
 	
+	public String getFullPath(){
+		String fullPath = this.path + this.bestand;
+		return fullPath;
+	}
+	
 	//methode voor het veranderen van de bestandsnaam, de hash wordt als parameter teruggegeven.
 	public int changeName(String nieuweNaam){ 
 		this.naam = nieuweNaam;
