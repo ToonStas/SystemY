@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
+import java.net.InetAddress;
 import java.net.MalformedURLException;
 import java.rmi.*;
 import java.rmi.registry.LocateRegistry;
@@ -28,7 +29,7 @@ public class NodeClient extends UnicastRemoteObject implements clientToClientInt
 	TreeMap<String, Boolean> allFiles = new TreeMap<>(); //name, isLocked; has all files in the system provided by the agent
 	ArrayList<String> owned = new ArrayList<>(); //contains all files this node is the owner of
 	ArrayList<String> locked = new ArrayList<>(); //contains all locked files in this node
-
+	private TCP tcp = new TCP();
 	public static void main(String args[]) {
 		try {
 			new NodeClient();
@@ -410,6 +411,47 @@ public class NodeClient extends UnicastRemoteObject implements clientToClientInt
 	
 	public void setLocked(ArrayList<String> locked){
 		this.locked = locked;
+	}
+	
+	public void sendFile(Bestand fileToSend){
+		String ip="";
+		int hash = fileToSend.getHashReplicationNode();
+		String pathFile = fileToSend.getFullPath();
+		try {
+			ip = ni.getIP(hash);
+		} catch (RemoteException e1) {
+			System.out.println("Couldn't fetch IP from Namingserver");
+			failure(hash); //when we can't fetch te ip it's likely the node shut down unexpectedly
+			e1.printStackTrace();
+		}
+		
+		try {
+			clientToClientInterface ctci = (clientToClientInterface) Naming.lookup("//" + ip + ":1100/nodeClient");
+			ctci.getFile(pathFile);
+			tcp.SendFile(fileToSend.getFile(), InetAddress.getByName(ip));
+			
+		} catch (RemoteException e) {
+			System.err.println("NamingServer exception: " + e.getMessage());
+			failure(hash); //when we can't connect to the node we assume it failed.
+			e.printStackTrace();
+		} catch (MalformedURLException e) {
+			e.printStackTrace();
+		} catch (NotBoundException e) {
+			System.out.println("Registry not bound");
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	public void getFile(String pathFile) {
+		try {
+			tcp.ReceiveFile(pathFile);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 }
