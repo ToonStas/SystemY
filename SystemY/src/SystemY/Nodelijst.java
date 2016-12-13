@@ -61,6 +61,7 @@ public class Nodelijst {
 			
 			val = 1;
 		}
+		writeJSON();
 		return val;
 	}
 
@@ -79,6 +80,7 @@ public class Nodelijst {
 	public void removeNode(int hash) {
 		listOfNodes.remove(hash);
 		updateJSONremove(hash);
+		writeJSON();
 	}
 
 	public void updateJSONadd(NodeNamingServer node)
