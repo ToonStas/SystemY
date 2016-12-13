@@ -50,6 +50,8 @@ public class Serializer {
 	        return;
 	     }
 
+		
+		//Must be adjusted to given parameters
 	    System.out.println("Deserialized Agent:");
 	    System.out.println("Name: " + anAgent.name);
 	    System.out.println("bestandlijst: " + anAgent.bestandlijst);
