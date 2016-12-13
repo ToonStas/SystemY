@@ -100,6 +100,9 @@ public class NodeClient extends UnicastRemoteObject implements clientToClientInt
 			System.out.println("|Send Nudes|");
 			System.out.println("------------");
 			break;
+		
+		case 6:
+			//sendFile(bestandenLijst.getBestand(test.txt));
 			
 		case 666:
 			System.out.println("------------------------");
