@@ -45,7 +45,7 @@ public class Nodelijst {
 		} else if(hash != 25757) {  //25757 is hash van de naam "Server"
 			NodeNamingServer node = new NodeNamingServer(name, ipaddr);
 			listOfNodes.put(node.getHash(), node);
-			updateJSON(Integer.MAX_VALUE, node);
+			updateJSONadd(node);
 			
 			//make an RMI interface for the server to RMI with the node
 			makeRMI(node);
@@ -78,19 +78,20 @@ public class Nodelijst {
 	//het verwijderen van een node uit de nodelijst
 	public void removeNode(int hash) {
 		listOfNodes.remove(hash);
-		updateJSON(hash, null);
+		updateJSONremove(hash);
 	}
 
-	//Het up tot date houden van de nodelijst in de JSON array.
-	public void updateJSON(int hash, NodeNamingServer node) // als je integermax value doorgeeft voeg
-										// je een node toe anders verwijder je
-										// de node op de meegegeven index.
+	public void updateJSONadd(NodeNamingServer node)
 	{
-		if (hash == Integer.MAX_VALUE) {
+		listOfClients.add(node.Node);
+	}
+	public void updateJSONremove(int hash)
+	{
+		for (Map.Entry<Integer, NodeNamingServer> entry : listOfNodes.entrySet())
+		{
+			listOfClients.clear();
+			NodeNamingServer node = entry.getValue();
 			listOfClients.add(node.Node);
-		} else {
-			int index = listOfClients.indexOf(node.Node.containsValue(hash));
-			listOfClients.remove(index);
 		}
 	}
 
