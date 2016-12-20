@@ -65,6 +65,9 @@ public class Bestand {
 		calculateHash();
 		return this.hash;
 	}
+	public void setReplicationNode(int hashNewReplicationNode){
+		this.hashReplicationNode = hashNewReplicationNode;
+	}
 	
 	//methode voor het cotroleren of de hash al bestaat, true als deze al bestaat
 	public boolean checkName(String checkNaam){

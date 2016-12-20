@@ -82,4 +82,17 @@ public class BestandenLijst {
 	public int getSize(){
 		return lijst.size();
 	}
+	
+	@SuppressWarnings("null")
+	public ArrayList<Bestand> getFilesWithSmallerHash(int hashNewNode){
+		int size = lijst.size();
+		ArrayList<Bestand> temp = null;
+		for (int i=0; size>i; i++){
+			if(lijst.get(i).getHash() > hashNewNode){
+				lijst.get(i).setReplicationNode(hashNewNode);
+				temp.add(lijst.get(i));
+			}	
+		}
+		return temp;
+	}
 }

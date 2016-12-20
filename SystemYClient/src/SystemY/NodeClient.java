@@ -11,6 +11,7 @@ import java.rmi.*;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.TreeMap;
 import java.util.concurrent.TimeUnit;
@@ -155,6 +156,7 @@ public class NodeClient extends UnicastRemoteObject implements clientToClientInt
 			System.out.println("ClientRegistery is ready at: " + bindLocation);
 
 			loadFilesStartUp();
+			getReplicationNewNode();
 			
 		} catch (MalformedURLException | RemoteException | NotBoundException | UnsupportedEncodingException | InterruptedException e) {
 			e.printStackTrace();
@@ -186,7 +188,7 @@ public class NodeClient extends UnicastRemoteObject implements clientToClientInt
 		}
 	}
 	// replicatie van node met grotere hash naar deze node
-	private void getreplicationStartUp(){
+	public void getReplicationNewNode(){
 		String ip="";
 		try {
 			ip = ni.getIP(nextNode);
@@ -197,6 +199,7 @@ public class NodeClient extends UnicastRemoteObject implements clientToClientInt
 		}
 		try {
 			clientToClientInterface ctci = (clientToClientInterface) Naming.lookup("//" + ip + ":1100/nodeClient");
+			ctci.sendReplicationToNewNode(ownHash);
 			
 		}catch (RemoteException e) {
 			System.err.println("NamingServer exception: " + e.getMessage());
@@ -207,13 +210,14 @@ public class NodeClient extends UnicastRemoteObject implements clientToClientInt
 		}catch (NotBoundException e) {
 			System.out.println("Registry not bound");
 			e.printStackTrace();
-		}catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 		}
 	}
-	private void sendReplicationStartUp(){
-		
+	public void sendReplicationToNewNode(int hashNewNode){
+		ArrayList<Bestand> temp = bestandenLijst.getFilesWithSmallerHash(hashNewNode);
+		int size = temp.size();
+		for (int i=0; size>i; i++){
+			sendFile(temp.get(0),hashNewNode);
+		}
 	}
 	
 	// toevoegen van één bestand van de lokale folder (filename + extentie)
