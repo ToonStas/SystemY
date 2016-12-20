@@ -11,7 +11,7 @@ public class BestandenLijst {
 		
 	}
 	
-	//methode voor het tovoegen van een bestand aan de lijst
+	//methode voor het toevoegen van een bestand aan de lijst
 	public int addBestand(String naamBestand, String pathBestand, int hashOwner, int hashReplicationNode){
 		boolean flag = false;
 		for (int i = 0;i<lijst.size();i++){
