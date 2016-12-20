@@ -66,7 +66,8 @@ public class NodeClient extends UnicastRemoteObject implements clientToClientInt
 		System.out.println("[3] Print neighbours");
 		System.out.println("[4] Ask Location");
 		System.out.println("[5] Surprise");
-		System.out.println("[5] Manually activate agent");
+		System.out.println("[6] Load file");
+		System.out.println("[7] Manually activate agent");
 		System.out.println("[9] Exit");
 
 		int input = Integer.parseInt(readConsole());
@@ -106,8 +107,14 @@ public class NodeClient extends UnicastRemoteObject implements clientToClientInt
 			System.out.println("|Send Nudes|");
 			System.out.println("------------");
 			break;
-		
+			
 		case 6:
+			
+			System.out.println("FileName: ");
+			String fileName = System.console().readLine();
+			loadFile(fileName);
+			
+		case 7:
 			activateAgent();
 			//sendFile(bestandenLijst.getBestand(test.txt));
 			
@@ -152,6 +159,8 @@ public class NodeClient extends UnicastRemoteObject implements clientToClientInt
 			reg = LocateRegistry.createRegistry(1100);
 			reg.bind(bindLocation, nodeClient);
 			System.out.println("ClientRegistery is ready at: " + bindLocation);
+			
+			loadFilesStartUp();
 
 			
 		} catch (MalformedURLException | RemoteException | NotBoundException | UnsupportedEncodingException | InterruptedException e) {
@@ -174,14 +183,26 @@ public class NodeClient extends UnicastRemoteObject implements clientToClientInt
 	{
 		File dir = new File("C:/TEMP");
 		for (File f : dir.listFiles()) {
-			bestandenLijst.addBestand(f.getName(),dir.toString(),ownHash,Integer.valueOf(ni.askLocation(f.getName())));
+			int hashReplicationNode = Integer.valueOf(ni.askLocation(f.getName()));
+			if(hashReplicationNode == ownHash)
+			{
+				hashReplicationNode = previousNode;
+			}
+			bestandenLijst.addBestand(f.getName(),dir.toString(),ownHash,hashReplicationNode);
+			sendFile(bestandenLijst.getBestand(f.getName()),hashReplicationNode);
 		}
 	}
 	// toevoegen van één bestand van de lokale folder (filename + extentie)
 	private void loadFile(String fileName) throws NumberFormatException, RemoteException
 	{
 		File dir = new File("C:/TEMP");
-		bestandenLijst.addBestand(fileName,dir.toString(),ownHash,Integer.valueOf(ni.askLocation(fileName)));
+		int hashReplicationNode = Integer.valueOf(ni.askLocation(fileName));
+		if(hashReplicationNode == ownHash)
+		{
+			hashReplicationNode = previousNode;
+		}
+		bestandenLijst.addBestand(fileName,dir.toString(),ownHash,hashReplicationNode);
+		sendFile(bestandenLijst.getBestand(fileName),hashReplicationNode);
 	}
 	
 	//returns the location where a file should be located and returns the ip
@@ -403,26 +424,25 @@ public class NodeClient extends UnicastRemoteObject implements clientToClientInt
 	
 	public void setLocked(HashSet<String> locked2){this.locked = locked2;}
 	
-	public void sendFile(Bestand fileToSend){
+	public void sendFile(Bestand fileToSend, int recieverHash){
 		String ip="";
-		int hash = fileToSend.getHashReplicationNode();
 		String pathFile = fileToSend.getFullPath();
 		try {
-			ip = ni.getIP(hash);
+			ip = ni.getIP(recieverHash);
 		} catch (RemoteException e1) {
 			System.out.println("Couldn't fetch IP from Namingserver");
-			failure(hash); //when we can't fetch te ip it's likely the node shut down unexpectedly
+			failure(recieverHash); //when we can't fetch te ip it's likely the node shut down unexpectedly
 			e1.printStackTrace();
 		}
 		
 		try {
 			clientToClientInterface ctci = (clientToClientInterface) Naming.lookup("//" + ip + ":1100/nodeClient");
-			//ctci.getFile(pathFile);
+			ctci.getFile(pathFile,fileToSend.getNaam(),fileToSend.getPath(),fileToSend.getHashOwner(),fileToSend.getHashReplicationNode());
 			tcp.SendFile(fileToSend.getFile(), InetAddress.getByName(ip));
 			
 		} catch (RemoteException e) {
 			System.err.println("NamingServer exception: " + e.getMessage());
-			failure(hash); //when we can't connect to the node we assume it failed.
+			failure(recieverHash); //when we can't connect to the node we assume it failed.
 			e.printStackTrace();
 		} catch (MalformedURLException e) {
 			e.printStackTrace();
@@ -435,9 +455,10 @@ public class NodeClient extends UnicastRemoteObject implements clientToClientInt
 		}
 	}
 	
-	public void getFile(String pathFile) {
+	public void getFile(String pathFile, String naamBestand, String pathBestand, int hashOwner, int hashReplicationNode) {
 		try {
 			tcp.ReceiveFile(pathFile);
+			bestandenLijst.addBestand(naamBestand, pathBestand, hashOwner, hashReplicationNode);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -447,13 +468,6 @@ public class NodeClient extends UnicastRemoteObject implements clientToClientInt
 	public void setOwned(HashSet<String> owned) {this.owned = owned;}
 
 	public HashSet<String> getUnlocked() {return unLocked;}
-
-	@Override
-	public void getFile(String pathFile, String naamBestand, String pathBestand, int hashOwner, int hashReplicationNode)
-			throws RemoteException {
-		// TODO Auto-generated method stub
-		
-	}
 
 	@Override
 	public void activateAgent() throws RemoteException {
