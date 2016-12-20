@@ -32,6 +32,7 @@ public class NodeClient extends UnicastRemoteObject implements clientToClientInt
 	HashSet<String> locked = new HashSet<>(); //contains all files that should be locked
 	HashSet<String> unLocked = new HashSet<>(); //contains all files that should be unlocked
 	private TCP tcp = new TCP();
+	Serializer s = new Serializer();
 	
 	public static void main(String args[]) {
 		try {
@@ -396,8 +397,8 @@ public class NodeClient extends UnicastRemoteObject implements clientToClientInt
 	public Integer getOwnHash(){return ownHash;}
 	
 	public void activateAgent(){
+		agent = s.deserialize();
 		System.out.println("agent hier");
-		agent = new Thread(new Agent(this));
 		agent.start();
 	}
 	
@@ -430,7 +431,7 @@ public class NodeClient extends UnicastRemoteObject implements clientToClientInt
 		
 		try {
 			clientToClientInterface ctci = (clientToClientInterface) Naming.lookup("//" + ip + ":1100/nodeClient");
-			ctci.getFile(pathFile);
+			//ctci.getFile(pathFile);
 			tcp.SendFile(fileToSend.getFile(), InetAddress.getByName(ip));
 			
 		} catch (RemoteException e) {
@@ -460,5 +461,12 @@ public class NodeClient extends UnicastRemoteObject implements clientToClientInt
 	public void setOwned(HashSet<String> owned) {this.owned = owned;}
 
 	public HashSet<String> getUnlocked() {return unLocked;}
+
+	@Override
+	public void getFile(String pathFile, String naamBestand, String pathBestand, int hashOwner, int hashReplicationNode)
+			throws RemoteException {
+		// TODO Auto-generated method stub
+		
+	}
 
 }
