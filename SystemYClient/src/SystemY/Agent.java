@@ -76,6 +76,6 @@ public class Agent implements Runnable, Serializable{
 		
 		//thread is now finished
 		//agent on next node should be activated
-		s.serialize(this);
+		nodeClient.nextAgent();
 	}
 }
