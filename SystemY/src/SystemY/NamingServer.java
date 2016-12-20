@@ -65,6 +65,13 @@ public class NamingServer extends UnicastRemoteObject implements ClientToNamingS
 	public int amIFirst(){
 		//if node is first
 		if(listOfNodes.size()==1){
+			//also start the agent on the node if it's first
+			try {
+				listOfNodes.get(getNext(0)).getInterface().activateAgent();
+			} catch (RemoteException e) {
+				System.out.println("Couldn't activate the first agent");
+				e.printStackTrace();
+			}
 			return 1;
 		//if node is second
 		}else if(listOfNodes.size()==2){
