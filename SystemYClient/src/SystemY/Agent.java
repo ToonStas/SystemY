@@ -72,5 +72,9 @@ public class Agent implements Runnable, Serializable{
 		
 		//update this nodes locked files
 		nodeClient.setLocked(locked);
+		
+		//thread is now finished
+		//agent on next node should be activated
+		nodeClient.nextAgent();
 	}
 }

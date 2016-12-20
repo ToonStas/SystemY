@@ -79,18 +79,10 @@ public class NamingServer extends UnicastRemoteObject implements ClientToNamingS
 	public int[] getNeigbours(int hashNode){
 		int[] neighbours = new int[2]; //neigbours[0] = previous, 1 = next
 		
-		//give hash of the first node < given hash
-		if(listOfNodes.floorEntry(hashNode-1)==null){ //if there is no lowest node, return the highest node
-			neighbours[0] = listOfNodes.lastEntry().getValue().getHash();
-		}else{
-			neighbours[0] = listOfNodes.floorEntry(hashNode-1).getValue().getHash(); //give the hash of the node below 
-		}
 		
-		if(listOfNodes.higherEntry(hashNode) == null){ //if there is no higher hash
-			neighbours[1] = listOfNodes.firstEntry().getValue().getHash();
-		}else{
-			neighbours[1] = listOfNodes.higherEntry(hashNode).getValue().getHash();
-		}		
+		
+		neighbours[0] = getPrevious(hashNode);
+		neighbours[1] = getNext(hashNode);
 		return neighbours;
 	}
 
@@ -105,4 +97,29 @@ public class NamingServer extends UnicastRemoteObject implements ClientToNamingS
 		return listOfNodes.get(hashNode).getIpAdress();	
 	}
 
+	@Override
+	public void activateAgent(int hashOfNode) throws RemoteException {
+		int next = getNext(hashOfNode);
+		listOfNodes.get(next).getInterface().activateAgent();
+	}
+
+	//method to return the next node
+	private int getNext(int hashOfNode) {
+		int next;
+		if(listOfNodes.higherEntry(hashOfNode) == null){ //if there is no higher hash
+			return next = listOfNodes.firstEntry().getValue().getHash();
+		}else{
+			return next = listOfNodes.higherEntry(hashOfNode).getValue().getHash();
+		}		
+	}
+	
+	private int getPrevious(int hashNode) {
+		int previous;
+		//give hash of the first node < given hash
+		if(listOfNodes.floorEntry(hashNode-1)==null){ //if there is no lowest node, return the highest node
+			return previous = listOfNodes.lastEntry().getValue().getHash();
+		}else{
+			return previous = listOfNodes.floorEntry(hashNode-1).getValue().getHash(); //give the hash of the node below 
+		}
+	}
 }

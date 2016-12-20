@@ -411,6 +411,15 @@ public class NodeClient extends UnicastRemoteObject implements clientToClientInt
 		agent = new Thread(new Agent(this));
 	}
 	
+	public void nextAgent(){
+		try {
+			ni.activateAgent(ownHash);
+		} catch (RemoteException e) {
+			System.out.println("Couldn't activate next agent");
+			e.printStackTrace();
+		}
+	}
+	
 	public void setAllFiles(TreeMap<String, Boolean> allFiles){
 		this.allFiles = allFiles;
 	}
