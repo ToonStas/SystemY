@@ -353,9 +353,7 @@ public class NodeClient extends UnicastRemoteObject implements clientToClientInt
 	}
 	
 	//for the server to set his ip on this node
-	public void setServerIP(String IP) {
-		serverIP = IP;
-	}
+	public void setServerIP(String IP) {serverIP = IP;}
 
 	//return the list of files the node has
 	public TreeMap<String, Integer> getFileList(){
@@ -365,30 +363,20 @@ public class NodeClient extends UnicastRemoteObject implements clientToClientInt
 	}
 
 	//for the thread to know when an RMI has been set up with the namingserver
-	public boolean getGoAhead() {
-		return goAhead;
-	}
+	public boolean getGoAhead() {return goAhead;}
 	
 	public void setNeighbours(int previous, int next){
 		previousNode = previous;
 		nextNode = next;
 	}
 
-	public void setNext(int hash) {
-		nextNode=hash;
-	}
+	public void setNext(int hash) {nextNode=hash;}
 
-	public void setPrevious(int hash) {
-		previousNode=hash;
-	}
+	public void setPrevious(int hash) {previousNode=hash;}
 
-	public int getPreviousNode() {
-		return previousNode;
-	}
+	public int getPreviousNode() {return previousNode;}
 
-	public int getNextNode() {
-		return nextNode;
-	}
+	public int getNextNode() {return nextNode;}
 	
 	//make sure your neighbours are correct,
 	//Should be invoke everytime you try to connect with neighbours
@@ -414,7 +402,9 @@ public class NodeClient extends UnicastRemoteObject implements clientToClientInt
 	}
 	
 	public void nextAgent(){
-		try {
+		//remove reference to thread, so garbage collection can cleanup
+		agent = null;
+		try { 
 			ni.activateAgent(ownHash);
 		} catch (RemoteException e) {
 			System.out.println("Couldn't activate next agent");
@@ -422,13 +412,9 @@ public class NodeClient extends UnicastRemoteObject implements clientToClientInt
 		}
 	}
 	
-	public void setAllFiles(TreeMap<String, Boolean> allFiles){
-		this.allFiles = allFiles;
-	}
+	public void setAllFiles(TreeMap<String, Boolean> allFiles){this.allFiles = allFiles;}
 	
-	public void setLocked(HashSet<String> locked2){
-		this.locked = locked2;
-	}
+	public void setLocked(HashSet<String> locked2){this.locked = locked2;}
 	
 	public void sendFile(Bestand fileToSend){
 		String ip="";
@@ -471,13 +457,8 @@ public class NodeClient extends UnicastRemoteObject implements clientToClientInt
 		}
 	}
 
-	public void setOwned(HashSet<String> owned) {
-		this.owned = owned;
-		
-	}
+	public void setOwned(HashSet<String> owned) {this.owned = owned;}
 
-	public HashSet<String> getUnlocked() {
-		return unLocked;
-	}
+	public HashSet<String> getUnlocked() {return unLocked;}
 
 }

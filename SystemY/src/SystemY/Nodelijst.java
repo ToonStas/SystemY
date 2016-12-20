@@ -100,6 +100,8 @@ public class Nodelijst {
 	//het wegschrijven van de JSONArray naar een file
 	public void writeJSON() {
 		try {
+			File dir = new File("C:/TEMP"); 
+			dir.mkdir();
 			File file = new File("C:/TEMP/JSONFile.json"); //file waar de informatie word weggeschreven.
 			file.createNewFile();
 			FileWriter fileWriter = new FileWriter(file);
