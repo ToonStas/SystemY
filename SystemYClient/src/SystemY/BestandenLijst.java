@@ -95,4 +95,7 @@ public class BestandenLijst {
 		}
 		return temp;
 	}
+	public Bestand getIndex(int index){
+		return lijst.get(index);
+	}
 }

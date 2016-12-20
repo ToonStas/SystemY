@@ -173,52 +173,6 @@ public class NodeClient extends UnicastRemoteObject implements clientToClientInt
 			fileList.put(f.getName(), calculateHash(f.getName()));
 		}
 	}
-	// toevoegen van alle bestanden in lokale folder
-	private void loadFilesStartUp() throws NumberFormatException, RemoteException
-	{
-		File dir = new File("C:/TEMP");
-		for (File f : dir.listFiles()) {
-			int hashReplicationNode = Integer.valueOf(ni.askLocation(f.getName()));
-			if(hashReplicationNode == ownHash)
-			{
-				hashReplicationNode = previousNode;
-			}
-			bestandenLijst.addBestand(f.getName(),dir.toString(),ownHash,hashReplicationNode);
-			sendFile(bestandenLijst.getBestand(f.getName()),hashReplicationNode);
-		}
-	}
-	// replicatie van node met grotere hash naar deze node
-	public void getReplicationNewNode(){
-		String ip="";
-		try {
-			ip = ni.getIP(previousNode);
-		} catch (RemoteException e1) {
-			System.out.println("Couldn't fetch IP from Namingserver");
-			failure(previousNode); //when we can't fetch te ip it's likely the node shut down unexpectedly
-			e1.printStackTrace();
-		}
-		try {
-			clientToClientInterface ctci = (clientToClientInterface) Naming.lookup("//" + ip + ":1100/nodeClient");
-			ctci.sendReplicationToNewNode(ownHash);
-			
-		}catch (RemoteException e) {
-			System.err.println("NamingServer exception: " + e.getMessage());
-			failure(previousNode); //when we can't connect to the node we assume it failed.
-			e.printStackTrace();
-		}catch (MalformedURLException e) {
-			e.printStackTrace();
-		}catch (NotBoundException e) {
-			System.out.println("Registry not bound");
-			e.printStackTrace();
-		}
-	}
-	public void sendReplicationToNewNode(int hashNewNode){
-		ArrayList<Bestand> temp = bestandenLijst.getFilesWithSmallerHash(hashNewNode);
-		int size = temp.size();
-		for (int i=0; size>i; i++){
-			sendFile(temp.get(0),hashNewNode);
-		}
-	}
 	
 	// toevoegen van één bestand van de lokale folder (filename + extentie)
 	private void loadFile(String fileName) throws NumberFormatException, RemoteException
@@ -462,6 +416,68 @@ public class NodeClient extends UnicastRemoteObject implements clientToClientInt
 			e.printStackTrace();
 		}
 	}
+	
+	// toevoegen van alle bestanden in lokale folder
+	private void loadFilesStartUp() throws NumberFormatException, RemoteException
+	{
+		File dir = new File("C:/TEMP");
+		for (File f : dir.listFiles()) {
+			int hashReplicationNode = Integer.valueOf(ni.askLocation(f.getName()));
+			if(hashReplicationNode == ownHash)
+			{
+				hashReplicationNode = previousNode;
+			}
+			bestandenLijst.addBestand(f.getName(),dir.toString(),ownHash,hashReplicationNode);
+			sendFile(bestandenLijst.getBestand(f.getName()),hashReplicationNode);
+		}
+	}
+	
+	// replicatie van van bestanden met grotere hash dan deze node en met kleinere hash vorige node
+	public void getReplicationNewNode(){
+		String ip="";
+		try {
+			ip = ni.getIP(previousNode);
+		} catch (RemoteException e1) {
+			System.out.println("Couldn't fetch IP from Namingserver");
+			failure(previousNode); //when we can't fetch te ip it's likely the node shut down unexpectedly
+			e1.printStackTrace();
+		}
+		try {
+			clientToClientInterface ctci = (clientToClientInterface) Naming.lookup("//" + ip + ":1100/nodeClient");
+			ctci.sendReplicationToNewNode(ownHash);
+			
+		}catch (RemoteException e) {
+			System.err.println("NamingServer exception: " + e.getMessage());
+			failure(previousNode); //when we can't connect to the node we assume it failed.
+			e.printStackTrace();
+		}catch (MalformedURLException e) {
+			e.printStackTrace();
+		}catch (NotBoundException e) {
+			System.out.println("Registry not bound");
+			e.printStackTrace();
+		}
+	}
+	public void sendReplicationToNewNode(int hashNewNode){
+		ArrayList<Bestand> temp = bestandenLijst.getFilesWithSmallerHash(hashNewNode);
+		int size = temp.size();
+		for (int i=0; size>i; i++){
+			sendFile(temp.get(0),hashNewNode);
+		}
+	}
+	
+	public void shutDownReplication(){
+		int size = bestandenLijst.getSize();
+		for(int i=0; size>i; i++){
+			if(bestandenLijst.getIndex(i).getHashReplicationNode()== ownHash){
+				bestandenLijst.getIndex(i).setReplicationNode(previousNode);
+				sendFile(bestandenLijst.getIndex(i),previousNode);
+			}
+			else if (bestandenLijst.getIndex(i).getHashOwner()== ownHash){
+				
+			}
+		}
+	}
+	
 
 	public void setOwned(HashSet<String> owned) {this.owned = owned;}
 
