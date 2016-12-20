@@ -191,10 +191,10 @@ public class NodeClient extends UnicastRemoteObject implements clientToClientInt
 	public void getReplicationNewNode(){
 		String ip="";
 		try {
-			ip = ni.getIP(nextNode);
+			ip = ni.getIP(previousNode);
 		} catch (RemoteException e1) {
 			System.out.println("Couldn't fetch IP from Namingserver");
-			failure(nextNode); //when we can't fetch te ip it's likely the node shut down unexpectedly
+			failure(previousNode); //when we can't fetch te ip it's likely the node shut down unexpectedly
 			e1.printStackTrace();
 		}
 		try {
@@ -203,7 +203,7 @@ public class NodeClient extends UnicastRemoteObject implements clientToClientInt
 			
 		}catch (RemoteException e) {
 			System.err.println("NamingServer exception: " + e.getMessage());
-			failure(nextNode); //when we can't connect to the node we assume it failed.
+			failure(previousNode); //when we can't connect to the node we assume it failed.
 			e.printStackTrace();
 		}catch (MalformedURLException e) {
 			e.printStackTrace();
