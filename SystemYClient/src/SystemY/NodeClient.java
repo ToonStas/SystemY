@@ -172,31 +172,62 @@ public class NodeClient extends UnicastRemoteObject implements clientToClientInt
 		}
 	}
 	// toevoegen van alle bestanden in lokale folder
-		private void loadFilesStartUp() throws NumberFormatException, RemoteException
-		{
-			File dir = new File("C:/TEMP");
-			for (File f : dir.listFiles()) {
-				int hashReplicationNode = Integer.valueOf(ni.askLocation(f.getName()));
-				if(hashReplicationNode == ownHash)
-				{
-					hashReplicationNode = previousNode;
-				}
-				bestandenLijst.addBestand(f.getName(),dir.toString(),ownHash,hashReplicationNode);
-				sendFile(bestandenLijst.getBestand(f.getName()),hashReplicationNode);
-			}
-		}
-		// toevoegen van één bestand van de lokale folder (filename + extentie)
-		private void loadFile(String fileName) throws NumberFormatException, RemoteException
-		{
-			File dir = new File("C:/TEMP");
-			int hashReplicationNode = Integer.valueOf(ni.askLocation(fileName));
+	private void loadFilesStartUp() throws NumberFormatException, RemoteException
+	{
+		File dir = new File("C:/TEMP");
+		for (File f : dir.listFiles()) {
+			int hashReplicationNode = Integer.valueOf(ni.askLocation(f.getName()));
 			if(hashReplicationNode == ownHash)
 			{
 				hashReplicationNode = previousNode;
 			}
-			bestandenLijst.addBestand(fileName,dir.toString(),ownHash,hashReplicationNode);
-			sendFile(bestandenLijst.getBestand(fileName),hashReplicationNode);
+			bestandenLijst.addBestand(f.getName(),dir.toString(),ownHash,hashReplicationNode);
+			sendFile(bestandenLijst.getBestand(f.getName()),hashReplicationNode);
 		}
+	}
+	// replicatie van node met grotere hash naar deze node
+	private void getreplicationStartUp(){
+		String ip="";
+		try {
+			ip = ni.getIP(nextNode);
+		} catch (RemoteException e1) {
+			System.out.println("Couldn't fetch IP from Namingserver");
+			failure(nextNode); //when we can't fetch te ip it's likely the node shut down unexpectedly
+			e1.printStackTrace();
+		}
+		try {
+			clientToClientInterface ctci = (clientToClientInterface) Naming.lookup("//" + ip + ":1100/nodeClient");
+			
+		}catch (RemoteException e) {
+			System.err.println("NamingServer exception: " + e.getMessage());
+			failure(nextNode); //when we can't connect to the node we assume it failed.
+			e.printStackTrace();
+		}catch (MalformedURLException e) {
+			e.printStackTrace();
+		}catch (NotBoundException e) {
+			System.out.println("Registry not bound");
+			e.printStackTrace();
+		}catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	private void sendReplicationStartUp(){
+		
+	}
+	
+	// toevoegen van één bestand van de lokale folder (filename + extentie)
+	private void loadFile(String fileName) throws NumberFormatException, RemoteException
+	{
+		File dir = new File("C:/TEMP");
+		int hashReplicationNode = Integer.valueOf(ni.askLocation(fileName));
+		if(hashReplicationNode == ownHash)
+		{
+			hashReplicationNode = previousNode;
+		}
+		bestandenLijst.addBestand(fileName,dir.toString(),ownHash,hashReplicationNode);
+		sendFile(bestandenLijst.getBestand(fileName),hashReplicationNode);
+	}
 	
 	//returns the location where a file should be located and returns the ip
 	private String getFileLocation(String fileName) {
