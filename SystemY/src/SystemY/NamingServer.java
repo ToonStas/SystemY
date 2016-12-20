@@ -65,13 +65,6 @@ public class NamingServer extends UnicastRemoteObject implements ClientToNamingS
 	public int amIFirst(){
 		//if node is first
 		if(listOfNodes.size()==1){
-			//also start the agent on the node if it's first
-			try {
-				listOfNodes.get(getNext(0)).getInterface().activateAgent();
-			} catch (RemoteException e) {
-				System.out.println("Couldn't activate the first agent");
-				e.printStackTrace();
-			}
 			return 1;
 		//if node is second
 		}else if(listOfNodes.size()==2){
@@ -85,9 +78,7 @@ public class NamingServer extends UnicastRemoteObject implements ClientToNamingS
 	//return the neigbours of a node specified by hashNode
 	public int[] getNeigbours(int hashNode){
 		int[] neighbours = new int[2]; //neigbours[0] = previous, 1 = next
-		
-		
-		
+
 		neighbours[0] = getPrevious(hashNode);
 		neighbours[1] = getNext(hashNode);
 		return neighbours;

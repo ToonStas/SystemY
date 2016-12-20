@@ -408,7 +408,9 @@ public class NodeClient extends UnicastRemoteObject implements clientToClientInt
 	public Integer getOwnHash(){return ownHash;}
 	
 	public void activateAgent(){
+		System.out.println("agent hier");
 		agent = new Thread(new Agent(this));
+		agent.start();
 	}
 	
 	public void nextAgent(){
