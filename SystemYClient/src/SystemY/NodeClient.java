@@ -66,7 +66,7 @@ public class NodeClient extends UnicastRemoteObject implements clientToClientInt
 		System.out.println("[3] Print neighbours");
 		System.out.println("[4] Ask Location");
 		System.out.println("[5] Surprise");
-		System.out.println("[5] Manually activate agent");
+		System.out.println("[6] Nada, noppes, nougabollen");
 		System.out.println("[9] Exit");
 
 		int input = Integer.parseInt(readConsole());
@@ -108,7 +108,6 @@ public class NodeClient extends UnicastRemoteObject implements clientToClientInt
 			break;
 		
 		case 6:
-			activateAgent();
 			//sendFile(bestandenLijst.getBestand(test.txt));
 			
 		case 666:
@@ -265,26 +264,11 @@ public class NodeClient extends UnicastRemoteObject implements clientToClientInt
 	public void notifyNext(int ownHash /*previous hash*/, int nextNodeHash /*next hash*/, int hash /*of node to notify*/) {
 		// Notifies the node (hash) that his previous node is this node and his next node is this node's former next node
 		
-		String ip="";
-		try {
-			ip = ni.getIP(hash);
-		} catch (RemoteException e1) {
-			System.out.println("Couldn't fetch IP from Namingserver");
-			failure(hash); //when we can't fetch te ip it's likely the node shut down unexpectedly
-			e1.printStackTrace();
-		}
-		
-		try {
-			clientToClientInterface ctci = (clientToClientInterface) Naming.lookup("//" + ip + ":1100/nodeClient");
-			ctci.getNotified(ownHash, nextNodeHash);
+		try{
+			makeCTCI(hash).getNotified(ownHash, nextNodeHash);
 		} catch (RemoteException e) {
 			System.err.println("NamingServer exception: " + e.getMessage());
 			failure(hash); //when we can't connect to the node we assume it failed.
-			e.printStackTrace();
-		} catch (MalformedURLException e) {
-			e.printStackTrace();
-		} catch (NotBoundException e) {
-			System.out.println("Registry not bound");
 			e.printStackTrace();
 		}
 	}
@@ -294,26 +278,11 @@ public class NodeClient extends UnicastRemoteObject implements clientToClientInt
 		// Notifies the new node that his previous node is this node's former
 		// previous node and his next node is this node
 		
-		String ip="";
 		try {
-			ip = ni.getIP(hash);
-		} catch (RemoteException e1) {
-			System.out.println("Couldn't fetch IP from Namingserver");
-			failure(hash); //when we can't fetch te ip it's likely the node shut down unexpectedly
-			e1.printStackTrace();
-		}
-		
-		try {
-			clientToClientInterface ctci = (clientToClientInterface) Naming.lookup("//" + ip + ":1100/nodeClient");
-			ctci.getNotified(hash, ownHash);
+			makeCTCI(hash).getNotified(hash, ownHash);
 		} catch (RemoteException e) {
 			System.err.println("NamingServer exception: " + e.getMessage());
 			failure(hash); //when we can't connect to the node we assume it failed.
-			e.printStackTrace();
-		} catch (MalformedURLException e) {
-			e.printStackTrace();
-		} catch (NotBoundException e) {
-			System.out.println("Registry not bound");
 			e.printStackTrace();
 		}
 	}
@@ -455,10 +424,57 @@ public class NodeClient extends UnicastRemoteObject implements clientToClientInt
 		
 	}
 
-	@Override
-	public void activateAgent() throws RemoteException {
-		// TODO Auto-generated method stub
+	//method called on this client, that the agent should be started
+	public void activateAgent(Thread agent) throws RemoteException {
+		//if the agent already exists
+		if(agent != null){
+			this.agent = agent;
+		//the agent should be made
+		}else{
+			this.agent = new Thread(new Agent(this));
+		}
+	}
+	
+	public void nextAgent(){
+		int nextHash = getNextNode();
+		
+		try {
+			makeCTCI(nextHash).activateAgent(agent);
+		} catch (RemoteException e) {
+			System.err.println("NamingServer exception: " + e.getMessage());
+			failure(nextHash); //when we can't connect to the node we assume it failed.
+			e.printStackTrace();
+		}
 		
 	}
-
+	
+	//makes an interface for the specified hash for RMI between nodes
+	public clientToClientInterface makeCTCI(int hash){
+		clientToClientInterface ctci = null;
+		
+		String ip="";
+		try {
+			ip = ni.getIP(hash);
+		} catch (RemoteException e1) {
+			System.out.println("Couldn't fetch IP from Namingserver");
+			failure(hash); //when we can't fetch te ip it's likely the node shut down unexpectedly
+			e1.printStackTrace();
+		}
+		
+		try {
+			ctci = (clientToClientInterface) Naming.lookup("//" + ip + ":1100/nodeClient");
+		}catch(RemoteException e){
+			System.out.println("Couldn't make interface");
+			e.printStackTrace();
+		} catch (MalformedURLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (NotBoundException e) {
+			System.out.println("Reg was not bound");
+			e.printStackTrace();
+		}
+		
+		return ctci;
+	}
+	
 }
