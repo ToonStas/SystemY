@@ -95,10 +95,9 @@ public class NamingServer extends UnicastRemoteObject implements ClientToNamingS
 		return listOfNodes.get(hashNode).getIpAdress();	
 	}
 
-	@Override
-	public void activateAgent(int hashOfNode) throws RemoteException {
+	public void activateAgent(int hashOfNode){
 		int next = getNext(hashOfNode);
-		listOfNodes.get(next).getInterface().activateAgent();
+		//listOfNodes.get(next).getInterface().activateAgent();
 	}
 
 	//method to return the next node

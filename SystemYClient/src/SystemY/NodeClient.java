@@ -32,7 +32,8 @@ public class NodeClient extends UnicastRemoteObject implements clientToClientInt
 	HashSet<String> locked = new HashSet<>(); //contains all files that should be locked
 	HashSet<String> unLocked = new HashSet<>(); //contains all files that should be unlocked
 	private TCP tcp = new TCP();
-	Serializer s = new Serializer();
+	Serializer s = new Serializer(); //class to serialize our agent
+	private boolean first = true; //to know if the agent should be made
 	
 	public static void main(String args[]) {
 		try {
@@ -65,6 +66,7 @@ public class NodeClient extends UnicastRemoteObject implements clientToClientInt
 		System.out.println("[3] Print neighbours");
 		System.out.println("[4] Ask Location");
 		System.out.println("[5] Surprise");
+		System.out.println("[5] Manually activate agent");
 		System.out.println("[9] Exit");
 
 		int input = Integer.parseInt(readConsole());
@@ -106,6 +108,7 @@ public class NodeClient extends UnicastRemoteObject implements clientToClientInt
 			break;
 		
 		case 6:
+			activateAgent();
 			//sendFile(bestandenLijst.getBestand(test.txt));
 			
 		case 666:
@@ -396,23 +399,6 @@ public class NodeClient extends UnicastRemoteObject implements clientToClientInt
 	
 	public Integer getOwnHash(){return ownHash;}
 	
-	public void activateAgent(){
-		agent = s.deserialize();
-		System.out.println("agent hier");
-		agent.start();
-	}
-	
-	public void nextAgent(){
-		//remove reference to thread, so garbage collection can cleanup
-		agent = null;
-		try { 
-			ni.activateAgent(ownHash);
-		} catch (RemoteException e) {
-			System.out.println("Couldn't activate next agent");
-			e.printStackTrace();
-		}
-	}
-	
 	public void setAllFiles(TreeMap<String, Boolean> allFiles){this.allFiles = allFiles;}
 	
 	public void setLocked(HashSet<String> locked2){this.locked = locked2;}
@@ -465,6 +451,12 @@ public class NodeClient extends UnicastRemoteObject implements clientToClientInt
 	@Override
 	public void getFile(String pathFile, String naamBestand, String pathBestand, int hashOwner, int hashReplicationNode)
 			throws RemoteException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void activateAgent() throws RemoteException {
 		// TODO Auto-generated method stub
 		
 	}
