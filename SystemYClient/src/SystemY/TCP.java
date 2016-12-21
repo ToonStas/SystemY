@@ -31,36 +31,38 @@ public class TCP {
 		return semReceive;
 	}
 	
+	public ArrayList<ListedReceiveFile> getReceiveList(){
+		return receiveList;
+	}
+	
+	public ArrayList<ListedSendFile> getSendList(){
+		return sendList;
+	}
+	
+	public Thread StartReceiveFile(String filePath, int size){
+		receiveThread = new Thread (new TCPReceiveThread(SOCKET_PORT, size, filePath));
+		receiveThread.start();
+		return receiveThread;
+	}
+	
+	public Thread StartSendFile(File fileToSend, InetAddress IPDestination){
+		sendThread = new Thread (new TCPSendThread(SOCKET_PORT, fileToSend, IPDestination));
+		sendThread.start();
+		return sendThread;
+	}
+	
 	//Starts a thread who receives a file if the thread is not busy handling another receive request.
-	public int ReceiveFile(String filePath, int size, int fileID) throws IOException {
+	public void ReceiveFile(clientToClientInterface ctci, String filePath, int size, int fileID) throws IOException {
 		receiveList.add(new ListedReceiveFile(filePath, size, fileID));
 		
 		
-		if (receiveThread != null && receiveThread.isAlive()){
-			System.out.println("The thread is still busy with receiving another file.");
-			return 0;
-		}
-		else {
-			receiveThread = new Thread (new TCPReceiveThread(SOCKET_PORT, size, filePath));
-			receiveThread.start();
-			return 1;
-		}
+		
 	}
 	
+	
 	//Starts a thread who sends a file if the thread is not busy handling another send request.
-	public int SendFile(File fileToSend, InetAddress IPDestination, int fileID) throws IOException {
+	public void SendFile(clientToClientInterface ctci, File fileToSend, InetAddress IPDestination, int fileID) throws IOException {
 		sendList.add(new ListedSendFile(fileToSend,IPDestination,fileID));
-		
-		
-		if (sendThread != null && sendThread.isAlive()){
-			System.out.println("The thread is still busy with sending another file.");
-			return 0;
-		}
-		else {
-			sendThread = new Thread (new TCPSendThread(SOCKET_PORT, fileToSend, IPDestination));
-			sendThread.start();
-			return 1;
-		}
 	}
 
 }

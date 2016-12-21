@@ -393,8 +393,8 @@ public class NodeClient extends UnicastRemoteObject implements clientToClientInt
 		
 		try {
 			clientToClientInterface ctci = (clientToClientInterface) Naming.lookup("//" + ip + ":1100/nodeClient");
-			ctci.getFile(pathFile,fileToSend.getNaam(),fileToSend.getPath(),fileToSend.getHashOwner(),fileToSend.getHashReplicationNode(),fileSize,fileID);
-			tcp.SendFile(fileToSend.getFile(), InetAddress.getByName(ip), fileID);
+			ctci.getFile(InetAddress.getLocalHost(),pathFile,fileToSend.getNaam(),fileToSend.getPath(),fileToSend.getHashOwner(),fileToSend.getHashReplicationNode(),fileSize,fileID);
+			tcp.SendFile(ctci, fileToSend.getFile(), InetAddress.getByName(ip), fileID);
 			
 		} catch (RemoteException e) {
 			System.err.println("NamingServer exception: " + e.getMessage());
@@ -411,11 +411,16 @@ public class NodeClient extends UnicastRemoteObject implements clientToClientInt
 		}
 	}
 	
-	public void getFile(String pathFile, String naamBestand, String pathBestand, int hashOwner, int hashReplicationNode, int fileSize,int fileID) {
+	public void getFile(InetAddress IPSource, String pathFile, String naamBestand, String pathBestand, int hashOwner, int hashReplicationNode, int fileSize,int fileID) {
+		String ip = IPSource.toString();
 		try {
-			tcp.ReceiveFile(pathFile, fileSize, fileID);
+			clientToClientInterface ctci = (clientToClientInterface) Naming.lookup("//" + ip + ":1100/nodeClient");
+			tcp.ReceiveFile(ctci, pathFile, fileSize, fileID);
 			bestandenLijst.addBestand(naamBestand, pathBestand, hashOwner, hashReplicationNode);
 		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (NotBoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
