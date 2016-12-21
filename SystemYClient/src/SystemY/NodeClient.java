@@ -16,6 +16,7 @@ import java.util.HashSet;
 import java.util.Random;
 import java.util.TreeMap;
 import java.util.concurrent.TimeUnit;
+import javax.swing.text.html.HTMLDocument.Iterator;
 
 public class NodeClient extends UnicastRemoteObject implements clientToClientInterface, NamingServerToClientInterface{
 	private static final long serialVersionUID = 1L;
@@ -496,6 +497,20 @@ public class NodeClient extends UnicastRemoteObject implements clientToClientInt
 	
 
 	public void setOwned(HashSet<String> owned) {this.owned = owned;}
+	
+	//Return true if file exists in owned
+
+	public boolean checkOwned(String fileName, HashSet<String> owned){
+		
+		for (String s : owned) {
+		    if(s == fileName ){
+		    	return true;
+		    }
+		}
+		return false;
+	}
+	
+	
 
 	public HashSet<String> getUnlocked() {return unLocked;}
 
