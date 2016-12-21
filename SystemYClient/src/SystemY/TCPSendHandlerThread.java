@@ -76,6 +76,7 @@ public class TCPSendHandlerThread extends Thread {
 						else{
 							System.out.println("TimeOutCounter expired for fileID "+listedFile.ID);
 							state = 0;
+							wachtlijst.remove(listedFile.ID);
 						}
 					}
 					
@@ -87,13 +88,14 @@ public class TCPSendHandlerThread extends Thread {
 						state = 0;
 					}
 					else {
-						if (timeOutCounter < 50){
+						if (timeOutCounter < 500){
 							timeOutCounter++;
 							state = 2;
 						}
 						else{
 							System.out.println("TimeOutCounter expired for fileID "+listedFile.ID);
 							state = 0;
+							wachtlijst.remove(listedFile.ID);
 						}
 					}
 					
