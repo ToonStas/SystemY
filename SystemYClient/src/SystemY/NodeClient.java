@@ -146,6 +146,9 @@ public class NodeClient extends UnicastRemoteObject implements clientToClientInt
 			ownHash = calculateHash(nameNode);
 			System.out.println(ni.getIP(ownHash));
 			
+			//get our neighbours
+			refreshNeighbours();
+			
 			//the interface has been made so the multicastreceiverthread can continue
 			goAhead = true;
 
@@ -351,9 +354,9 @@ public class NodeClient extends UnicastRemoteObject implements clientToClientInt
 
 	public void setPrevious(int hash) {previousNode=hash;}
 
-	public int getPreviousNode() {return previousNode;}
+	public int getPreviousNode() {refreshNeighbours(); return previousNode;}
 
-	public int getNextNode() {return nextNode;}
+	public int getNextNode() {refreshNeighbours(); return nextNode;}
 	
 	//make sure your neighbours are correct,
 	//Should be invoke everytime you try to connect with neighbours
@@ -363,6 +366,7 @@ public class NodeClient extends UnicastRemoteObject implements clientToClientInt
 			neighbours=ni.getNeigbours(ownHash);
 			previousNode = neighbours[0];
 			nextNode = neighbours[1];
+			System.out.println(previousNode+nextNode);
 		} catch (RemoteException e) {
 			System.out.println("Couldn't refresh neighbours");
 			e.printStackTrace();
@@ -430,19 +434,18 @@ public class NodeClient extends UnicastRemoteObject implements clientToClientInt
 	}
 	
 	// toevoegen van alle bestanden in lokale folder
-	private void loadFilesStartUp() throws NumberFormatException, RemoteException
-	{
+	private void loadFilesStartUp() throws NumberFormatException, RemoteException{
 		File dir = new File("C:/TEMP/");
 		for (File f : dir.listFiles()) {
 			int hashReplicationNode = ni.getHash(ni.askLocation(f.getName()));
-			if(hashReplicationNode == ownHash)
-			{
-				hashReplicationNode = previousNode;
+			if(hashReplicationNode == ownHash){
+				hashReplicationNode = getPreviousNode();
 			}
 			String name = f.getName();
 			bestandenLijst.addBestand(name ,dir.toString(),ownHash,hashReplicationNode);
 			sendFile(bestandenLijst.getBestand(name),hashReplicationNode);
 		}
+		bestandenLijst.listAllFiles();
 	}
 	
 	// replicatie van van bestanden met grotere hash dan deze node en met kleinere hash vorige node

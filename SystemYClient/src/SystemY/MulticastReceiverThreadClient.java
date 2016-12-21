@@ -56,7 +56,6 @@ public class MulticastReceiverThreadClient extends Thread {
 		int hash = nodeClient.calculateHash(parts[0]);
 		
 		//always have the most recent next and previous node
-		nodeClient.refreshNeighbours();
 		previousNode = nodeClient.getPreviousNode();
 		nextNode = nodeClient.getNextNode();
 		

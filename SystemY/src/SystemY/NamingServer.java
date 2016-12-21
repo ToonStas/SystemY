@@ -26,9 +26,7 @@ public class NamingServer extends UnicastRemoteObject implements ClientToNamingS
 		nodeLijst.writeJSON();
 		//nodeLijst.readJSON();
 		
-		listOfNodes = nodeLijst.getListOfNodes();
-		
-		
+		listOfNodes = nodeLijst.getListOfNodes();	
 	}
 	
 	
@@ -78,7 +76,7 @@ public class NamingServer extends UnicastRemoteObject implements ClientToNamingS
 	//return the neigbours of a node specified by hashNode
 	public int[] getNeigbours(int hashNode){
 		int[] neighbours = new int[2]; //neigbours[0] = previous, 1 = next
-
+		
 		neighbours[0] = getPrevious(hashNode);
 		neighbours[1] = getNext(hashNode);
 		return neighbours;
@@ -92,7 +90,18 @@ public class NamingServer extends UnicastRemoteObject implements ClientToNamingS
 
 	//returns the ip for the node with hash: hashNode
 	public String getIP(int hashNode){
-		return listOfNodes.get(hashNode).getIpAdress();	
+		String ip="";
+		listOfNodes = nodeLijst.getListOfNodes();	
+		System.out.println(hashNode);
+		try{
+			ip = listOfNodes.get(hashNode).getIpAdress();
+		}catch(NullPointerException e){
+			System.out.println("An ip was requested for a node that doesn't exist. ");
+			System.out.println("The queeried hash was: " + hashNode);
+			e.printStackTrace();
+		}
+		
+		return ip;	
 	}
 	
 	//get hash of a node by it's ip
