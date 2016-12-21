@@ -426,6 +426,14 @@ public class NodeClient extends UnicastRemoteObject implements clientToClientInt
 		}
 	}
 	
+	public void setTCPSendMessage(int message){
+		tcp.setSendMessage(message);
+	}
+	
+	public void setTCPReceiveMessage(int message){
+		tcp.setReceiveMessage(message);
+	}
+	
 	// toevoegen van alle bestanden in lokale folder
 	private void loadFilesStartUp() throws NumberFormatException, RemoteException
 	{

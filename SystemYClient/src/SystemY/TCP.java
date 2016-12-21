@@ -15,6 +15,8 @@ public class TCP {
 	private final static int SOCKET_PORT = 13267;
 	private Thread receiveThread;
 	private Thread sendThread;
+	private int sendMessage;
+	private int receiveMessage;
 	private Semaphore semReceive = new Semaphore(1);
 	private Semaphore semSend = new Semaphore(1);
 	private TreeMap receiveList = new TreeMap<Integer,ListedReceiveFile>();
@@ -22,6 +24,22 @@ public class TCP {
 	
 	public TCP() {
 		
+	}
+	
+	public int getSendMessage(){
+		return sendMessage;
+	}
+	
+	public int getReceiveMessage(){
+		return receiveMessage;
+	}
+	
+	public void setSendMessage(int message){
+		sendMessage = message;
+	}
+	
+	public void setReceiveMessage(int message){
+		receiveMessage = message;
 	}
 	
 	public Semaphore getSemSend(){
