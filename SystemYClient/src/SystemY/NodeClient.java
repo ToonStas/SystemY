@@ -51,10 +51,14 @@ public class NodeClient extends UnicastRemoteObject implements clientToClientInt
 		multicastReceiverThreadClient = new Thread(
 				new MulticastReceiverThreadClient(ownHash, this));
 
+		GUI gui = new GUI(this);
+
 		startUp(this, nameNode);
 
 		System.out.println("This nodes hash is: "+ownHash);
+		
 
+		
 		// infinite while loop for the gui
 		while (true){
 			consoleGUI(); 
@@ -136,7 +140,7 @@ public class NodeClient extends UnicastRemoteObject implements clientToClientInt
 			String bindLocation = "Client"+nameNode;
 			Registry reg = LocateRegistry.createRegistry(1200);
 			reg.bind(bindLocation, nodeClient);
-			System.out.println("Namingserver registry is ready at: " + bindLocation);
+			System.out.println("Registry is ready at: " + bindLocation);
 
 			new MulticastSender(ownHash, nameNode);
 			multicastReceiverThreadClient.start();
@@ -149,7 +153,6 @@ public class NodeClient extends UnicastRemoteObject implements clientToClientInt
 			String name = "//" + serverIP + ":1099/NamingServer";
 			ni = (ClientToNamingServerInterface) Naming.lookup(name);
 			ownHash = calculateHash(nameNode);
-			System.out.println(ni.getIP(ownHash));
 			
 			//get our neighbours
 			refreshNeighbours();
@@ -364,16 +367,18 @@ public class NodeClient extends UnicastRemoteObject implements clientToClientInt
 	public int getNextNode() {refreshNeighbours(); return nextNode;}
 	
 	//make sure your neighbours are correct,
-	//Should be invoke everytime you try to connect with neighbours
+	//Should be invoked everytime you try to connect with neighbours
 	public void refreshNeighbours() {
 		int[] neighbours = new int[2];
 		try {
 			neighbours=ni.getNeigbours(ownHash);
 			previousNode = neighbours[0];
 			nextNode = neighbours[1];
-			System.out.println(previousNode+nextNode);
 		} catch (RemoteException e) {
 			System.out.println("Couldn't refresh neighbours");
+			e.printStackTrace();
+		} catch (NullPointerException e){
+			//error in hash
 			e.printStackTrace();
 		}
 		
@@ -569,6 +574,10 @@ public class NodeClient extends UnicastRemoteObject implements clientToClientInt
 		}
 		
 		return ctci;
+	}
+
+	public BestandenLijst getBestandenLijst() {
+		return bestandenLijst;
 	}
 
 	

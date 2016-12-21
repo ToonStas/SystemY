@@ -13,13 +13,18 @@ import javax.swing.JTextField;
 
 
 public class GUI extends JFrame implements ActionListener {
-	
-	int length = BestandenLijst.getSize();
+	NodeClient nodeClient;
+	BestandenLijst bestandenLijst;
+	int length;
 	JButton logout = new JButton("LOG OUT");
 	JButton openbuttons[] = new JButton[length];
 	JButton deletebuttons[] = new JButton[length];
+	Bestand bestand; //een bestand
 	
-	public GUI(){
+	public GUI(NodeClient nodeClient){
+		this.nodeClient = nodeClient;
+		bestandenLijst = nodeClient.getBestandenLijst();
+		length = bestandenLijst.getSize();
 		
 		for(int i=0; i< length;i++){
 			JButton btn = new JButton("OPEN");
@@ -43,16 +48,16 @@ public class GUI extends JFrame implements ActionListener {
 		
 		for(int i = 0; i< length; i++)	
 		{
-		JPanel p = new JPanel();
-		p.setLayout(new GridLayout(1, 4));
-	    p.add(new JTextField(Bestand.getNaam()));	//get filename
-	    p.add(openbuttons[i]);
-	    p.add(deletebuttons[i]);
-	    //if(checkOwned(Bestand.getNaam(), BestandenLijst.BestandenLijst())){								//Check if file is local file
-	    //	p.add(new JButton("LOCAL_DELETE"));
-	   // }
-		frame.add(p);
-	    frame.pack();
+			JPanel p = new JPanel();
+			p.setLayout(new GridLayout(1, 4));
+			p.add(new JTextField(bestand.getNaam()));	//get filename
+			p.add(openbuttons[i]);
+			p.add(deletebuttons[i]);
+			//if(checkOwned(Bestand.getNaam(), BestandenLijst.BestandenLijst())){								//Check if file is local file
+			//	p.add(new JButton("LOCAL_DELETE"));
+			// }
+			frame.add(p);
+			frame.pack();
 		}
 	    
 		JPanel p5 = new JPanel(new GridLayout(length+1,3));
@@ -67,11 +72,11 @@ public class GUI extends JFrame implements ActionListener {
 		JButton b = (JButton) e.getSource();
 		int i=0;
 		if(b == openbuttons[i]){
-			Bestand.getFile();
+			bestand.getFile();
 		}
 		if(b == deletebuttons[i]){
-			String name = Bestand.getNaam();
-			BestandenLijst.verwijderBestandMetNaam(name);
+			String name = bestand.getNaam();
+			bestandenLijst.verwijderBestandMetNaam(name);
 		}
 		
 	}

@@ -55,10 +55,6 @@ public class MulticastReceiverThreadClient extends Thread {
 		String[] parts = nameIp.split(" ");
 		int hash = nodeClient.calculateHash(parts[0]);
 		
-		//always have the most recent next and previous node
-		previousNode = nodeClient.getPreviousNode();
-		nextNode = nodeClient.getNextNode();
-		
 		//if hash == 25757 we know it's the server, so wwe shouldn't get it as a neighbour
 		if(hash!=25757){
 			// Check if this node is the first node, if so it shouldn't replace its
@@ -70,6 +66,10 @@ public class MulticastReceiverThreadClient extends Thread {
 					goAhead = nodeClient.getGoAhead();
 					TimeUnit.SECONDS.sleep(2);
 				}
+				//always have the most recent next and previous node
+				previousNode = nodeClient.getPreviousNode();
+				nextNode = nodeClient.getNextNode();
+				
 				//if the node isn't first
 				if (nodeClient.ni.amIFirst() == 0) {
 					if (hash > ownHash & hash < nextNode) {// if the new node lies between this node and the next node
