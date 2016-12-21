@@ -7,11 +7,13 @@ public class ListedSendFile {
 	public File file;
 	public InetAddress IP;
 	public int ID;
+	public clientToClientInterface ctci;
 	
-	public ListedSendFile(File fileToSend, InetAddress IPDestination, int fileID){
+	public ListedSendFile(clientToClientInterface fileCtci,File fileToSend, InetAddress IPDestination, int fileID){
 		file = fileToSend;
 		IP = IPDestination;
 		ID = fileID;
+		ctci = fileCtci;
 	}
 
 }

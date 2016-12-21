@@ -426,12 +426,20 @@ public class NodeClient extends UnicastRemoteObject implements clientToClientInt
 		}
 	}
 	
-	public void setTCPSendMessage(int message){
+	public void setTCPSendMessage(int message) throws RemoteException{
 		tcp.setSendMessage(message);
 	}
 	
-	public void setTCPReceiveMessage(int message){
+	public void setTCPReceiveMessage(int message) throws RemoteException{
 		tcp.setReceiveMessage(message);
+	}
+	
+	public int getTCPSendMessage() throws RemoteException{
+		return tcp.getSendMessage();
+	}
+	
+	public int getTCPReceiveMessage() throws RemoteException {
+		return tcp.getReceiveMessage();
 	}
 	
 	// toevoegen van alle bestanden in lokale folder
@@ -552,5 +560,7 @@ public class NodeClient extends UnicastRemoteObject implements clientToClientInt
 		
 		return ctci;
 	}
+
+	
 	
 }

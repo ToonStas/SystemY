@@ -5,7 +5,7 @@ import java.util.TreeMap;
 import java.util.concurrent.Semaphore;
 
 public class TCPReceiveHandlerThread extends Thread {
-	private TCP tcp;;
+	private TCP tcp;
 	private TreeMap<Integer,ListedReceiveFile> wachtlijst;
 	private Semaphore sem;
 	public TCPReceiveHandlerThread(TCP thisTcp){

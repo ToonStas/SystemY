@@ -11,5 +11,7 @@ public interface clientToClientInterface extends Remote {
 	public void activateAgent(Thread agent) throws RemoteException;
 	public void setTCPSendMessage(int message) throws RemoteException;
 	public void setTCPReceiveMessage(int message) throws RemoteException;
+	public int getTCPSendMessage() throws RemoteException;
+	public int getTCPReceiveMessage() throws RemoteException;
 	
 }

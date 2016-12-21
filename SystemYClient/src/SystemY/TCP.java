@@ -23,6 +23,10 @@ public class TCP {
 	private TreeMap sendList = new TreeMap<Integer,ListedSendFile>();
 	
 	public TCP() {
+		Thread receiveHandler = new TCPReceiveHandlerThread(this);
+		receiveHandler.start();
+		Thread sendHandler = new TCPSendHandlerThread(this);
+		sendHandler.start();
 		
 	}
 	
@@ -72,7 +76,7 @@ public class TCP {
 	
 	//Starts a thread who receives a file if the thread is not busy handling another receive request.
 	public void ReceiveFile(clientToClientInterface ctci, String filePath, int size, int fileID) throws IOException {
-		receiveList.put(fileID,new ListedReceiveFile(filePath, size, fileID));
+		receiveList.put(fileID,new ListedReceiveFile(ctci,filePath, size, fileID));
 		
 		
 		
@@ -81,7 +85,7 @@ public class TCP {
 	
 	//Starts a thread who sends a file if the thread is not busy handling another send request.
 	public void SendFile(clientToClientInterface ctci, File fileToSend, InetAddress IPDestination, int fileID) throws IOException {
-		sendList.put(fileID,new ListedSendFile(fileToSend,IPDestination,fileID));
+		sendList.put(fileID,new ListedSendFile(ctci,fileToSend,IPDestination,fileID));
 	}
 
 }

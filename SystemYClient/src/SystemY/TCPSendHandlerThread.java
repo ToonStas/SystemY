@@ -1,5 +1,6 @@
 package SystemY;
 
+import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.TreeMap;
 import java.util.concurrent.Semaphore;
@@ -17,6 +18,7 @@ public class TCPSendHandlerThread extends Thread {
 	
 	public void run(){
 		long timeOut = 100;
+		int ID;
 		while (true){
 			try {
 				Thread.sleep(timeOut);
@@ -24,8 +26,10 @@ public class TCPSendHandlerThread extends Thread {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			if (wachtlijst.size()>0){
-
+			if (!wachtlijst.isEmpty()){
+				ID = wachtlijst.firstKey();
+				clientToClientInterface ctci = wachtlijst.get(ID).ctci;
+				
 			}
 			
 			
