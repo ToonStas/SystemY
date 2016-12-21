@@ -12,46 +12,46 @@ public class Bestand {
 	private int hashReplicationNode;
 	
 	public Bestand(String naamBestand, String pathBestand, int hashOwner, int hashReplicationNode){
-		this.naam = naamBestand;
-		this.path = pathBestand;
-		bestand = new File(this.path);
+		naam = naamBestand;
+		path = pathBestand;
+		bestand = new File(path+"/" + naam);
 		calculateHash();
 		this.hashOwner = hashOwner;
 		this.hashReplicationNode = hashReplicationNode;
 	}
 	
-	//Deze functie berekend de hash voor deze node zelf bij initialisatie
+	//Deze functie berekent de hash voor deze node zelf bij initialisatie
 	private int calculateHash(){
-		int tempHash = this.naam.hashCode();
+		int tempHash = naam.hashCode();
 		if (tempHash < 0)
 			tempHash = tempHash * -1;
 		tempHash = tempHash % 32768;
-		this.hash = tempHash;
+		hash = tempHash;
 		return 1;
 	}
 	
 	public int getHash(){
-		return this.hash;
+		return hash;
 	}
 	
 	public int getHashOwner(){
-		return this.hashOwner;
+		return hashOwner;
 	}
 	
 	public int getHashReplicationNode(){
-		return this.hashReplicationNode;
+		return hashReplicationNode;
 	}
 	
 	public String getNaam(){
-		return this.naam;
+		return naam;
 	}
 	
 	public File getFile(){
-		return this.bestand;
+		return bestand;
 	}
 	
 	public String getPath(){
-		return this.path;
+		return path;
 	}
 	
 	public String getFullPath(){

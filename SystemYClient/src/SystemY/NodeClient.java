@@ -34,7 +34,6 @@ public class NodeClient extends UnicastRemoteObject implements clientToClientInt
 	HashSet<String> locked = new HashSet<>(); //contains all files that should be locked
 	HashSet<String> unLocked = new HashSet<>(); //contains all files that should be unlocked
 	private TCP tcp = new TCP();
-	Serializer s = new Serializer(); //class to serialize our agent
 	private boolean first = true; //to know if the agent should be made
 	
 	public static void main(String args[]) {
@@ -377,33 +376,21 @@ public class NodeClient extends UnicastRemoteObject implements clientToClientInt
 	
 	public void setLocked(HashSet<String> locked2){this.locked = locked2;}
 	
-	public void sendFile(Bestand fileToSend, int recieverHash){
+	public void sendFile(Bestand fileToSend, int receiverHash){
 		String ip="";
-		String pathFile = fileToSend.getFullPath();
+		String pathFile = "C:/TEMP/" + fileToSend.getNaam();
 		int fileSize = ((int) fileToSend.getFile().length())+1000;
 		Random ran = new Random();
 		int fileID = ran.nextInt(10000);
-		try {
-			ip = ni.getIP(recieverHash);
-		} catch (RemoteException e1) {
-			System.out.println("Couldn't fetch IP from Namingserver");
-			failure(recieverHash); //when we can't fetch te ip it's likely the node shut down unexpectedly
-			e1.printStackTrace();
-		}
 		
 		try {
-			clientToClientInterface ctci = (clientToClientInterface) Naming.lookup("//" + ip + ":1100/nodeClient");
+			clientToClientInterface ctci = makeCTCI(receiverHash);
 			ctci.getFile(InetAddress.getLocalHost(),pathFile,fileToSend.getNaam(),fileToSend.getPath(),fileToSend.getHashOwner(),fileToSend.getHashReplicationNode(),fileSize,fileID);
 			tcp.SendFile(ctci, fileToSend.getFile(), InetAddress.getByName(ip), fileID);
 			
 		} catch (RemoteException e) {
 			System.err.println("NamingServer exception: " + e.getMessage());
-			failure(recieverHash); //when we can't connect to the node we assume it failed.
-			e.printStackTrace();
-		} catch (MalformedURLException e) {
-			e.printStackTrace();
-		} catch (NotBoundException e) {
-			System.out.println("Registry not bound");
+			failure(receiverHash); //when we can't connect to the node we assume it failed.
 			e.printStackTrace();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
@@ -445,15 +432,16 @@ public class NodeClient extends UnicastRemoteObject implements clientToClientInt
 	// toevoegen van alle bestanden in lokale folder
 	private void loadFilesStartUp() throws NumberFormatException, RemoteException
 	{
-		File dir = new File("C:/TEMP");
+		File dir = new File("C:/TEMP/");
 		for (File f : dir.listFiles()) {
 			int hashReplicationNode = ni.getHash(ni.askLocation(f.getName()));
 			if(hashReplicationNode == ownHash)
 			{
 				hashReplicationNode = previousNode;
 			}
-			bestandenLijst.addBestand(f.getName(),dir.toString(),ownHash,hashReplicationNode);
-			sendFile(bestandenLijst.getBestand(f.getName()),hashReplicationNode);
+			String name = f.getName();
+			bestandenLijst.addBestand(name ,dir.toString(),ownHash,hashReplicationNode);
+			sendFile(bestandenLijst.getBestand(name),hashReplicationNode);
 		}
 	}
 	

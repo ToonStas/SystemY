@@ -1,6 +1,7 @@
 package SystemY;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 
 //klasse voor een lijst van bestanden van een node in te bewaren
 public class BestandenLijst {
@@ -33,11 +34,17 @@ public class BestandenLijst {
 	//D.m.v. bestandsnaam bestand opvragen als deze voorkomt.
 	public Bestand getBestand(String naamBestand){
 		Bestand testBestand = null;
-		for (int i = 0; i < lijst.size(); i++){
-			if (lijst.get(i).getNaam()==naamBestand){
-				testBestand = lijst.get(i);
+		
+		Iterator<Bestand> iter = lijst.iterator();
+		
+		while (iter.hasNext()){
+			Bestand temp = iter.next();
+				
+			if(temp.getNaam()  == naamBestand){
+				testBestand = temp;
 			}
 		}
+		
 		if (testBestand != null){
 			System.out.println("bestand succesvol opgehaald.");
 			return testBestand;
@@ -97,5 +104,12 @@ public class BestandenLijst {
 	}
 	public Bestand getIndex(int index){
 		return lijst.get(index);
+	}
+	
+	public void listAllFiles(){
+		Iterator<Bestand> iter = lijst.iterator();
+		while (iter.hasNext()){
+			System.out.println(iter.next().getNaam());			
+		}
 	}
 }

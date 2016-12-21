@@ -38,7 +38,7 @@ public class RMIServer {
 			System.out.println("What do you want to do?");
 			System.out.println("[1] Print Nodes");
 			System.out.println("[2] Look for file");
-			System.out.println("[3] Open");
+			System.out.println("[3] Clear list");
 			System.out.println("[4] Open");
 			System.out.println("[9] Exit");
 
@@ -58,6 +58,7 @@ public class RMIServer {
 				break;
 
 			case 3:
+				namingServer.listOfNodes.clear();
 				break;
 				
 			case 4:

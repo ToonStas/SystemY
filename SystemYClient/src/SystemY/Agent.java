@@ -15,7 +15,6 @@ public class Agent implements Runnable, Serializable{
 	HashSet<String> owned = new HashSet<>(); //contains all files this node is the owner of
 	HashSet<String> locked = new HashSet<>(); //contains all files that should be locked
 	HashSet<String> unLocked = new HashSet<>(); //contains all files that should be unlocked
-	Serializer s = new Serializer();
 	
 	public Agent(NodeClient nodeClient){
 		this.nodeClient = nodeClient;
