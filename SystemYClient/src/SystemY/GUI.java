@@ -5,6 +5,7 @@ import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -12,6 +13,7 @@ import javax.swing.JTextField;
 
 
 public class GUI extends JFrame implements ActionListener {
+	
 	int length = BestandenLijst.getSize();
 	JButton logout = new JButton("LOG OUT");
 	JButton openbuttons[] = new JButton[length];
