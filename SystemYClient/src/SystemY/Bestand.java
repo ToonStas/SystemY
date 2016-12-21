@@ -55,7 +55,7 @@ public class Bestand {
 	}
 	
 	public String getFullPath(){
-		String fullPath = this.path + this.bestand;
+		String fullPath = path + naam;
 		return fullPath;
 	}
 	
