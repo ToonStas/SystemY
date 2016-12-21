@@ -7,6 +7,7 @@ import java.util.AbstractQueue;
 import java.util.ArrayList;
 import java.util.PriorityQueue;
 import java.util.Queue;
+import java.util.TreeMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.Semaphore;
 
@@ -16,8 +17,8 @@ public class TCP {
 	private Thread sendThread;
 	private Semaphore semReceive = new Semaphore(1);
 	private Semaphore semSend = new Semaphore(1);
-	private ArrayList receiveList = new ArrayList<ListedReceiveFile>();
-	private ArrayList sendList = new ArrayList<ListedSendFile>();
+	private TreeMap receiveList = new TreeMap<Integer,ListedReceiveFile>();
+	private TreeMap sendList = new TreeMap<Integer,ListedSendFile>();
 	
 	public TCP() {
 		
@@ -31,11 +32,11 @@ public class TCP {
 		return semReceive;
 	}
 	
-	public ArrayList<ListedReceiveFile> getReceiveList(){
+	public TreeMap<Integer,ListedReceiveFile> getReceiveList(){
 		return receiveList;
 	}
 	
-	public ArrayList<ListedSendFile> getSendList(){
+	public TreeMap<Integer,ListedSendFile> getSendList(){
 		return sendList;
 	}
 	
@@ -53,7 +54,7 @@ public class TCP {
 	
 	//Starts a thread who receives a file if the thread is not busy handling another receive request.
 	public void ReceiveFile(clientToClientInterface ctci, String filePath, int size, int fileID) throws IOException {
-		receiveList.add(new ListedReceiveFile(filePath, size, fileID));
+		receiveList.put(fileID,new ListedReceiveFile(filePath, size, fileID));
 		
 		
 		
@@ -62,7 +63,7 @@ public class TCP {
 	
 	//Starts a thread who sends a file if the thread is not busy handling another send request.
 	public void SendFile(clientToClientInterface ctci, File fileToSend, InetAddress IPDestination, int fileID) throws IOException {
-		sendList.add(new ListedSendFile(fileToSend,IPDestination,fileID));
+		sendList.put(fileID,new ListedSendFile(fileToSend,IPDestination,fileID));
 	}
 
 }
