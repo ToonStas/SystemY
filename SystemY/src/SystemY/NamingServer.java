@@ -94,6 +94,19 @@ public class NamingServer extends UnicastRemoteObject implements ClientToNamingS
 	public String getIP(int hashNode){
 		return listOfNodes.get(hashNode).getIpAdress();	
 	}
+	
+	//get hash of a node by it's ip
+	public int getHash(String ip){
+		int hash = -1;
+		for(NodeNamingServer node : listOfNodes.values()){
+			//return the hash if the ip exists
+			if(node.getIpAdress() == ip){
+				hash = node.getHash();
+			}
+		}
+		
+		return hash;
+	}
 
 	public void activateAgent(int hashOfNode){
 		int next = getNext(hashOfNode);

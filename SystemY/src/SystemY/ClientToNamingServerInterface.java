@@ -10,5 +10,6 @@ public interface ClientToNamingServerInterface extends Remote{
 	public String getIP(int hash) throws RemoteException;
 	public int[] getNeigbours(int hashNode) throws RemoteException;
 	public void deleteNode(int hashNode) throws RemoteException;
-	//public void activateAgent(int ownHash) throws RemoteException;
+	public void activateAgent(int ownHash) throws RemoteException;
+	public int getHash(String ip) throws RemoteException;
 }
