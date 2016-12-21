@@ -7,17 +7,20 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.net.InetAddress;
 import java.net.Socket;
+import java.util.concurrent.Semaphore;
 
 public class TCPSendThread extends Thread {
 	private static int SOCKET_PORT;
 	private File file;
 	private InetAddress IPDest;
+	private TCP tcp;
 	
 	//Thread who sends a file
-	public TCPSendThread(int SocketPort, File fileToSend, InetAddress IPDestination){
+	public TCPSendThread(int SocketPort, File fileToSend, InetAddress IPDestination, TCP thisTcp){
 		SOCKET_PORT = SocketPort;
 		file = fileToSend;
 		IPDest = IPDestination;
+		tcp = thisTcp;
 	}
 	
 	public void run(){
@@ -47,6 +50,7 @@ public class TCPSendThread extends Thread {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} finally {
+			
 			try {
 				if (bis != null)
 					bis.close();
@@ -54,9 +58,12 @@ public class TCPSendThread extends Thread {
 					os.close();
 				if (sock != null)
 					sock.close();
+				tcp.getSemSend().release();
+				
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
+				tcp.getSemSend().release();
 			}
 		}
 	}

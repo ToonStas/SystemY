@@ -27,6 +27,8 @@ public class TCP {
 		receiveHandler.start();
 		Thread sendHandler = new TCPSendHandlerThread(this);
 		sendHandler.start();
+		sendMessage = -1;
+		receiveMessage = -1;
 		
 	}
 	
@@ -63,13 +65,13 @@ public class TCP {
 	}
 	
 	public Thread StartReceiveFile(String filePath, int size){
-		receiveThread = new Thread (new TCPReceiveThread(SOCKET_PORT, size, filePath));
+		receiveThread = new Thread (new TCPReceiveThread(SOCKET_PORT, size, filePath, this));
 		receiveThread.start();
 		return receiveThread;
 	}
 	
 	public Thread StartSendFile(File fileToSend, InetAddress IPDestination){
-		sendThread = new Thread (new TCPSendThread(SOCKET_PORT, fileToSend, IPDestination));
+		sendThread = new Thread (new TCPSendThread(SOCKET_PORT, fileToSend, IPDestination, this));
 		sendThread.start();
 		return sendThread;
 	}

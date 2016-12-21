@@ -13,13 +13,14 @@ public class TCPReceiveThread extends Thread {
 	private static int SOCKET_PORT;
 	private int size;
 	private String path;
-	
+	private TCP tcp;
 	
 	//Thread who receives a file
-	public TCPReceiveThread(int Socket_Port, int fileSize, String filePath){
+	public TCPReceiveThread(int Socket_Port, int fileSize, String filePath, TCP thisTcp){
 		SOCKET_PORT = Socket_Port;
 		size = fileSize;
 		path = filePath;
+		tcp = thisTcp;
 	}
 	
 	public void run(){
@@ -62,20 +63,23 @@ public class TCPReceiveThread extends Thread {
 					if (bos != null)
 						bos.close();
 					if (sock != null)
-						sock.close();	
+						sock.close();
+					
 				}
 			
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
+			tcp.getSemReceive().release();
 			e.printStackTrace();
 		} finally {
-			if (servSock != null)
+			if (servSock != null){
 				try {
 					servSock.close();
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
+			}
+			tcp.getSemReceive().release();
 		}
 		
 	}
