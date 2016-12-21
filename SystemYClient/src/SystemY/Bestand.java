@@ -4,9 +4,9 @@ import java.io.File;
 
 //klasse voor een bestand in te bewaren.
 public class Bestand {
-	private String naam;
+	private static String naam;
 	private String path;
-	private File bestand;
+	private static File bestand;
 	private int hash;
 	private int hashOwner;
 	private int hashReplicationNode;
@@ -42,11 +42,11 @@ public class Bestand {
 		return hashReplicationNode;
 	}
 	
-	public String getNaam(){
+	public static String getNaam(){
 		return naam;
 	}
 	
-	public File getFile(){
+	public static File getFile(){
 		return bestand;
 	}
 	

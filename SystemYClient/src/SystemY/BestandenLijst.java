@@ -5,7 +5,7 @@ import java.util.Iterator;
 
 //klasse voor een lijst van bestanden van een node in te bewaren
 public class BestandenLijst {
-	private ArrayList<Bestand> lijst = null;
+	private static ArrayList<Bestand> lijst = null;
 	
 	public BestandenLijst(){
 		lijst = new ArrayList<Bestand>();
@@ -67,7 +67,7 @@ public class BestandenLijst {
 	}
 	
 	//bestand verwijderen op basis van naam
-	public int verwijderBestandMetNaam(String naamBestand){
+	public static int verwijderBestandMetNaam(String naamBestand){
 		boolean flag = false;
 		for (int i = 0; i < lijst.size(); i++){
 			if (lijst.get(i).getNaam()==naamBestand){
@@ -86,7 +86,7 @@ public class BestandenLijst {
 		
 	}
 	
-	public int getSize(){
+	public static int getSize(){
 		return lijst.size();
 	}
 	
@@ -112,4 +112,5 @@ public class BestandenLijst {
 			System.out.println(iter.next().getNaam());			
 		}
 	}
+
 }

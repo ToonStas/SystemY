@@ -56,9 +56,13 @@ public class NodeClient extends UnicastRemoteObject implements clientToClientInt
 		System.out.println("This nodes hash is: "+ownHash);
 
 		// infinite while loop for the gui
-		while (true) 
+		while (true){
 			consoleGUI(); 
+		}
+			
 	}
+	
+	
 	
 	//start the consolegui
 	private void consoleGUI() throws RemoteException {
