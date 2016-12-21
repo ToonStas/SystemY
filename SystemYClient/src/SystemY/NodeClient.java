@@ -179,7 +179,7 @@ public class NodeClient extends UnicastRemoteObject implements clientToClientInt
 	private void loadFile(String fileName) throws NumberFormatException, RemoteException
 	{
 		File dir = new File("C:/TEMP");
-		int hashReplicationNode = Integer.valueOf(ni.askLocation(fileName));
+		int hashReplicationNode = ni.getHash(ni.askLocation(fileName));
 		if(hashReplicationNode == ownHash)
 		{
 			hashReplicationNode = previousNode;
@@ -439,7 +439,7 @@ public class NodeClient extends UnicastRemoteObject implements clientToClientInt
 	{
 		File dir = new File("C:/TEMP");
 		for (File f : dir.listFiles()) {
-			int hashReplicationNode = Integer.valueOf(ni.askLocation(f.getName()));
+			int hashReplicationNode = ni.getHash(ni.askLocation(f.getName()));
 			if(hashReplicationNode == ownHash)
 			{
 				hashReplicationNode = previousNode;
