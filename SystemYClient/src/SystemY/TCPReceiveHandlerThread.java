@@ -49,7 +49,7 @@ public class TCPReceiveHandlerThread extends Thread {
 						clientToClientInterface ctci = listedFile.ctci;
 						try {
 							ctci.setTCPSendMessage(listedFile.ID);
-							receiver = tcp.StartReceiveFile(listedFile.path, listedFile.size);
+							receiver = tcp.StartReceiveFile(listedFile.path, listedFile.size,listedFile.ID);
 							timeOutCounterSend = 0;
 							state = 2;
 						} catch (RemoteException e) {

@@ -61,7 +61,7 @@ public class TCPSendHandlerThread extends Thread {
 							e.printStackTrace();
 						}
 						if (tcp.getSemSend().tryAcquire()){
-							tcp.StartSendFile(listedFile.file, listedFile.IP);
+							tcp.StartSendFile(listedFile.file, listedFile.IP,listedFile.ID);
 							state = 0;
 						}
 						else {
@@ -83,7 +83,7 @@ public class TCPSendHandlerThread extends Thread {
 				
 				case 2: //wachten op semafoor
 					if (tcp.getSemSend().tryAcquire()){
-						tcp.StartSendFile(listedFile.file, listedFile.IP);
+						tcp.StartSendFile(listedFile.file, listedFile.IP,listedFile.ID);
 						state = 0;
 					}
 					else {

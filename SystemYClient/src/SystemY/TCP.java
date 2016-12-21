@@ -64,14 +64,14 @@ public class TCP {
 		return sendList;
 	}
 	
-	public Thread StartReceiveFile(String filePath, int size){
-		receiveThread = new Thread (new TCPReceiveThread(SOCKET_PORT, size, filePath, this));
+	public Thread StartReceiveFile(String filePath, int size, int fileID){
+		receiveThread = new Thread (new TCPReceiveThread(SOCKET_PORT, size, filePath, this, fileID));
 		receiveThread.start();
 		return receiveThread;
 	}
 	
-	public Thread StartSendFile(File fileToSend, InetAddress IPDestination){
-		sendThread = new Thread (new TCPSendThread(SOCKET_PORT, fileToSend, IPDestination, this));
+	public Thread StartSendFile(File fileToSend, InetAddress IPDestination, int fileID){
+		sendThread = new Thread (new TCPSendThread(SOCKET_PORT, fileToSend, IPDestination, this, fileID));
 		sendThread.start();
 		return sendThread;
 	}

@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.TreeMap;
 
 public class TCPReceiveThread extends Thread {
 	
@@ -14,13 +15,15 @@ public class TCPReceiveThread extends Thread {
 	private int size;
 	private String path;
 	private TCP tcp;
+	private int ID;
 	
 	//Thread who receives a file
-	public TCPReceiveThread(int Socket_Port, int fileSize, String filePath, TCP thisTcp){
+	public TCPReceiveThread(int Socket_Port, int fileSize, String filePath, TCP thisTcp, int fileID){
 		SOCKET_PORT = Socket_Port;
 		size = fileSize;
 		path = filePath;
 		tcp = thisTcp;
+		ID = fileID;
 	}
 	
 	public void run(){
@@ -69,6 +72,8 @@ public class TCPReceiveThread extends Thread {
 			
 		} catch (IOException e) {
 			tcp.getSemReceive().release();
+			TreeMap<Integer,ListedReceiveFile> map = tcp.getReceiveList();
+			map.remove(ID);
 			e.printStackTrace();
 		} finally {
 			if (servSock != null){
@@ -80,6 +85,8 @@ public class TCPReceiveThread extends Thread {
 				}
 			}
 			tcp.getSemReceive().release();
+			TreeMap<Integer,ListedReceiveFile> map = tcp.getReceiveList();
+			map.remove(ID);
 		}
 		
 	}
