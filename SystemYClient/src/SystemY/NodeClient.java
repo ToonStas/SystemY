@@ -13,6 +13,7 @@ import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Random;
 import java.util.TreeMap;
 import java.util.concurrent.TimeUnit;
 
@@ -379,6 +380,9 @@ public class NodeClient extends UnicastRemoteObject implements clientToClientInt
 	public void sendFile(Bestand fileToSend, int recieverHash){
 		String ip="";
 		String pathFile = fileToSend.getFullPath();
+		int fileSize = ((int) fileToSend.getFile().length())+1000;
+		Random ran = new Random();
+		int fileID = ran.nextInt(10000);
 		try {
 			ip = ni.getIP(recieverHash);
 		} catch (RemoteException e1) {
@@ -389,8 +393,8 @@ public class NodeClient extends UnicastRemoteObject implements clientToClientInt
 		
 		try {
 			clientToClientInterface ctci = (clientToClientInterface) Naming.lookup("//" + ip + ":1100/nodeClient");
-			ctci.getFile(pathFile,fileToSend.getNaam(),fileToSend.getPath(),fileToSend.getHashOwner(),fileToSend.getHashReplicationNode());
-			tcp.SendFile(fileToSend.getFile(), InetAddress.getByName(ip));
+			ctci.getFile(pathFile,fileToSend.getNaam(),fileToSend.getPath(),fileToSend.getHashOwner(),fileToSend.getHashReplicationNode(),fileSize,fileID);
+			tcp.SendFile(fileToSend.getFile(), InetAddress.getByName(ip), fileID);
 			
 		} catch (RemoteException e) {
 			System.err.println("NamingServer exception: " + e.getMessage());
@@ -407,9 +411,9 @@ public class NodeClient extends UnicastRemoteObject implements clientToClientInt
 		}
 	}
 	
-	public void getFile(String pathFile, String naamBestand, String pathBestand, int hashOwner, int hashReplicationNode) {
+	public void getFile(String pathFile, String naamBestand, String pathBestand, int hashOwner, int hashReplicationNode, int fileSize,int fileID) {
 		try {
-			tcp.ReceiveFile(pathFile);
+			tcp.ReceiveFile(pathFile, fileSize, fileID);
 			bestandenLijst.addBestand(naamBestand, pathBestand, hashOwner, hashReplicationNode);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
