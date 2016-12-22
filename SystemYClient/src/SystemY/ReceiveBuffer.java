@@ -1,7 +1,7 @@
 package SystemY;
 
 import java.util.TreeMap;
-
+//buffer which holds the different file requests
 public class ReceiveBuffer {
 
 	private TreeMap<Integer,ReceiveFileRequest> map;

@@ -2,7 +2,7 @@ package SystemY;
 
 import java.rmi.RemoteException;
 
-
+// this thread handles all the TCP send request and negotiates with the receiver for faultless transmission
 public class TCPSendHandlerThread extends Thread {
 
 	private TCP tcp;

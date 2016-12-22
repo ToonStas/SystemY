@@ -2,7 +2,7 @@ package SystemY;
 
 import java.util.ArrayList;
 
-// FIFO buffer voor het verzenden van bestanden
+// FIFO buffer wich holds the different file send requests
 public class SendBuffer {
 	
 	private ArrayList<SendFileRequest> buffer;

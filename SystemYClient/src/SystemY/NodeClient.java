@@ -391,11 +391,12 @@ public class NodeClient extends UnicastRemoteObject implements ClientToClientInt
 	
 	public void setLocked(HashSet<String> locked2){this.locked = locked2;}
 	
+	//this method sets a file send request in this node and a file receive request in the receiving node, the TCP class handles the reqeusts
 	public void sendFile(Bestand fileToSend, int receiverHash){
-		//this method sets a file send request in this node and a file receive request in the receiving node, the TCP class handles the reqeusts
+		
 		String ip="";
 		Random ran = new Random();
-		int fileID = ran.nextInt(10000);
+		int fileID = ran.nextInt(20000); //The file ID is used in the file receive and send requests, they are compared to know if they are transmitting the right file
 		try {
 			ip = ni.getIP(receiverHash);
 		} catch (RemoteException e1) {
@@ -424,6 +425,7 @@ public class NodeClient extends UnicastRemoteObject implements ClientToClientInt
 		}
 	}
 	
+	//sets a receive request in the tcp receive file buffer (used by the file sender via RMI)
 	public void setReceiveRequest(ReceiveFileRequest request) throws RemoteException{
 		try {
 			tcp.addReceiveRequest(request);
@@ -433,6 +435,7 @@ public class NodeClient extends UnicastRemoteObject implements ClientToClientInt
 		}
 	}
 	
+	//checks if TCP is ready to receive a file with the following file ID
 	public int checkReceiveAvailable(int fileID) throws RemoteException{
 		return tcp.checkReceiveAvailable(fileID);
 	}

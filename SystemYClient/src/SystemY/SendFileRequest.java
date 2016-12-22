@@ -2,7 +2,7 @@ package SystemY;
 
 import java.io.File;
 import java.net.InetAddress;
-
+// class with the information needed for a file send request
 public class SendFileRequest {
 	public File file;
 	public InetAddress IP;
@@ -20,6 +20,7 @@ public class SendFileRequest {
 		hashReceiver = hashReceiverNode;
 	}
 	
+
 	public boolean checkSemTOC(){
 		semTOC--;
 		if (semTOC<0)

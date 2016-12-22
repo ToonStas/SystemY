@@ -1,7 +1,7 @@
 package SystemY;
 
 import java.net.InetAddress;
-
+//class with the information needed to handle a file request
 public class ReceiveFileRequest {
 	public String path;
 	public String name;
