@@ -7,23 +7,23 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.net.InetAddress;
 import java.net.Socket;
-import java.util.TreeMap;
-import java.util.concurrent.Semaphore;
 
 public class TCPSendThread extends Thread {
 	private static int SOCKET_PORT;
 	private File file;
+	private SendFileRequest request;
 	private InetAddress IPDest;
 	private TCP tcp;
 	private int ID;
 	
 	//Thread who sends a file
-	public TCPSendThread(int SocketPort, File fileToSend, InetAddress IPDestination, TCP thisTcp, int fileID){
+	public TCPSendThread(int SocketPort,TCP thisTcp, NodeClient nodeClient, SendFileRequest sendRequest){
 		SOCKET_PORT = SocketPort;
-		file = fileToSend;
-		IPDest = IPDestination;
+		request = sendRequest;
+		file = request.file;
+		IPDest = request.IP;
 		tcp = thisTcp;
-		ID = fileID;
+		ID = request.ID;
 	}
 	
 	public void run(){
@@ -31,7 +31,6 @@ public class TCPSendThread extends Thread {
 		BufferedInputStream bis = null;
 		OutputStream os = null;
 		Socket sock = null;
-
 		
 		System.out.println("Waiting...");
 		try {
@@ -47,7 +46,9 @@ public class TCPSendThread extends Thread {
 				System.out.println("Sending " + file.toString() + "(" + mybytearray.length + " bytes)");
 				os.write(mybytearray, 0, mybytearray.length);
 				os.flush();
-				System.out.println("Done.");
+				System.out.println("File was send using TCP.");
+				tcp.getSemSend().release();
+				tcp.getSendBuffer().remove(ID);
 			
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
@@ -62,15 +63,13 @@ public class TCPSendThread extends Thread {
 				if (sock != null)
 					sock.close();
 				tcp.getSemSend().release();
-				TreeMap<Integer,ListedSendFile> map = tcp.getSendList();
-				map.remove(ID);
+				tcp.getSendBuffer().remove(ID);
 				
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 				tcp.getSemSend().release();
-				TreeMap<Integer,ListedSendFile> map = tcp.getSendList();
-				map.remove(ID);
+				tcp.getSendBuffer().remove(ID);
 			}
 		}
 	}

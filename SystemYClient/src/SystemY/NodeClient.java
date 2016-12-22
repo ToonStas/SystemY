@@ -7,6 +7,7 @@ import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.net.InetAddress;
 import java.net.MalformedURLException;
+import java.net.UnknownHostException;
 import java.rmi.*;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
@@ -18,7 +19,7 @@ import java.util.TreeMap;
 import java.util.concurrent.TimeUnit;
 import javax.swing.text.html.HTMLDocument.Iterator;
 
-public class NodeClient extends UnicastRemoteObject implements clientToClientInterface, NamingServerToClientInterface{
+public class NodeClient extends UnicastRemoteObject implements ClientToClientInterface, NamingServerToClientInterface{
 	private static final long serialVersionUID = 1L;
 	private TreeMap<String, Integer> fileList = new TreeMap<>(); // filename, hash
 	private BestandenLijst bestandenLijst = new BestandenLijst();
@@ -34,7 +35,7 @@ public class NodeClient extends UnicastRemoteObject implements clientToClientInt
 	HashSet<String> owned = new HashSet<>(); //contains all files this node is the owner of
 	HashSet<String> locked = new HashSet<>(); //contains all files that should be locked
 	HashSet<String> unLocked = new HashSet<>(); //contains all files that should be unlocked
-	private TCP tcp = new TCP();
+	private TCP tcp = new TCP(this);
 	private boolean first = true; //to know if the agent should be made
 	
 	public static void main(String args[]) {
@@ -259,7 +260,7 @@ public class NodeClient extends UnicastRemoteObject implements clientToClientInt
 	
 	//when a connectionexception occurs when communicting with another node this method should be invoked
 	//ask nameserver next and previous of failing node, update these nodes with gained info
-	private void failure(int failingHash){
+	public void failure(int failingHash){
 		int[] neighbours = new int[2];
 		// Get next node and previous node using the current nodes hash number
 		try {
@@ -391,16 +392,27 @@ public class NodeClient extends UnicastRemoteObject implements clientToClientInt
 	public void setLocked(HashSet<String> locked2){this.locked = locked2;}
 	
 	public void sendFile(Bestand fileToSend, int receiverHash){
+		//this method sets a file send request in this node and a file receive request in the receiving node, the TCP class handles the reqeusts
 		String ip="";
-		String pathFile = "C:/TEMP/" + fileToSend.getNaam();
-		int fileSize = ((int) fileToSend.getFile().length())+1000;
 		Random ran = new Random();
 		int fileID = ran.nextInt(10000);
+		try {
+			ip = ni.getIP(receiverHash);
+		} catch (RemoteException e1) {
+			System.out.println("Couldn't fetch IP from Namingserver");
+			failure(receiverHash); //when we can't fetch te ip it's likely the node shut down unexpectedly
+			e1.printStackTrace();
+		}
+		int fileSize = ((int) fileToSend.getFile().length())+1000;
+		
 		
 		try {
-			clientToClientInterface ctci = makeCTCI(receiverHash);
-			ctci.getFile(InetAddress.getLocalHost(),pathFile,fileToSend.getNaam(),fileToSend.getPath(),fileToSend.getHashOwner(),fileToSend.getHashReplicationNode(),fileSize,fileID);
-			tcp.SendFile(ctci, fileToSend.getFile(), InetAddress.getByName(ip), fileID);
+			SendFileRequest sendRequest = new SendFileRequest(fileToSend.getFile(),InetAddress.getByName(ip),fileID,receiverHash);
+			ReceiveFileRequest receiveRequest = new ReceiveFileRequest(InetAddress.getLocalHost(),fileToSend.getNaam(), fileToSend.getFullPath(), fileSize, fileID, fileToSend.getHashOwner(), fileToSend.getHashReplicationNode());
+			ClientToClientInterface ctci = makeCTCI(receiverHash);
+			ctci.setReceiveRequest(receiveRequest);
+			ctci = null;
+			tcp.addSendRequest(sendRequest);
 			
 		} catch (RemoteException e) {
 			System.err.println("NamingServer exception: " + e.getMessage());
@@ -412,36 +424,20 @@ public class NodeClient extends UnicastRemoteObject implements clientToClientInt
 		}
 	}
 	
-	public void getFile(InetAddress IPSource, String pathFile, String naamBestand, String pathBestand, int hashOwner, int hashReplicationNode, int fileSize,int fileID) {
-		String ip = IPSource.toString();
+	public void setReceiveRequest(ReceiveFileRequest request) throws RemoteException{
 		try {
-			clientToClientInterface ctci = (clientToClientInterface) Naming.lookup("//" + ip + ":1100/nodeClient");
-			tcp.ReceiveFile(ctci, pathFile, fileSize, fileID);
-			bestandenLijst.addBestand(naamBestand, pathBestand, hashOwner, hashReplicationNode);
+			tcp.addReceiveRequest(request);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (NotBoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
 	
-	public void setTCPSendMessage(int message) throws RemoteException{
-		tcp.setSendMessage(message);
+	public int checkReceiveAvailable(int fileID) throws RemoteException{
+		return tcp.checkReceiveAvailable(fileID);
 	}
 	
-	public void setTCPReceiveMessage(int message) throws RemoteException{
-		tcp.setReceiveMessage(message);
-	}
 	
-	public int getTCPSendMessage() throws RemoteException{
-		return tcp.getSendMessage();
-	}
-	
-	public int getTCPReceiveMessage() throws RemoteException {
-		return tcp.getReceiveMessage();
-	}
 	
 	// toevoegen van alle bestanden in lokale folder
 	private void loadFilesStartUp() throws NumberFormatException, RemoteException{
@@ -469,7 +465,7 @@ public class NodeClient extends UnicastRemoteObject implements clientToClientInt
 			e1.printStackTrace();
 		}
 		try {
-			clientToClientInterface ctci = (clientToClientInterface) Naming.lookup("//" + ip + ":1100/nodeClient");
+			ClientToClientInterface ctci = (ClientToClientInterface) Naming.lookup("//" + ip + ":1100/nodeClient");
 			ctci.sendReplicationToNewNode(ownHash);
 			
 		}catch (RemoteException e) {
@@ -548,8 +544,8 @@ public class NodeClient extends UnicastRemoteObject implements clientToClientInt
 	}
 	
 	//makes an interface for the specified hash for RMI between nodes
-	public clientToClientInterface makeCTCI(int hash){
-		clientToClientInterface ctci = null;
+	public ClientToClientInterface makeCTCI(int hash){
+		ClientToClientInterface ctci = null;
 		
 		String ip="";
 		try {
@@ -561,7 +557,7 @@ public class NodeClient extends UnicastRemoteObject implements clientToClientInt
 		}
 		
 		try {
-			ctci = (clientToClientInterface) Naming.lookup("//" + ip + ":1100/nodeClient");
+			ctci = (ClientToClientInterface) Naming.lookup("//" + ip + ":1100/nodeClient");
 		}catch(RemoteException e){
 			System.out.println("Couldn't make interface");
 			e.printStackTrace();

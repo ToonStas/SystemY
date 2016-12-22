@@ -1,106 +1,160 @@
 package SystemY;
 
 import java.rmi.RemoteException;
-import java.util.ArrayList;
-import java.util.TreeMap;
-import java.util.concurrent.Semaphore;
+
 
 public class TCPSendHandlerThread extends Thread {
 
 	private TCP tcp;
-	private TreeMap<Integer,ListedSendFile> wachtlijst;
-	private Semaphore sem;
+	private SendBuffer sendBuffer;
 	private int state;
-	public TCPSendHandlerThread(TCP thisTcp){
+	private NodeClient node;
+	private SendFileRequest request;
+	private ClientToClientInterface ctci;
+	public TCPSendHandlerThread(TCP thisTcp, NodeClient nodeClient){
 		tcp = thisTcp;
-		wachtlijst = tcp.getSendList();
-		sem = tcp.getSemSend();
+		node = nodeClient;
 		state = 0;
 	}
 	
 	public void run(){
-		long timeOut = 100;
-		int timeOutCounter = 0;
-		int ID;
-		ListedSendFile listedFile = null;
+		long sleepTime = 100;
+		int message;
+		int currentID = -600; //random value
+		
 		while (true){
 			try {
-				Thread.sleep(timeOut);
+				Thread.sleep(sleepTime);
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			switch (state) {
-				case 0: //check voor bestanden om te versturen
-					if (!wachtlijst.isEmpty()){
-						ID = wachtlijst.firstKey();
-						listedFile = wachtlijst.get(ID);
-						clientToClientInterface ctci = listedFile.ctci;
-						try {
-							ctci.setTCPReceiveMessage(ID);
-						} catch (RemoteException e) {
+			
+			switch(state) {
+				case 0: //standard state
+					sendBuffer = tcp.getSendBuffer();
+					if (sendBuffer.isNext() && tcp.getSemSend().tryAcquire()){
+						request = sendBuffer.getNext();
+						if (request.ID != currentID) { //if not, the thread wil start multiple send Threads for 1 file
 							
-							e.printStackTrace();
+							ctci = node.makeCTCI(request.hashReceiver);
+							try {
+								message = ctci.checkReceiveAvailable(request.ID);
+								if (message == request.ID){ //ready to receive
+									tcp.StartSendFile(request);
+									currentID = request.ID;
+									ctci = null;
+									state = 0;
+								}
+								else if (message == -1) { //semaphore not available
+									state = 1;
+									currentID = request.ID;
+								}
+								else if (message == -2) { //file does not exist
+									state = 2;
+									currentID = request.ID;
+								}
+								else {
+									state = 0;
+									ctci = null;
+								}
+								
+							} catch (RemoteException e) {
+								ctci = null;
+								node.failure(request.hashReceiver);
+								sendBuffer.remove(request.ID);
+								tcp.getSemSend().release();
+								e.printStackTrace();
+							}
 						}
-						state = 1;
+
+						
 					}
-					else{
-						state = 0;	
-					}
-					timeOutCounter = 0;
-					
 					break;
 					
-				case 1: //kijken of ontvanger klaar is om te verzenden 
-					if (tcp.getSendMessage() == listedFile.ID){
-						clientToClientInterface ctci = listedFile.ctci;
+				case 1: //waiting on semaphore receiver
+					if (request.checkSemTOC()) {
 						try {
-							ctci.setTCPReceiveMessage(listedFile.ID);
-						} catch (RemoteException e) {
 							
+							message = ctci.checkReceiveAvailable(request.ID);
+							if (message == request.ID){
+								tcp.StartSendFile(request);
+								ctci = null;
+								state = 0;
+							} 
+							else if (message == -1){
+								state = 1;
+							}
+							else {
+								state = 0;
+								ctci = null;
+								sendBuffer.remove(request.ID);
+								tcp.getSemSend().release();
+							}
+						
+						} catch (RemoteException e) {
+							ctci = null;
+							node.failure(request.hashReceiver);
+							sendBuffer.remove(request.ID);
+							tcp.getSemSend().release();
 							e.printStackTrace();
 						}
-						if (tcp.getSemSend().tryAcquire()){
-							tcp.StartSendFile(listedFile.file, listedFile.IP,listedFile.ID);
-							state = 0;
-						}
-						else {
-							state = 2;
-						}
 					}
-					else {
-						if (timeOutCounter < 50){
-							timeOutCounter++;
-							state = 1;
-						}
-						else{
-							System.out.println("TimeOutCounter expired for fileID "+listedFile.ID);
-							state = 0;
-							wachtlijst.remove(listedFile.ID);
-						}
-					}
-					
-					break;
-				
-				case 2: //wachten op semafoor
-					if (tcp.getSemSend().tryAcquire()){
-						tcp.StartSendFile(listedFile.file, listedFile.IP,listedFile.ID);
+					else { //semaphore time out counter expired
+						System.out.println("Semphore timeout counter expired from file request with ID "+request.ID);
+						ctci = null;
+						sendBuffer.remove(request.ID);
+						tcp.getSemSend().release();
 						state = 0;
 					}
-					else {
-						if (timeOutCounter < 500){
-							timeOutCounter++;
-							state = 2;
-						}
-						else{
-							System.out.println("TimeOutCounter expired for fileID "+listedFile.ID);
-							state = 0;
-							wachtlijst.remove(listedFile.ID);
+					break;
+					
+				case 2: //receiver didn't find the file in his buffer
+					if (request.checkFileTOC()) {
+						try {
+							
+							message = ctci.checkReceiveAvailable(request.ID);
+							if (message == request.ID){
+								tcp.StartSendFile(request);
+								ctci = null;
+								state = 0;
+							} 
+							else if (message == -1){
+								state = 1;
+							}
+							else if (message == -2){
+								state = 2;
+							}
+							else {
+								state = 0;
+								ctci = null;
+								sendBuffer.remove(request.ID);
+								tcp.getSemSend().release();
+							}
+						
+						} catch (RemoteException e) {
+							ctci = null;
+							node.failure(request.hashReceiver);
+							sendBuffer.remove(request.ID);
+							tcp.getSemSend().release();
+							e.printStackTrace();
 						}
 					}
-					
+					else { //file time out counter expired
+						System.out.println("File not found timeout counter expired from file request with ID "+request.ID);
+						ctci = null;
+						sendBuffer.remove(request.ID);
+						tcp.getSemSend().release();
+						state = 0;
+					}
 					break;
+				
+					
+				default:
+					state = 0;
+
 			}
+			
 			
 			
 			

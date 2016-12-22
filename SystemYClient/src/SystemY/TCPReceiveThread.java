@@ -7,7 +7,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.TreeMap;
 
 public class TCPReceiveThread extends Thread {
 	
@@ -16,14 +15,18 @@ public class TCPReceiveThread extends Thread {
 	private String path;
 	private TCP tcp;
 	private int ID;
+	private NodeClient node;
+	private ReceiveFileRequest request;
 	
 	//Thread who receives a file
-	public TCPReceiveThread(int Socket_Port, int fileSize, String filePath, TCP thisTcp, int fileID){
+	public TCPReceiveThread(int Socket_Port,TCP thisTcp, NodeClient nodeClient, ReceiveFileRequest receiveRequest){
 		SOCKET_PORT = Socket_Port;
-		size = fileSize;
-		path = filePath;
+		request = receiveRequest;
+		size = request.size;
+		path = request.path;
 		tcp = thisTcp;
-		ID = fileID;
+		ID = request.ID;
+		node = nodeClient;
 	}
 	
 	public void run(){
@@ -55,10 +58,13 @@ public class TCPReceiveThread extends Thread {
 					File file = new File(path);
 					if (file.exists()){
 						System.out.println("File " +file.getName()+ " was succesfull received.");
+						node.getBestandenLijst().addBestand(request.name , path, request.hashOwner, request.hashReplication);
 					}
 					else {
 						System.out.println("Could not receive file.");
 					}
+					tcp.getSemReceive().release();
+					tcp.getReceiveBuffer().remove(request.ID);
 
 				} finally {
 					if (fos != null)
@@ -72,8 +78,7 @@ public class TCPReceiveThread extends Thread {
 			
 		} catch (IOException e) {
 			tcp.getSemReceive().release();
-			TreeMap<Integer,ListedReceiveFile> map = tcp.getReceiveList();
-			map.remove(ID);
+			tcp.getReceiveBuffer().remove(ID);
 			e.printStackTrace();
 		} finally {
 			if (servSock != null){
@@ -85,8 +90,7 @@ public class TCPReceiveThread extends Thread {
 				}
 			}
 			tcp.getSemReceive().release();
-			TreeMap<Integer,ListedReceiveFile> map = tcp.getReceiveList();
-			map.remove(ID);
+			tcp.getReceiveBuffer().remove(ID);
 		}
 		
 	}
