@@ -2,13 +2,11 @@ package SystemY;
 
 import java.io.Serializable;
 import java.rmi.RemoteException;
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.TreeMap;
 
+@SuppressWarnings("serial")
 public class Agent implements Runnable, Serializable{
 	TreeMap<String, Boolean> allFiles = new TreeMap<>(); //name, isLocked; all files in the system to provide to the clients
 	private NodeClient nodeClient;
@@ -20,6 +18,7 @@ public class Agent implements Runnable, Serializable{
 		this.nodeClient = nodeClient;
 	}
 	
+	@SuppressWarnings("unused")
 	public void run(){
 		TreeMap<String, Integer> temp = nodeClient.getFileList();
 		
