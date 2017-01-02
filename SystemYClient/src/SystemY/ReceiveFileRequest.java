@@ -1,8 +1,9 @@
 package SystemY;
 
+import java.io.Serializable;
 import java.net.InetAddress;
 //class with the information needed to handle a file request
-public class ReceiveFileRequest {
+public class ReceiveFileRequest implements Serializable {
 	public String path;
 	public String name;
 	public int size;

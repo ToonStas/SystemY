@@ -468,21 +468,16 @@ public class NodeClient extends UnicastRemoteObject implements ClientToClientInt
 			e1.printStackTrace();
 		}
 		try {
-			ClientToClientInterface ctci = (ClientToClientInterface) Naming.lookup("//" + ip + ":1100/nodeClient");
+			ClientToClientInterface ctci = makeCTCI(previousNode);
 			ctci.sendReplicationToNewNode(ownHash);
 			
 		}catch (RemoteException e) {
 			System.err.println("NamingServer exception: " + e.getMessage());
 			failure(previousNode); //when we can't connect to the node we assume it failed.
 			e.printStackTrace();
-		}catch (MalformedURLException e) {
-			e.printStackTrace();
-		}catch (NotBoundException e) {
-			System.out.println("Registry not bound");
-			e.printStackTrace();
 		}
 	}
-	public void sendReplicationToNewNode(int hashNewNode){
+	public void sendReplicationToNewNode(int hashNewNode) throws RemoteException {
 		ArrayList<Bestand> temp = bestandenLijst.getFilesWithSmallerHash(hashNewNode);
 		int size = temp.size();
 		for (int i=0; size>i; i++){
