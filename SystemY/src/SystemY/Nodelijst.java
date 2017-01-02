@@ -6,14 +6,13 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.rmi.AlreadyBoundException;
+
 import java.rmi.Naming;
 import java.rmi.RemoteException;
-import java.rmi.registry.LocateRegistry;
-import java.rmi.registry.Registry;
+
 import java.util.Map;
 import java.util.TreeMap;
-import java.util.function.Predicate;
+
 
 import org.json.simple.*;
 import org.json.simple.parser.*;
@@ -83,10 +82,12 @@ public class Nodelijst {
 		writeJSON();
 	}
 
+	@SuppressWarnings("unchecked")
 	public void updateJSONadd(NodeNamingServer node)
 	{
 		listOfClients.add(node.Node);
 	}
+	@SuppressWarnings("unchecked")
 	public void updateJSONremove(int hash)
 	{
 		for (Map.Entry<Integer, NodeNamingServer> entry : listOfNodes.entrySet())
@@ -115,6 +116,7 @@ public class Nodelijst {
 	}
 
 	//het inlezen van de JSON file
+	@SuppressWarnings("unused")
 	public void readJSON() {
 		JSONParser parser = new JSONParser();
 		listOfNodes.clear();			// eerst de huidige lijsten leeg maken zodat de ingelezen informatie hier niet dubbel in gezet word

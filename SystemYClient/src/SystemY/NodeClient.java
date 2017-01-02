@@ -7,7 +7,6 @@ import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.net.InetAddress;
 import java.net.MalformedURLException;
-import java.net.UnknownHostException;
 import java.rmi.*;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
@@ -17,7 +16,6 @@ import java.util.HashSet;
 import java.util.Random;
 import java.util.TreeMap;
 import java.util.concurrent.TimeUnit;
-import javax.swing.text.html.HTMLDocument.Iterator;
 
 public class NodeClient extends UnicastRemoteObject implements ClientToClientInterface, NamingServerToClientInterface{
 	private static final long serialVersionUID = 1L;
@@ -36,6 +34,7 @@ public class NodeClient extends UnicastRemoteObject implements ClientToClientInt
 	HashSet<String> locked = new HashSet<>(); //contains all files that should be locked
 	HashSet<String> unLocked = new HashSet<>(); //contains all files that should be unlocked
 	private TCP tcp = new TCP(this);
+	@SuppressWarnings("unused")
 	private boolean first = true; //to know if the agent should be made
 	
 	public static void main(String args[]) {
@@ -47,6 +46,7 @@ public class NodeClient extends UnicastRemoteObject implements ClientToClientInt
 		}
 	}
 
+	@SuppressWarnings("unused")
 	public NodeClient() throws RemoteException{
 		String nameNode = readConsoleName();
 		multicastReceiverThreadClient = new Thread(

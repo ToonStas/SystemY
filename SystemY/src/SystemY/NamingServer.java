@@ -1,9 +1,5 @@
 package SystemY;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.TreeMap;
@@ -15,6 +11,7 @@ public class NamingServer extends UnicastRemoteObject implements ClientToNamingS
 	TreeMap<Integer, NodeNamingServer> listOfNodes = new TreeMap<>();
 
 	//Namingserver houdt enkel een lijst van nodes bij met hierin de naam, de hash en het ipadres. Niks meer!
+	@SuppressWarnings("unused")
 	public NamingServer() throws RemoteException{
 		super();
 		nodeLijst = new Nodelijst();
@@ -117,12 +114,14 @@ public class NamingServer extends UnicastRemoteObject implements ClientToNamingS
 		return hash;
 	}
 
+	@SuppressWarnings("unused")
 	public void activateAgent(int hashOfNode){
 		int next = getNext(hashOfNode);
 		//listOfNodes.get(next).getInterface().activateAgent();
 	}
 
 	//method to return the next node
+	@SuppressWarnings("unused")
 	private int getNext(int hashOfNode) {
 		int next;
 		if(listOfNodes.higherEntry(hashOfNode) == null){ //if there is no higher hash
@@ -132,6 +131,7 @@ public class NamingServer extends UnicastRemoteObject implements ClientToNamingS
 		}		
 	}
 	
+	@SuppressWarnings("unused")
 	private int getPrevious(int hashNode) {
 		int previous;
 		//give hash of the first node < given hash

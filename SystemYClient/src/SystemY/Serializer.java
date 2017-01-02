@@ -7,13 +7,12 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
-import testietestie.agent;
-
 public class Serializer {
 	File file = new File("C:/TEMP/Agentfile");
 	File file2 = new File("C:/TEMP/Agentfile/agent.ser");
 	private Thread agent;
 
+	@SuppressWarnings("unused")
 	public static void main(String[] args) {
 		Serializer s = new Serializer();
 	}
