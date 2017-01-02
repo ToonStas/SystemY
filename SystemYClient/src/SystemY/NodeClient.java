@@ -479,9 +479,11 @@ public class NodeClient extends UnicastRemoteObject implements ClientToClientInt
 	}
 	public void sendReplicationToNewNode(int hashNewNode) throws RemoteException {
 		ArrayList<Bestand> temp = bestandenLijst.getFilesWithSmallerHash(hashNewNode);
-		int size = temp.size();
-		for (int i=0; size>i; i++){
-			sendFile(temp.get(0),hashNewNode);
+		if (temp!=null){
+			int size = temp.size();
+			for (int i=0; size>i; i++){
+				sendFile(temp.get(0),hashNewNode);
+			}
 		}
 	}
 	

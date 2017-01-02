@@ -4,12 +4,12 @@ import java.io.File;
 import java.net.InetAddress;
 // class with the information needed for a file send request
 public class SendFileRequest {
-	public File file;
-	public InetAddress IP;
-	public int ID;
-	public int semTOC; //time out counter for busy semaphore
-	public int fileTOC; // time out counter for no such file in receive request buffer
-	public int hashReceiver;
+	private File file;
+	private InetAddress IP;
+	private int ID;
+	private int semTOC; //time out counter for busy semaphore
+	private int fileTOC; // time out counter for no such file in receive request buffer
+	private int hashReceiver;
 	
 	public SendFileRequest(File fileToSend, InetAddress IPDestination, int fileID, int hashReceiverNode){
 		file = fileToSend;
@@ -20,6 +20,29 @@ public class SendFileRequest {
 		hashReceiver = hashReceiverNode;
 	}
 	
+	public File getFile(){
+		return file;
+	}
+	
+	public InetAddress getIP(){
+		return IP;
+	}
+	
+	public int getID(){
+		return ID;
+	}
+	
+	public int getSemTOC(){
+		return semTOC;
+	}
+	
+	public int getFileTOC(){
+		return fileTOC;
+	}
+	
+	public int getHashReceiver(){
+		return hashReceiver;
+	}
 
 	public boolean checkSemTOC(){
 		semTOC--;

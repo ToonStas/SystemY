@@ -10,7 +10,7 @@ public class ReceiveBuffer {
 	}
 	
 	public void add(ReceiveFileRequest fileRequest){
-		map.put(fileRequest.ID, fileRequest);
+		map.put(fileRequest.getID(), fileRequest);
 	}
 	
 	public ReceiveFileRequest get(int fileID){

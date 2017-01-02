@@ -20,10 +20,10 @@ public class TCPSendThread extends Thread {
 	public TCPSendThread(int SocketPort,TCP thisTcp, NodeClient nodeClient, SendFileRequest sendRequest){
 		SOCKET_PORT = SocketPort;
 		request = sendRequest;
-		file = request.file;
-		IPDest = request.IP;
+		file = request.getFile();
+		IPDest = request.getIP();
 		tcp = thisTcp;
-		ID = request.ID;
+		ID = request.getID();
 	}
 	
 	public void run(){

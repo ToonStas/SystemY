@@ -22,10 +22,10 @@ public class TCPReceiveThread extends Thread {
 	public TCPReceiveThread(int Socket_Port,TCP thisTcp, NodeClient nodeClient, ReceiveFileRequest receiveRequest){
 		SOCKET_PORT = Socket_Port;
 		request = receiveRequest;
-		size = request.size;
-		path = request.path;
+		size = request.getSize();
+		path = request.getPath();
 		tcp = thisTcp;
-		ID = request.ID;
+		ID = request.getID();
 		node = nodeClient;
 	}
 	
@@ -58,13 +58,13 @@ public class TCPReceiveThread extends Thread {
 					File file = new File(path);
 					if (file.exists()){
 						System.out.println("File " +file.getName()+ " was succesfull received.");
-						node.getBestandenLijst().addBestand(request.name , path, request.hashOwner, request.hashReplication);
+						node.getBestandenLijst().addBestand(request.getName() , path, request.getHashOwner(), request.getHashReplication());
 					}
 					else {
 						System.out.println("Could not receive file.");
 					}
 					tcp.getSemReceive().release();
-					tcp.getReceiveBuffer().remove(request.ID);
+					tcp.getReceiveBuffer().remove(request.getID());
 
 				} finally {
 					if (fos != null)

@@ -18,7 +18,7 @@ public class SendBuffer {
 	
 	public boolean remove(int fileID){
 		boolean inList;
-		if (buffer.get(0).ID == fileID){
+		if (buffer.get(0).getID() == fileID){
 			buffer.remove(0); //if the file is in the list
 			inList = true;
 		}
@@ -44,7 +44,7 @@ public class SendBuffer {
 	public boolean contains(int fileID){
 		boolean check = false;
 		for (int i=0;i<buffer.size();i++){
-			if (buffer.get(i).ID == fileID){
+			if (buffer.get(i).getID() == fileID){
 				check = true;
 			}
 		}
