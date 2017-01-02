@@ -12,7 +12,6 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 
 
-@SuppressWarnings("serial")
 public class GUI extends JFrame implements ActionListener {
 	NodeClient nodeClient;
 	BestandenLijst bestandenLijst;

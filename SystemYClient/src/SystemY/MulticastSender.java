@@ -10,7 +10,6 @@ public class MulticastSender {
 	private int port = 8769; // Poort naar waar we verzenden
 	private String group = "224.1.1.1";
 	private MulticastSocket s;
-	@SuppressWarnings("unused")
 	private int ownHash;
 	String name;
 
@@ -37,7 +36,6 @@ public class MulticastSender {
 
 
 	//niet meer nodig we halen het ipadres nu zelf op
-	@SuppressWarnings("unused")
 	private String readConsoleIP() {
 		String IP = null;
 		BufferedReader br = null;
@@ -84,7 +82,6 @@ public class MulticastSender {
 		s.close();
 	}
 	
-	@SuppressWarnings("unused")
 	private int calculateHash(String nodeNaam){ //Deze functie berekent de hash van een String als parameter.
         int tempHash = nodeNaam.hashCode();
         if (tempHash < 0)
