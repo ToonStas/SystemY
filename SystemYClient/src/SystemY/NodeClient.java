@@ -166,9 +166,13 @@ public class NodeClient extends UnicastRemoteObject implements ClientToClientInt
 			reg = LocateRegistry.createRegistry(1100);
 			reg.bind(bindLocation, nodeClient);
 			System.out.println("ClientRegistery is ready at: " + bindLocation);
-
+			//System.out.println("load startup files.");
 			loadFilesStartUp();
-			getReplicationNewNode();
+			//System.out.println("trying replication.");
+			if (ni.amIFirst()!=1){
+				//System.out.println("starting replication.");
+				getReplicationNewNode();
+			}
 			
 		} catch (MalformedURLException | RemoteException | NotBoundException | UnsupportedEncodingException | InterruptedException e) {
 			e.printStackTrace();
@@ -445,20 +449,23 @@ public class NodeClient extends UnicastRemoteObject implements ClientToClientInt
 	// toevoegen van alle bestanden in lokale folder
 	private void loadFilesStartUp() throws NumberFormatException, RemoteException{
 		File dir = new File("C:/TEMP/");
-		for (File f : dir.listFiles()) {
-			int hashReplicationNode = ni.getHash(ni.askLocation(f.getName()));
-			if(hashReplicationNode == ownHash){
-				hashReplicationNode = getPreviousNode();
+		if (ni.amIFirst()!=1){
+			for (File f : dir.listFiles()) {
+				int hashReplicationNode = ni.getHash(ni.askLocation(f.getName()));
+				if(hashReplicationNode == ownHash){
+					hashReplicationNode = getPreviousNode();
+				}
+				String name = f.getName();
+				bestandenLijst.addBestand(name ,dir.toString(),ownHash,hashReplicationNode);
+				sendFile(bestandenLijst.getBestand(name),hashReplicationNode);
 			}
-			String name = f.getName();
-			bestandenLijst.addBestand(name ,dir.toString(),ownHash,hashReplicationNode);
-			sendFile(bestandenLijst.getBestand(name),hashReplicationNode);
 		}
 		bestandenLijst.listAllFiles();
 	}
 	
 	// replicatie van van bestanden met grotere hash dan deze node en met kleinere hash vorige node
 	public void getReplicationNewNode(){
+		
 		String ip="";
 		try {
 			ip = ni.getIP(previousNode);
@@ -476,6 +483,7 @@ public class NodeClient extends UnicastRemoteObject implements ClientToClientInt
 			failure(previousNode); //when we can't connect to the node we assume it failed.
 			e.printStackTrace();
 		}
+		
 	}
 	public void sendReplicationToNewNode(int hashNewNode) throws RemoteException {
 		ArrayList<Bestand> temp = bestandenLijst.getFilesWithSmallerHash(hashNewNode);
