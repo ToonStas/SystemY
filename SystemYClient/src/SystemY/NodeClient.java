@@ -493,11 +493,11 @@ public class NodeClient extends UnicastRemoteObject implements ClientToClientInt
 	public void shutDownReplication(){
 		int size = bestandenLijst.getSize();
 		for(int i=0; size>i; i++){
-			if(bestandenLijst.getIndex(i).getHashReplicationNode()== ownHash){
+			if(bestandenLijst.getIndex(i).getHashReplicationNode()== ownHash){ //als dit deze node replicatienode is
 				bestandenLijst.getIndex(i).setReplicationNode(previousNode);
 				sendFile(bestandenLijst.getIndex(i),previousNode);
 			}
-			else if (bestandenLijst.getIndex(i).getHashOwner()== ownHash){
+			else if (bestandenLijst.getIndex(i).getHashOwner()== ownHash){ //als deze node eigenaar is
 				
 			}
 		}
