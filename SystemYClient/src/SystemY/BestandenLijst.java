@@ -26,7 +26,7 @@ public class BestandenLijst {
 		}
 		else {	
 			lijst.add(new Bestand(naamBestand, pathBestand, hashOwner, hashReplicationNode));
-			System.out.println("bestand is toegevoegd");
+			System.out.println("bestand met naam "+naamBestand+" is toegevoegd");
 			return 1;
 		}
 	}
@@ -46,11 +46,11 @@ public class BestandenLijst {
 		}
 		
 		if (testBestand != null){
-			System.out.println("bestand succesvol opgehaald.");
+			//System.out.println("bestand succesvol opgehaald.");
 			return testBestand;
 		}
 		else {
-			System.out.println("Bestandsnaam komt niet voor in lijst.");
+			//System.out.println("Bestandsnaam komt niet voor in lijst.");
 			return testBestand;
 		}
 			
