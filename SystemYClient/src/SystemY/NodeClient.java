@@ -166,12 +166,13 @@ public class NodeClient extends UnicastRemoteObject implements ClientToClientInt
 			reg = LocateRegistry.createRegistry(1100);
 			reg.bind(bindLocation, nodeClient);
 			System.out.println("ClientRegistery is ready at: " + bindLocation);
-			//System.out.println("load startup files.");
+			System.out.println("load startup files.");
 			loadFilesStartUp();
-			//System.out.println("trying replication.");
+			System.out.println("startup ended, trying replication.");
 			if (ni.amIFirst()!=1){
-				//System.out.println("starting replication.");
+				System.out.println("replicationd started." );
 				getReplicationNewNode();
+				System.out.println("replication ended");
 			}
 			
 		} catch (MalformedURLException | RemoteException | NotBoundException | UnsupportedEncodingException | InterruptedException e) {
@@ -457,6 +458,7 @@ public class NodeClient extends UnicastRemoteObject implements ClientToClientInt
 				}
 				String name = f.getName();
 				bestandenLijst.addBestand(name ,dir.toString(),ownHash,hashReplicationNode);
+				System.out.println("At loadFilesStartUp: trying to send file "+bestandenLijst.getBestand(name).getNaam()+" to hash "+hashReplicationNode);
 				sendFile(bestandenLijst.getBestand(name),hashReplicationNode);
 			}
 		}

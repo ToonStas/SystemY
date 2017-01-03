@@ -153,7 +153,10 @@ public class Nodelijst {
     }
     
     public NodeNamingServer getNode(int hash){
-		NodeNamingServer node = listOfNodes.get(hash);
+    	NodeNamingServer node = null;
+    	if (listOfNodes.containsKey(hash)){
+    		node = listOfNodes.get(hash);
+    	} 
     	return node;
     }
     
