@@ -16,6 +16,7 @@ public class TCPSendThread extends Thread {
 	private TCP tcp;
 	private FileManager fileManager;
 	private int ID;
+	private String fileName;
 	
 	//Thread who sends a file
 	public TCPSendThread(int SocketPort,TCP thisTcp, NodeClient nodeClient, SendFileRequest sendRequest, FileManager theFileManager){
@@ -26,6 +27,7 @@ public class TCPSendThread extends Thread {
 		tcp = thisTcp;
 		ID = request.getID();
 		fileManager = theFileManager;
+		fileName = request.getFileName();
 	}
 	
 	public void run(){
@@ -49,6 +51,9 @@ public class TCPSendThread extends Thread {
 				os.write(mybytearray, 0, mybytearray.length);
 				os.flush();
 				System.out.println("File was send using TCP.");
+				if (request.isRemoveFiche()){
+					fileManager.removeFicheByName(fileName);
+				}
 				tcp.getSemSend().release();
 				tcp.getSendBuffer().remove(ID);
 			

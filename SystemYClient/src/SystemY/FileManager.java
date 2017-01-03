@@ -12,8 +12,9 @@ import java.util.Random;
 public class FileManager {
 	private FileListWithFile localFiles = null; //files which the node possesses locally
 	private FileListWithFile repFiles = null; //files which are replicated to this node or file which are download for any other reason
-	private ArrayList<BestandFiche> fileFiches = null; //fiches which hold the locations where a file is stored
-	private NodeClient node = null;					   //only files where this node is owner of, have a fileFiche
+	private ArrayList<BestandFiche> fileFiches = null; //fiches which hold the locations where a file is stored,, only files where this node is owner of, have a fileFiche
+	private NodeClient node = null;		
+	private TCP tcp;									
 	
 	
 	public FileManager(NodeClient nodeClient){
@@ -21,6 +22,7 @@ public class FileManager {
 		repFiles = new FileListWithFile();
 		fileFiches = new ArrayList<BestandFiche>();
 		node = nodeClient;
+		tcp = node.getTCP();
 		loadLocalFiles();
 		startUpReplication();
 		
@@ -70,8 +72,10 @@ public class FileManager {
 	
 	public int addRepFile(String nameFile, String nameNode, int hashNode, BestandFiche fileFiche){
 		Bestand newFile = new Bestand(nameFile,"C:/TEMP/RepFiles/",nameNode,hashNode);
-		if ()
 		if (repFiles.contains(newFile)){
+			if (fileFiche.isOwner()){
+				fileFiches.add(fileFiche);
+			}
 			return -1;
 		} else {
 			repFiles.add(newFile);
@@ -110,17 +114,38 @@ public class FileManager {
 	
 	public void replicateFile(Bestand fileToSend){
 		int ownerHash = node.getHashLocation(fileToSend.getName());
+		BestandFiche fiche = getFicheByName(fileToSend.getName());
+		fiche.addFileLocation(node.getName());
 		if (ownerHash == node.getOwnHash()){
 			node.refreshNeighbours();
 			int replicationHash = node.getPreviousNode();
-			sendFileWithoutOwnerShip(fileToSend,replicationHash);
+			fiche.setNotOwner(); //to indicate this file is not gonna be the owner file
+			tcp.sendFile(fileToSend, replicationHash, fiche);
 		} else {
-			sendFileWithOwnerShip(fileToSend,ownerHash);
+			tcp.sendFile(fileToSend, ownerHash, fiche);
 		}
 	}
 	
-	private void sendFileWithoutOwnerShip(Bestand fileToSend, int hashDest){
-		
+	private BestandFiche getFicheByName(String fileName){
+		BestandFiche fiche = null;
+		for (int i = 0; i<fileFiches.size();i++){
+			if (fileFiches.get(i).getFileName() == fileName){
+				fiche = fileFiches.get(i);
+			}
+		}
+		return fiche;
+	}
+	
+	public void removeFicheByName(String fileName){
+		int index = -1;
+		for (int i = 0; i<fileFiches.size();i++){
+			if (fileFiches.get(i).getFileName() == fileName){
+				index = i;
+			}
+		}
+		if (index != -1){
+			fileFiches.remove(index);
+		}
 	}
 	
 	private void sendFileWithOwnerShip(Bestand fileToSend, int hashDest){
@@ -128,38 +153,7 @@ public class FileManager {
 	}
 	
 	
-	/*public void sendFile(Bestand fileToSend, int receiverHash){
-		
-		String ip="";
-		Random ran = new Random();
-		int fileID = ran.nextInt(20000); //The file ID is used in the file receive and send requests, they are compared to know if they are transmitting the right file
-		try {
-			ip = ni.getIP(receiverHash);
-		} catch (RemoteException e1) {
-			System.out.println("Couldn't fetch IP from Namingserver");
-			failure(receiverHash); //when we can't fetch te ip it's likely the node shut down unexpectedly
-			e1.printStackTrace();
-		}
-		int fileSize = ((int) fileToSend.getFile().length())+1000;
-		
-		
-		try {
-			SendFileRequest sendRequest = new SendFileRequest(fileToSend.getFile(),InetAddress.getByName(ip),fileID,receiverHash);
-			ReceiveFileRequest receiveRequest = new ReceiveFileRequest(InetAddress.getLocalHost(),fileToSend.getName(), fileToSend.getFullPath(), fileSize, fileID, fileToSend.getHashOwner(), fileToSend.getHashReplicationNode());
-			ClientToClientInterface ctci = makeCTCI(receiverHash);
-			ctci.setReceiveRequest(receiveRequest);
-			ctci = null;
-			tcp.addSendRequest(sendRequest);
-			
-		} catch (RemoteException e) {
-			System.err.println("NamingServer exception: " + e.getMessage());
-			failure(receiverHash); //when we can't connect to the node we assume it failed.
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}*/
+	
 	
 	/*public ArrayList<Bestand> getFilesWithSmallerHash(int hashNewNode){
 		int size = lijst.size();

@@ -6,18 +6,30 @@ import java.net.InetAddress;
 public class SendFileRequest {
 	private File file;
 	private InetAddress IP;
+	private String fileName;
 	private int ID;
 	private int semTOC; //time out counter for busy semaphore
 	private int fileTOC; // time out counter for no such file in receive request buffer
 	private int hashReceiver;
+	private boolean removeFiche;
 	
-	public SendFileRequest(File fileToSend, InetAddress IPDestination, int fileID, int hashReceiverNode){
+	public SendFileRequest(File fileToSend, InetAddress IPDestination, int fileID, int hashReceiverNode, String fileName, boolean removeFiche){
 		file = fileToSend;
 		IP = IPDestination;
 		ID = fileID;
 		semTOC = 50;
 		fileTOC = 50;
 		hashReceiver = hashReceiverNode;
+		this.fileName = fileName;
+		this.removeFiche = removeFiche;
+	}
+	
+	public String getFileName(){
+		return fileName;
+	}
+	
+	public boolean isRemoveFiche(){
+		return removeFiche;
 	}
 	
 	public File getFile(){

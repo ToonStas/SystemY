@@ -605,4 +605,8 @@ public class NodeClient extends UnicastRemoteObject implements ClientToClientInt
 		return name;
 	}
 	
+	public TCP getTCP(){
+		return tcp;
+	}
+	
 }
