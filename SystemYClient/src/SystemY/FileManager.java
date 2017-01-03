@@ -1,8 +1,12 @@
 package SystemY;
 
 import java.io.File;
+import java.io.IOException;
+import java.net.InetAddress;
+import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.Random;
 
 //klasse voor een lijst van bestanden van een node in te bewaren
 public class FileManager {
@@ -30,9 +34,6 @@ public class FileManager {
 		
 	}
 
-	private void replicateFile(Bestand bestand) {
-				
-	}
 
 	//voegt alle locale bestanden toe bij het opstarten van de node en maakt hun fileFiches aan
 	private void loadLocalFiles(){  
@@ -54,7 +55,7 @@ public class FileManager {
 	
 	//methode voor het toevoegen van een bestand aan de lijst
 	public int addLocalFile(String nameFile){
-		Bestand newFile = new Bestand(nameFile,"C:/TEMP/LocalFiles/",node.getName());
+		Bestand newFile = new Bestand(nameFile,"C:/TEMP/LocalFiles/",node.getName(),node.getOwnHash());
 		if (localFiles.contains(newFile)){
 			return -1;
 		} else {
@@ -67,8 +68,9 @@ public class FileManager {
 		}
 	}
 	
-	public int addRepFile(String nameFile){
-		Bestand newFile = new Bestand(nameFile,"C:/RepFiles/",node.getName());
+	public int addRepFile(String nameFile, String nameNode, int hashNode, BestandFiche fileFiche){
+		Bestand newFile = new Bestand(nameFile,"C:/TEMP/RepFiles/",nameNode,hashNode);
+		if ()
 		if (repFiles.contains(newFile)){
 			return -1;
 		} else {
@@ -106,8 +108,59 @@ public class FileManager {
 		
 	}
 	
+	public void replicateFile(Bestand fileToSend){
+		int ownerHash = node.getHashLocation(fileToSend.getName());
+		if (ownerHash == node.getOwnHash()){
+			node.refreshNeighbours();
+			int replicationHash = node.getPreviousNode();
+			sendFileWithoutOwnerShip(fileToSend,replicationHash);
+		} else {
+			sendFileWithOwnerShip(fileToSend,ownerHash);
+		}
+	}
 	
-
+	private void sendFileWithoutOwnerShip(Bestand fileToSend, int hashDest){
+		
+	}
+	
+	private void sendFileWithOwnerShip(Bestand fileToSend, int hashDest){
+		
+	}
+	
+	
+	/*public void sendFile(Bestand fileToSend, int receiverHash){
+		
+		String ip="";
+		Random ran = new Random();
+		int fileID = ran.nextInt(20000); //The file ID is used in the file receive and send requests, they are compared to know if they are transmitting the right file
+		try {
+			ip = ni.getIP(receiverHash);
+		} catch (RemoteException e1) {
+			System.out.println("Couldn't fetch IP from Namingserver");
+			failure(receiverHash); //when we can't fetch te ip it's likely the node shut down unexpectedly
+			e1.printStackTrace();
+		}
+		int fileSize = ((int) fileToSend.getFile().length())+1000;
+		
+		
+		try {
+			SendFileRequest sendRequest = new SendFileRequest(fileToSend.getFile(),InetAddress.getByName(ip),fileID,receiverHash);
+			ReceiveFileRequest receiveRequest = new ReceiveFileRequest(InetAddress.getLocalHost(),fileToSend.getName(), fileToSend.getFullPath(), fileSize, fileID, fileToSend.getHashOwner(), fileToSend.getHashReplicationNode());
+			ClientToClientInterface ctci = makeCTCI(receiverHash);
+			ctci.setReceiveRequest(receiveRequest);
+			ctci = null;
+			tcp.addSendRequest(sendRequest);
+			
+		} catch (RemoteException e) {
+			System.err.println("NamingServer exception: " + e.getMessage());
+			failure(receiverHash); //when we can't connect to the node we assume it failed.
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}*/
+	
 	/*public ArrayList<Bestand> getFilesWithSmallerHash(int hashNewNode){
 		int size = lijst.size();
 		ArrayList<Bestand> temp = new ArrayList<>();

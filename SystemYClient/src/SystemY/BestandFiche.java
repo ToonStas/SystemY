@@ -6,6 +6,7 @@ public class BestandFiche {
 	private String name; //name of the file
 	private ArrayList<String> fileLocations; 
 	private String localOwner; //name of the local owner of the file
+	private boolean isOwner = true;
 	
 	public BestandFiche(String fileName, String localOwnerFile){
 		name = fileName;
@@ -42,6 +43,14 @@ public class BestandFiche {
 	
 	public ArrayList<String> getfileLocations(){
 		return fileLocations;
+	}
+	
+	public void setNotOwner(){
+		isOwner = false;
+	}
+	
+	public boolean isOwner(){
+		return isOwner;
 	}
 	
 

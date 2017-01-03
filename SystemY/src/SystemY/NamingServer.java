@@ -59,6 +59,19 @@ public class NamingServer extends UnicastRemoteObject implements ClientToNamingS
 		return location;
 	}
 	
+	public int askHashLocation(String fileName){
+		int hashNode = -1;
+		int hashFile = nodeLijst.calculateHash(fileName);
+		
+		//give ip of the first node <= hash of the filename
+		if(listOfNodes.floorEntry(hashFile)==null){ //if there is no lowest node, return the highest node
+			hashNode = listOfNodes.lastEntry().getValue().getHash();
+		}else{
+			hashNode = listOfNodes.floorEntry(hashFile).getValue().getHash(); 
+		}
+		return hashNode;
+	}
+	
 	// methode voor na te gaan of je de eerste node bent van het netwerk
 	public int amIFirst(){
 		//if node is first
@@ -109,6 +122,7 @@ public class NamingServer extends UnicastRemoteObject implements ClientToNamingS
 		return ip;	
 	}
 	
+	//gets the nodes hash using his name
 	public int getHashByName(String nameNode){
 		System.out.println("An ip was requested for this name: "+nameNode);
 		int hash = -1;

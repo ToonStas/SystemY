@@ -1,6 +1,9 @@
 package SystemY;
 
 import java.io.IOException;
+import java.net.InetAddress;
+import java.rmi.RemoteException;
+import java.util.Random;
 import java.util.concurrent.Semaphore;
 
 // this class handles the tcp sends/receives
@@ -55,13 +58,13 @@ public class TCP {
 	}
 	
 	public Thread StartReceiveFile(ReceiveFileRequest request){
-		receiveThread = new Thread (new TCPReceiveThread(SOCKET_PORT, this, node, request));
+		receiveThread = new Thread (new TCPReceiveThread(SOCKET_PORT, this, node, request, node.getFileManager()));
 		receiveThread.start();
 		return receiveThread;
 	}
 	
 	public Thread StartSendFile(SendFileRequest request){
-		sendThread = new Thread (new TCPSendThread(SOCKET_PORT, this, node, request));
+		sendThread = new Thread (new TCPSendThread(SOCKET_PORT, this, node, request, node.getFileManager()));
 		sendThread.start();
 		return sendThread;
 	}
@@ -77,5 +80,40 @@ public class TCP {
 		sendBuffer.add(request);
 		System.out.println("A send request was set: "+request.getFile().getName()+" to IP address: "+request.getIP());
 	}
+	
+	public void sendFile(Bestand fileToSend, int receiverHash, BestandFiche fileFiche){
+		Random ran = new Random();
+		int fileID = ran.nextInt(20000);//The file ID is used in the file receive and send requests, they are compared to know if they are transmitting the right file
+		String ip = "";
+		try {
+			ip = node.getNI().getIP(receiverHash);
+		} catch (RemoteException e1) {
+			System.out.println("Couldn't fetch IP from Namingserver");
+			node.failure(receiverHash); //when we can't fetch te ip it's likely the node shut down unexpectedly
+			e1.printStackTrace();
+		}
+		int fileSize = ((int) fileToSend.getFile().length())+1000;
+		
+		
+		try {
+			SendFileRequest sendRequest = new SendFileRequest(fileToSend.getFile(),InetAddress.getByName(ip),fileID,receiverHash);
+			ReceiveFileRequest receiveRequest = new ReceiveFileRequest(InetAddress.getLocalHost(),fileToSend.getName(),fileSize,fileID, fileToSend.getHashLocalOwner(), fileToSend.getNameLocalOwner(), fileFiche);
+
+			ClientToClientInterface ctci = node.makeCTCI(receiverHash);
+			ctci.setReceiveRequest(receiveRequest);
+			ctci = null;
+			addSendRequest(sendRequest);
+			
+		} catch (RemoteException e) {
+			System.err.println("NamingServer exception: " + e.getMessage());
+			node.failure(receiverHash); //when we can't connect to the node we assume it failed.
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	
 
 }

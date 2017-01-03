@@ -14,16 +14,18 @@ public class TCPSendThread extends Thread {
 	private SendFileRequest request;
 	private InetAddress IPDest;
 	private TCP tcp;
+	private FileManager fileManager;
 	private int ID;
 	
 	//Thread who sends a file
-	public TCPSendThread(int SocketPort,TCP thisTcp, NodeClient nodeClient, SendFileRequest sendRequest){
+	public TCPSendThread(int SocketPort,TCP thisTcp, NodeClient nodeClient, SendFileRequest sendRequest, FileManager theFileManager){
 		SOCKET_PORT = SocketPort;
 		request = sendRequest;
 		file = request.getFile();
 		IPDest = request.getIP();
 		tcp = thisTcp;
 		ID = request.getID();
+		fileManager = theFileManager;
 	}
 	
 	public void run(){

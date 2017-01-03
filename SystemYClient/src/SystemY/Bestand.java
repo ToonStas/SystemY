@@ -8,14 +8,16 @@ public class Bestand {
 	private String path;
 	private File bestand;
 	private int hash;
-	private String localOwner;
+	private int hashLocalOwner;
+	private String nameLocalOwner;
 	
 	
-	public Bestand(String naamBestand, String pathBestand, String nameLocalOwner){
+	public Bestand(String naamBestand, String pathBestand, String nameLocalOwner, int hashLocalOwner){
 		name = naamBestand;
 		path = pathBestand;
 		bestand = new File(path+"/" + name);
-		localOwner = nameLocalOwner;
+		this.nameLocalOwner = nameLocalOwner;
+		this.hashLocalOwner = hashLocalOwner;
 		calculateHash();
 
 	}
@@ -34,8 +36,12 @@ public class Bestand {
 		return hash;
 	}
 	
-	public String getLocalOwner(){
-		return localOwner;
+	public String getNameLocalOwner(){
+		return nameLocalOwner;
+	}
+	
+	public int getHashLocalOwner(){
+		return hashLocalOwner;
 	}
 	
 	public String getName(){

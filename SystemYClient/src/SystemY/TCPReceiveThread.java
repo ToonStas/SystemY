@@ -12,21 +12,21 @@ public class TCPReceiveThread extends Thread {
 	
 	private static int SOCKET_PORT;
 	private int size;
-	private String path;
 	private TCP tcp;
 	private int ID;
 	private NodeClient node;
 	private ReceiveFileRequest request;
+	private FileManager fileManager;
 	
 	//Thread who receives a file
-	public TCPReceiveThread(int Socket_Port,TCP thisTcp, NodeClient nodeClient, ReceiveFileRequest receiveRequest){
+	public TCPReceiveThread(int Socket_Port,TCP thisTcp, NodeClient nodeClient, ReceiveFileRequest receiveRequest, FileManager theFileManager){
 		SOCKET_PORT = Socket_Port;
 		request = receiveRequest;
 		size = request.getSize();
-		path = request.getPath();
 		tcp = thisTcp;
 		ID = request.getID();
 		node = nodeClient;
+		fileManager = theFileManager;
 	}
 	
 	public void run(){
@@ -44,7 +44,7 @@ public class TCPReceiveThread extends Thread {
 					System.out.println("Succesful TCP connection with " + sock.getInetAddress().toString() + ", ready for receiving file.");
 					byte[] byteArray = new byte[size];
 					InputStream in = sock.getInputStream();
-					fos = new FileOutputStream(path);
+					fos = new FileOutputStream("C:/TEMP/RepFiles/"+request.getName());
 					bos = new BufferedOutputStream(fos);
 					bytesRead = in.read(byteArray, 0, byteArray.length);
 					current = bytesRead;
@@ -55,10 +55,11 @@ public class TCPReceiveThread extends Thread {
 					} while (bytesRead > -1);
 					bos.write(byteArray, 0, current);
 					bos.flush();
-					File file = new File(path);
+					File file = new File("C:/TEMP/RepFiles/"+request.getName());
 					if (file.exists()){
 						System.out.println("File " +file.getName()+ " was succesfull received.");
-						node.getBestandenLijst().addBestand(request.getName() , path, request.getHashOwner(), request.getHashReplication());
+						fileManager.addRepFile(request.getName(), request.getNameOwnerNode(), request.getHashOwnerNode(), request.getFiche());
+						
 					}
 					else {
 						System.out.println("Could not receive file.");

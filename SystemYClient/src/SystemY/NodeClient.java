@@ -192,6 +192,17 @@ public class NodeClient extends UnicastRemoteObject implements ClientToClientInt
 		return location;
 	}
 	
+	public int getHashLocation(String fileName) {
+		int hash = -1;
+		try {
+			hash = ni.askHashLocation(fileName);
+		} catch (RemoteException e) {
+			System.err.println("NodeClient couldn't fetch filelocation: " + e.getMessage());
+			e.printStackTrace();
+		}
+		return hash;
+	}
+	
 	//calculate hash for a certain name
 	public int calculateHash(String nodeNaam) {
 		int tempHash = nodeNaam.hashCode();
@@ -582,9 +593,13 @@ public class NodeClient extends UnicastRemoteObject implements ClientToClientInt
 	}
 		
 				
+	public FileManager getFileManager(){
+		return fileManager;
+	}
 	
-	
-	
+	public ClientToNamingServerInterface getNI(){
+		return ni;
+	}
 
 	public String getName(){
 		return name;

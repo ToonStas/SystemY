@@ -4,27 +4,23 @@ import java.io.Serializable;
 import java.net.InetAddress;
 //class with the information needed to handle a file request
 public class ReceiveFileRequest implements Serializable {
-	private String path;
 	private String name;
 	private int size;
 	private int ID;
 	private InetAddress IP;
-	private int hashOwner;
-	private int hashReplication;
-	public ReceiveFileRequest(InetAddress IPSender,String fileName, String filePath, int fileSize, int fileID, int hashOwnerNode, int hashReplicationNode){
-		path = filePath;
+	private int hashOwnerNode;
+	private String nameOwnerNode;
+	private BestandFiche fiche;
+	public ReceiveFileRequest(InetAddress IPSender,String fileName, int fileSize, int fileID, int hashOwnerNode, String nameOwnerNode, BestandFiche fileFiche){
 		size = fileSize;
 		ID = fileID;
 		IP = IPSender;
 		name = fileName;
-		hashOwner = hashOwnerNode;
-		hashReplication = hashReplicationNode;
-		
+		this.hashOwnerNode = hashOwnerNode;
+		this.nameOwnerNode = nameOwnerNode;
+		fiche = fileFiche;
 	}
 	
-	public String getPath(){
-		return path;
-	}
 	
 	public String getName(){
 		return name;
@@ -42,12 +38,15 @@ public class ReceiveFileRequest implements Serializable {
 		return IP;
 	}
 	
-	public int getHashOwner(){
-		return hashOwner;
+	public int getHashOwnerNode(){
+		return hashOwnerNode;
 	}
 	
-	public int getHashReplication(){
-		return hashReplication;
+	public String getNameOwnerNode(){
+		return nameOwnerNode;
 	}
 
+	public BestandFiche getFiche(){
+		return fiche;
+	}
 }
