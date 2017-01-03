@@ -1,18 +1,15 @@
 package SystemY;
 
 import java.io.File;
-import java.io.IOException;
-import java.net.InetAddress;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.Random;
 
-//klasse voor een lijst van bestanden van een node in te bewaren
+//Class which manages all files and the lists it has
 public class FileManager {
 	private FileListWithFile localFiles = null; //files which the node possesses locally
 	private FileListWithFile repFiles = null; //files which are replicated to this node or file which are download for any other reason
 	private ArrayList<BestandFiche> fileFiches = null; //fiches which hold the locations where a file is stored,, only files where this node is owner of, have a fileFiche
+	private ArrayList<String> filesToReplicate = null; //list of files which are not yet replicated because this node was the first one
 	private NodeClient node = null;		
 	private TCP tcp;									
 	
@@ -23,22 +20,18 @@ public class FileManager {
 		fileFiches = new ArrayList<BestandFiche>();
 		node = nodeClient;
 		tcp = node.getTCP();
-		loadLocalFiles();
-		startUpReplication();
+		filesToReplicate = new ArrayList<String>();
+		
+		
+		
 		
 	}
 	
-	private void startUpReplication() {
-		ArrayList<Bestand> list = localFiles.getList();
-		for (int i=0; i<list.size();i++){
-			replicateFile(list.get(i));
-		}
-		
-	}
+	
 
 
 	//voegt alle locale bestanden toe bij het opstarten van de node en maakt hun fileFiches aan
-	private void loadLocalFiles(){  
+	public void loadLocalFiles(){  
 		File dir = new File("C:/TEMP/LocalFiles/");
 		for (File f : dir.listFiles()) {
 			String name = f.getName();
@@ -55,7 +48,7 @@ public class FileManager {
 		repFiles.printFiles();
 	}
 	
-	//methode voor het toevoegen van een bestand aan de lijst
+	//adds a file correctly to the list, they are replicated afterward
 	public int addLocalFile(String nameFile){
 		Bestand newFile = new Bestand(nameFile,"C:/TEMP/LocalFiles/",node.getName(),node.getOwnHash());
 		if (localFiles.contains(newFile)){
@@ -63,17 +56,40 @@ public class FileManager {
 		} else {
 			localFiles.add(newFile);
 			fileFiches.add(new BestandFiche(newFile.getName(),node.getName()));
-			String ip = node.getFileLocation(newFile.getName());
-			
-			
+			ClientToNamingServerInterface ni = node.getNI();
+			try {
+				if(ni.amIFirst()!=1){
+					replicateFile(newFile);
+				}
+				else{
+					filesToReplicate.add(newFile.getName());
+				}
+			} catch (RemoteException e) {
+				System.out.println("Couldn't reach namingserver via RMI.");
+				e.printStackTrace();
+			}
 			return 1;
 		}
+	}
+	
+	//method which checks if all files are replicated correctly, invoked when a new node enters the network
+	public void checkReplication(){
+		//checking if this node still has files that need to be replicated
+		//if the node was the first node, it may not have replicated it files when it was the only node
+		while (filesToReplicate.isEmpty()!=true){
+			Bestand file = getFileByName(filesToReplicate.get(0));
+			replicateFile(file);
+			filesToReplicate.remove(0);
+		}
+		
+		//checking if the replicated files on this node are replicated to the right node
+		
 	}
 	
 	public int addRepFile(String nameFile, String nameNode, int hashNode, BestandFiche fileFiche){
 		Bestand newFile = new Bestand(nameFile,"C:/TEMP/RepFiles/",nameNode,hashNode);
 		if (repFiles.contains(newFile)){
-			if (fileFiche.isOwner()){
+			if (fileFiche.isOwner()){ //if the node is gonna be the new owner, the fileFiche should be added
 				fileFiches.add(fileFiche);
 			}
 			return -1;
@@ -86,7 +102,7 @@ public class FileManager {
 	
 	
 	//D.m.v. bestandsnaam bestand opvragen als deze voorkomt.
-	public Bestand getBestand(String fileName){
+	public Bestand getFileByName(String fileName){
 		Bestand testFile = localFiles.getFile(fileName);
 		if (testFile == null){
 			testFile = repFiles.getFile(fileName);
@@ -148,9 +164,7 @@ public class FileManager {
 		}
 	}
 	
-	private void sendFileWithOwnerShip(Bestand fileToSend, int hashDest){
-		
-	}
+	
 	
 	
 	

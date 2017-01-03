@@ -167,7 +167,8 @@ public class NodeClient extends UnicastRemoteObject implements ClientToClientInt
 			tcp = new TCP(this);
 			//start with loading files and executing replication
 			fileManager = new FileManager(this); //this automatically loads the local files and start the replication
-			
+			fileManager.loadLocalFiles();
+			checkReplicationPreviousNode();
 			
 			
 		} catch (MalformedURLException | RemoteException | NotBoundException | UnsupportedEncodingException | InterruptedException e) {
@@ -392,39 +393,6 @@ public class NodeClient extends UnicastRemoteObject implements ClientToClientInt
 	
 	public void setLocked(HashSet<String> locked2){this.locked = locked2;}
 	
-	//this method sets a file send request in this node and a file receive request in the receiving node, the TCP class handles the reqeusts
-	public void sendFile(Bestand fileToSend, int receiverHash){
-		
-		String ip="";
-		Random ran = new Random();
-		int fileID = ran.nextInt(20000); //The file ID is used in the file receive and send requests, they are compared to know if they are transmitting the right file
-		try {
-			ip = ni.getIP(receiverHash);
-		} catch (RemoteException e1) {
-			System.out.println("Couldn't fetch IP from Namingserver");
-			failure(receiverHash); //when we can't fetch te ip it's likely the node shut down unexpectedly
-			e1.printStackTrace();
-		}
-		int fileSize = ((int) fileToSend.getFile().length())+1000;
-		
-		
-		try {
-			SendFileRequest sendRequest = new SendFileRequest(fileToSend.getFile(),InetAddress.getByName(ip),fileID,receiverHash);
-			ReceiveFileRequest receiveRequest = new ReceiveFileRequest(InetAddress.getLocalHost(),fileToSend.getName(), fileToSend.getFullPath(), fileSize, fileID, fileToSend.getHashOwner(), fileToSend.getHashReplicationNode());
-			ClientToClientInterface ctci = makeCTCI(receiverHash);
-			ctci.setReceiveRequest(receiveRequest);
-			ctci = null;
-			tcp.addSendRequest(sendRequest);
-			
-		} catch (RemoteException e) {
-			System.err.println("NamingServer exception: " + e.getMessage());
-			failure(receiverHash); //when we can't connect to the node we assume it failed.
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
 	
 	//sets a receive request in the tcp receive file buffer (used by the file sender via RMI)
 	public void setReceiveRequest(ReceiveFileRequest request) throws RemoteException{
@@ -441,24 +409,8 @@ public class NodeClient extends UnicastRemoteObject implements ClientToClientInt
 		return tcp.checkReceiveAvailable(fileID);
 	}
 	
-	
-	
-	// toevoegen van alle bestanden in lokale folder
-	private void loadFilesStartUp() throws NumberFormatException, RemoteException{
-		File dir = new File("C:/TEMP/");
-		if (ni.amIFirst()!=1){
-			for (File f : dir.listFiles()) {
-				int hashReplicationNode = ni.getHash(ni.askLocation(f.getName()));
-				if(hashReplicationNode == ownHash){
-					hashReplicationNode = getPreviousNode();
-				}
-				String name = f.getName();
-				fileManager.addBestand(name ,dir.toString(),ownHash,hashReplicationNode);
-				System.out.println("At loadFilesStartUp: trying to send file "+fileManager.getBestand(name).getName()+" to hash "+hashReplicationNode);
-				sendFile(fileManager.getBestand(name),hashReplicationNode);
-			}
-		}
-		fileManager.listAllFiles();
+	public void checkReplicationPreviousNode(){
+		
 	}
 	
 	// replicatie van van bestanden met grotere hash dan deze node en met kleinere hash vorige node
