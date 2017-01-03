@@ -75,6 +75,7 @@ public class TCP {
 	//Adds the request to the buffer
 	public void addSendRequest(SendFileRequest request){
 		sendBuffer.add(request);
+		System.out.println("A send request was set: "+request.getFile().getName()+" to IP address: "+request.getIP());
 	}
 
 }

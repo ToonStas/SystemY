@@ -98,6 +98,7 @@ public class NamingServer extends UnicastRemoteObject implements ClientToNamingS
 		}catch(NullPointerException e){
 			System.out.println("An ip was requested for a node that doesn't exist. ");
 			System.out.println("The queeried hash was: " + hashNode);
+			System.out.println("Only the following nodes exist: "+listOfNodes.toString());
 			e.printStackTrace();
 		}
 		
