@@ -14,7 +14,7 @@ import javax.swing.JTextField;
 
 public class GUI extends JFrame implements ActionListener {
 	NodeClient nodeClient;
-	BestandenLijst bestandenLijst;
+	FileManager fileManager;
 	int length;
 	JButton logout = new JButton("LOG OUT");
 	JButton openbuttons[] = new JButton[length];
@@ -23,8 +23,8 @@ public class GUI extends JFrame implements ActionListener {
 	
 	public GUI(NodeClient nodeClient){
 		this.nodeClient = nodeClient;
-		bestandenLijst = nodeClient.getBestandenLijst();
-		length = bestandenLijst.getSize();
+		fileManager = nodeClient.getBestandenLijst();
+		length = fileManager.getSize();
 		
 		for(int i=0; i< length;i++){
 			JButton btn = new JButton("OPEN");
@@ -50,10 +50,10 @@ public class GUI extends JFrame implements ActionListener {
 		{
 			JPanel p = new JPanel();
 			p.setLayout(new GridLayout(1, 4));
-			p.add(new JTextField(bestand.getNaam()));	//get filename
+			p.add(new JTextField(bestand.getName()));	//get filename
 			p.add(openbuttons[i]);
 			p.add(deletebuttons[i]);
-			//if(checkOwned(Bestand.getNaam(), BestandenLijst.BestandenLijst())){								//Check if file is local file
+			//if(checkOwned(Bestand.getNaam(), FileManager.BestandenLijst())){								//Check if file is local file
 			//	p.add(new JButton("LOCAL_DELETE"));
 			// }
 			frame.add(p);
@@ -75,8 +75,8 @@ public class GUI extends JFrame implements ActionListener {
 			bestand.getFile();
 		}
 		if(b == deletebuttons[i]){
-			String name = bestand.getNaam();
-			bestandenLijst.verwijderBestandMetNaam(name);
+			String name = bestand.getName();
+			fileManager.verwijderBestandMetNaam(name);
 		}
 		
 	}

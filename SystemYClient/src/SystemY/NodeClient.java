@@ -21,21 +21,22 @@ import javax.swing.text.html.HTMLDocument.Iterator;
 
 public class NodeClient extends UnicastRemoteObject implements ClientToClientInterface, NamingServerToClientInterface{
 	private static final long serialVersionUID = 1L;
-	private TreeMap<String, Integer> fileList = new TreeMap<>(); // filename, hash
-	private BestandenLijst bestandenLijst = new BestandenLijst();
+	//private TreeMap<String, Integer> fileList = new TreeMap<>(); // filename, hash
+	private FileManager fileManager;
 	private int nextNode; //hash for next node
 	private int previousNode; //hash for previous node
 	private int ownHash; //hash of this node
 	private Thread multicastReceiverThreadClient; //threaed to receive multicasts by other nodes
 	ClientToNamingServerInterface ni; 
 	String serverIP;
+	private String name;
 	volatile boolean goAhead = false; //the thread should wait untill the interface has been made before communicating via it
 	Thread agent; //our agent
-	TreeMap<String, Boolean> allFiles = new TreeMap<>(); //name, isLocked; has all files in the system provided by the agent
-	HashSet<String> owned = new HashSet<>(); //contains all files this node is the owner of
-	HashSet<String> locked = new HashSet<>(); //contains all files that should be locked
-	HashSet<String> unLocked = new HashSet<>(); //contains all files that should be unlocked
-	private TCP tcp = new TCP(this);
+	//TreeMap<String, Boolean> allFiles = new TreeMap<>(); //name, isLocked; has all files in the system provided by the agent
+	//HashSet<String> owned = new HashSet<>(); //contains all files this node is the owner of
+	//HashSet<String> locked = new HashSet<>(); //contains all files that should be locked
+	//HashSet<String> unLocked = new HashSet<>(); //contains all files that should be unlocked
+	private TCP tcp;
 	private boolean first = true; //to know if the agent should be made
 	
 	public static void main(String args[]) {
@@ -48,13 +49,13 @@ public class NodeClient extends UnicastRemoteObject implements ClientToClientInt
 	}
 
 	public NodeClient() throws RemoteException{
-		String nameNode = readConsoleName();
+		name = readConsoleName();
 		multicastReceiverThreadClient = new Thread(
 				new MulticastReceiverThreadClient(ownHash, this));
 
 		GUI gui = new GUI(this);
 
-		startUp(this, nameNode);
+		startUp();
 
 		System.out.println("This nodes hash is: "+ownHash);
 		
@@ -77,7 +78,6 @@ public class NodeClient extends UnicastRemoteObject implements ClientToClientInt
 		System.out.println("[3] Print neighbours");
 		System.out.println("[4] Ask Location");
 		System.out.println("[5] Surprise");
-		System.out.println("[6] Load fole");
 		System.out.println("[9] Exit");
 
 		int input = Integer.parseInt(readConsole());
@@ -85,8 +85,8 @@ public class NodeClient extends UnicastRemoteObject implements ClientToClientInt
 
 		switch (input) {
 		case 1:
-			checkLocalFiles(new File("C:/TEMP"));
-			System.out.println("Local Files are: " + fileList);
+			System.out.println("Printing files: ");
+			fileManager.printAllFiles();
 			break;
 
 		case 2:
@@ -118,10 +118,6 @@ public class NodeClient extends UnicastRemoteObject implements ClientToClientInt
 			System.out.println("------------");
 			break;
 		
-		case 6:
-			System.out.println("FileName: ");
-			String fileName = System.console().readLine();
-			loadFile(fileName);
 			
 		case 666:
 			System.out.println("------------------------");
@@ -135,15 +131,15 @@ public class NodeClient extends UnicastRemoteObject implements ClientToClientInt
 		}
 	}
 	
-	private void startUp(NodeClient nodeClient, String nameNode) {
+	private void startUp() {
 		try {
 			//make registry to establish communication of server to client
-			String bindLocation = "Client"+nameNode;
+			String bindLocation = "Client"+name;
 			Registry reg = LocateRegistry.createRegistry(1200);
-			reg.bind(bindLocation, nodeClient);
+			reg.bind(bindLocation, this);
 			System.out.println("Registry is ready at: " + bindLocation);
 
-			new MulticastSender(ownHash, nameNode);
+			new MulticastSender(ownHash, name);
 			multicastReceiverThreadClient.start();
 			while(serverIP == null){
 				//wait until we know the servers ip
@@ -153,7 +149,7 @@ public class NodeClient extends UnicastRemoteObject implements ClientToClientInt
 			//make interface for communication with namingserver
 			String name = "//" + serverIP + ":1099/NamingServer";
 			ni = (ClientToNamingServerInterface) Naming.lookup(name);
-			ownHash = calculateHash(nameNode);
+			ownHash = calculateHash(name);
 			
 			//get our neighbours
 			refreshNeighbours();
@@ -164,16 +160,15 @@ public class NodeClient extends UnicastRemoteObject implements ClientToClientInt
 			// make registry to establish RMI between nodes
 			bindLocation = "nodeClient";
 			reg = LocateRegistry.createRegistry(1100);
-			reg.bind(bindLocation, nodeClient);
+			reg.bind(bindLocation, this);
 			System.out.println("ClientRegistery is ready at: " + bindLocation);
-			System.out.println("load startup files.");
-			loadFilesStartUp();
-			System.out.println("startup ended, trying replication.");
-			if (ni.amIFirst()!=1){
-				System.out.println("replicationd started." );
-				getReplicationNewNode();
-				System.out.println("replication ended");
-			}
+			
+			//starting the tcp socket
+			tcp = new TCP(this);
+			//start with loading files and executing replication
+			fileManager = new FileManager(this); //this automatically loads the local files and start the replication
+			
+			
 			
 		} catch (MalformedURLException | RemoteException | NotBoundException | UnsupportedEncodingException | InterruptedException e) {
 			e.printStackTrace();
@@ -183,29 +178,10 @@ public class NodeClient extends UnicastRemoteObject implements ClientToClientInt
 		}
 	}
 
-	//puts all local files in fileList: name, hash
-	private void checkLocalFiles(File dir) {
-		File[] filesList = dir.listFiles();
-		for (File f : filesList) {
-			fileList.put(f.getName(), calculateHash(f.getName()));
-		}
-	}
 	
-	// toevoegen van één bestand van de lokale folder (filename + extentie)
-	private void loadFile(String fileName) throws NumberFormatException, RemoteException
-	{
-		File dir = new File("C:/TEMP");
-		int hashReplicationNode = ni.getHash(ni.askLocation(fileName));
-		if(hashReplicationNode == ownHash)
-		{
-			hashReplicationNode = previousNode;
-		}
-		bestandenLijst.addBestand(fileName,dir.toString(),ownHash,hashReplicationNode);
-		sendFile(bestandenLijst.getBestand(fileName),hashReplicationNode);
-	}
 	
 	//returns the location where a file should be located and returns the ip
-	private String getFileLocation(String fileName) {
+	public String getFileLocation(String fileName) {
 		String location = "";
 		try {
 			location = ni.getFileLocation(fileName);
@@ -239,8 +215,22 @@ public class NodeClient extends UnicastRemoteObject implements ClientToClientInt
 		return input;
 	}
 	
-	//method to call when the node wants to shut down
+	//method to call when the node wants to shut down (2 steps: 1: replicate/move files, 2: remove node from server
 	private void shutdown() {
+		//STEP 1: replicate/move files
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		//STEP 2: remove node from server
 		//if you're the first (and this case last) node, you shouldn't notify yourself)
 		try {
 			if(ni.amIFirst()!=1){
@@ -281,6 +271,7 @@ public class NodeClient extends UnicastRemoteObject implements ClientToClientInt
 		notifyPrevious(-1, neighbours[1], neighbours[0]);
 	}
 
+	
 	// Notify next node via RMI
 	public void notifyNext(int ownHash /*previous hash*/, int nextNodeHash /*next hash*/, int hash /*of node to notify*/) {
 		// Notifies the node (hash) that his previous node is this node and his next node is this node's former next node
@@ -349,12 +340,6 @@ public class NodeClient extends UnicastRemoteObject implements ClientToClientInt
 	//for the server to set his ip on this node
 	public void setServerIP(String IP) {serverIP = IP;}
 
-	//return the list of files the node has
-	public TreeMap<String, Integer> getFileList(){
-		//make sure we have the latest files
-		checkLocalFiles(new File("C:/TEMP"));
-		return fileList;
-	}
 
 	//for the thread to know when an RMI has been set up with the namingserver
 	public boolean getGoAhead() {return goAhead;}
@@ -414,7 +399,7 @@ public class NodeClient extends UnicastRemoteObject implements ClientToClientInt
 		
 		try {
 			SendFileRequest sendRequest = new SendFileRequest(fileToSend.getFile(),InetAddress.getByName(ip),fileID,receiverHash);
-			ReceiveFileRequest receiveRequest = new ReceiveFileRequest(InetAddress.getLocalHost(),fileToSend.getNaam(), fileToSend.getFullPath(), fileSize, fileID, fileToSend.getHashOwner(), fileToSend.getHashReplicationNode());
+			ReceiveFileRequest receiveRequest = new ReceiveFileRequest(InetAddress.getLocalHost(),fileToSend.getName(), fileToSend.getFullPath(), fileSize, fileID, fileToSend.getHashOwner(), fileToSend.getHashReplicationNode());
 			ClientToClientInterface ctci = makeCTCI(receiverHash);
 			ctci.setReceiveRequest(receiveRequest);
 			ctci = null;
@@ -457,12 +442,12 @@ public class NodeClient extends UnicastRemoteObject implements ClientToClientInt
 					hashReplicationNode = getPreviousNode();
 				}
 				String name = f.getName();
-				bestandenLijst.addBestand(name ,dir.toString(),ownHash,hashReplicationNode);
-				System.out.println("At loadFilesStartUp: trying to send file "+bestandenLijst.getBestand(name).getNaam()+" to hash "+hashReplicationNode);
-				sendFile(bestandenLijst.getBestand(name),hashReplicationNode);
+				fileManager.addBestand(name ,dir.toString(),ownHash,hashReplicationNode);
+				System.out.println("At loadFilesStartUp: trying to send file "+fileManager.getBestand(name).getName()+" to hash "+hashReplicationNode);
+				sendFile(fileManager.getBestand(name),hashReplicationNode);
 			}
 		}
-		bestandenLijst.listAllFiles();
+		fileManager.listAllFiles();
 	}
 	
 	// replicatie van van bestanden met grotere hash dan deze node en met kleinere hash vorige node
@@ -488,7 +473,7 @@ public class NodeClient extends UnicastRemoteObject implements ClientToClientInt
 		
 	}
 	public void sendReplicationToNewNode(int hashNewNode) throws RemoteException {
-		ArrayList<Bestand> temp = bestandenLijst.getFilesWithSmallerHash(hashNewNode);
+		ArrayList<Bestand> temp = fileManager.getFilesWithSmallerHash(hashNewNode);
 		if (temp!=null){
 			int size = temp.size();
 			for (int i=0; size>i; i++){
@@ -498,13 +483,13 @@ public class NodeClient extends UnicastRemoteObject implements ClientToClientInt
 	}
 	
 	public void shutDownReplication(){
-		int size = bestandenLijst.getSize();
+		int size = fileManager.getSize();
 		for(int i=0; size>i; i++){
-			if(bestandenLijst.getIndex(i).getHashReplicationNode()== ownHash){ //als dit deze node replicatienode is
-				bestandenLijst.getIndex(i).setReplicationNode(previousNode);
-				sendFile(bestandenLijst.getIndex(i),previousNode);
+			if(fileManager.getIndex(i).getHashReplicationNode()== ownHash){ //als dit deze node replicatienode is
+				fileManager.getIndex(i).setReplicationNode(previousNode);
+				sendFile(fileManager.getIndex(i),previousNode);
 			}
-			else if (bestandenLijst.getIndex(i).getHashOwner()== ownHash){ //als deze node eigenaar is
+			else if (fileManager.getIndex(i).getHashOwner()== ownHash){ //als deze node eigenaar is
 				
 			}
 		}
@@ -581,11 +566,14 @@ public class NodeClient extends UnicastRemoteObject implements ClientToClientInt
 		
 		return ctci;
 	}
-
-	public BestandenLijst getBestandenLijst() {
-		return bestandenLijst;
+	
+	
+	public FileManager getBestandenLijst() {
+		return fileManager;
 	}
 
-	
+	public String getName(){
+		return name;
+	}
 	
 }

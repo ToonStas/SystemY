@@ -165,5 +165,21 @@ public class Nodelijst {
     	     System.out.println("Hash: " + entry.getKey() + ", Ipadres: " + entry.getValue().getIpAdress() + ", Naam: " + entry.getValue().getName());
     	}
     }
+    
+    public NodeNamingServer getNodeByName(String nodeName){
+    	int hash = -1;
+    	NodeNamingServer node = null;
+    	for(Map.Entry<Integer,NodeNamingServer> entry : listOfNodes.entrySet()) {
+    		  node = entry.getValue();
+    		  if (node.getName()==nodeName){
+    			  hash = entry.getKey();
+    		  }
+    	}
+    	if (hash == -1){
+    		return listOfNodes.get(hash);
+    	} else {
+    		return node = null;
+    	}
+    }
 
 }

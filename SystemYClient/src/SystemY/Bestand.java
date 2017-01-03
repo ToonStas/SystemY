@@ -4,25 +4,25 @@ import java.io.File;
 
 //klasse voor een bestand in te bewaren.
 public class Bestand {
-	private String naam;
+	private String name;
 	private String path;
 	private File bestand;
 	private int hash;
-	private int hashOwner;
-	private int hashReplicationNode;
+	private String localOwner;
 	
-	public Bestand(String naamBestand, String pathBestand, int hashOwner, int hashReplicationNode){
-		naam = naamBestand;
+	
+	public Bestand(String naamBestand, String pathBestand, String nameLocalOwner){
+		name = naamBestand;
 		path = pathBestand;
-		bestand = new File(path+"/" + naam);
+		bestand = new File(path+"/" + name);
+		localOwner = nameLocalOwner;
 		calculateHash();
-		this.hashOwner = hashOwner;
-		this.hashReplicationNode = hashReplicationNode;
+
 	}
 	
 	//Deze functie berekent de hash voor deze node zelf bij initialisatie
 	private int calculateHash(){
-		int tempHash = naam.hashCode();
+		int tempHash = name.hashCode();
 		if (tempHash < 0)
 			tempHash = tempHash * -1;
 		tempHash = tempHash % 32768;
@@ -34,16 +34,12 @@ public class Bestand {
 		return hash;
 	}
 	
-	public int getHashOwner(){
-		return hashOwner;
+	public String getLocalOwner(){
+		return localOwner;
 	}
 	
-	public int getHashReplicationNode(){
-		return hashReplicationNode;
-	}
-	
-	public String getNaam(){
-		return naam;
+	public String getName(){
+		return name;
 	}
 	
 	public File getFile(){
@@ -55,18 +51,15 @@ public class Bestand {
 	}
 	
 	public String getFullPath(){
-		String fullPath = path + naam;
+		String fullPath = path + name;
 		return fullPath;
 	}
 	
 	//methode voor het veranderen van de bestandsnaam, de hash wordt als parameter teruggegeven.
 	public int changeName(String nieuweNaam){ 
-		this.naam = nieuweNaam;
+		this.name = nieuweNaam;
 		calculateHash();
 		return this.hash;
-	}
-	public void setReplicationNode(int hashNewReplicationNode){
-		this.hashReplicationNode = hashNewReplicationNode;
 	}
 	
 	//methode voor het cotroleren of de hash al bestaat, true als deze al bestaat
