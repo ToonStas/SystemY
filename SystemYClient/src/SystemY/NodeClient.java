@@ -567,10 +567,24 @@ public class NodeClient extends UnicastRemoteObject implements ClientToClientInt
 		return ctci;
 	}
 	
-	
-	public FileManager getBestandenLijst() {
-		return fileManager;
+	//makes an interface for the specified hash for RMI between nodes
+	public ClientToClientInterface makeCTCIByName(String nodeName){
+		ClientToClientInterface ctci = null;
+		int hash;
+		try {
+			hash = ni.getHashByName(nodeName);
+			ctci = makeCTCI(hash);
+		} catch (RemoteException e) {
+			e.printStackTrace();
+		}
+		
+		return ctci;
 	}
+		
+				
+	
+	
+	
 
 	public String getName(){
 		return name;

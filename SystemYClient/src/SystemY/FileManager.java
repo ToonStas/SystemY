@@ -62,6 +62,7 @@ public class FileManager {
 			fileFiches.add(new BestandFiche(newFile.getName(),node.getName()));
 			String ip = node.getFileLocation(newFile.getName());
 			
+			
 			return 1;
 		}
 	}
