@@ -116,7 +116,7 @@ public class NamingServer extends UnicastRemoteObject implements ClientToNamingS
 		}
 		else {
 			ip = node.getIpAdress();
-			System.out.println("The following IP address was given: "+ip);
+			//System.out.println("The following IP address was given: "+ip);
 		}
 		
 		return ip;	
