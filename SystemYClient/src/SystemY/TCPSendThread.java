@@ -7,9 +7,11 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.net.InetAddress;
 import java.net.Socket;
+import java.rmi.RemoteException;
 
 public class TCPSendThread extends Thread {
 	private static int SOCKET_PORT;
+	private NodeClient node;
 	private File file;
 	private SendFileRequest request;
 	private InetAddress IPDest;
@@ -17,73 +19,123 @@ public class TCPSendThread extends Thread {
 	private FileManager fileManager;
 	private int ID;
 	private String fileName;
+	private long sleepTimeMillis = 100;
+	private int receiverHash;
 	
 	//Thread who sends a file
-	public TCPSendThread(int SocketPort,TCP thisTcp, NodeClient nodeClient, SendFileRequest sendRequest, FileManager theFileManager){
+	public TCPSendThread(int SocketPort, NodeClient nodeClient, SendFileRequest sendRequest){
 		SOCKET_PORT = SocketPort;
 		request = sendRequest;
 		file = request.getFile();
 		IPDest = request.getIP();
-		tcp = thisTcp;
+		node = nodeClient;
+		tcp = node.getTCP();
 		ID = request.getID();
-		fileManager = theFileManager;
+		fileManager = node.getFileManager();
 		fileName = request.getFileName();
+		receiverHash = request.getHashReceiver();
 	}
 	
 	public void run(){
-		FileInputStream fis = null;
-		BufferedInputStream bis = null;
-		OutputStream os = null;
-		Socket sock = null;
+		boolean sendFile = false;
+		boolean TOC = false;
+		int message;
+		ClientToClientInterface ctci;
 		
-		//System.out.println("Waiting...");
-		try {
-			
-				sock = new Socket(IPDest, SOCKET_PORT);
-				//System.out.println("Accepted connection : " + sock);
-				// send file
-				byte[] mybytearray = new byte[(int) file.length()];
-				fis = new FileInputStream(file);
-				bis = new BufferedInputStream(fis);
-				bis.read(mybytearray, 0, mybytearray.length);
-				os = sock.getOutputStream();
-				//System.out.println("Sending " + file.toString() + "(" + mybytearray.length + " bytes)");
-				os.write(mybytearray, 0, mybytearray.length);
-				os.flush();
-				System.out.println("File "+fileName+" was send using TCP.");
-				
-				if (request.isRemoveFiche()){ //if this node loses the ownership
-					fileManager.removeFicheByName(fileName);
-				}
-				if (request.deleteFileAfterSending()) //if this node must delete the file after sending
-				{
-					fileManager.deleteFileBySendThread(fileName);
-				}
-				tcp.getSemSend().release();
-				tcp.getSendBuffer().remove(ID);
-			
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} finally {
-			
+		//loop for checking if this node and the receiving node are ready to transmit the file
+		while (sendFile == false && TOC == false){
+			//sleeping till new request
 			try {
-				if (bis != null)
-					bis.close();
-				if (os != null)
-					os.close();
-				if (sock != null)
-					sock.close();
-				tcp.getSemSend().release();
-				tcp.getSendBuffer().remove(ID);
+				Thread.sleep(sleepTimeMillis);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+			//checking if this node is available for sending a file
+			if (tcp.getSemSend().tryAcquire()){
+				//checking if receiver is available
+				ctci = node.makeCTCI(receiverHash);
+				try {
+					message = ctci.checkReceiveAvailable(ID);
+					ctci = null;
+					if (message == ID){
+						sendFile = true; //now we can send the file
+					} else if (message == -1) {
+						//Semaphore was not available in receiver
+						if (!request.checkSemTOC()){
+							System.out.println("TCP semTOC error for file "+fileName+", the file could not be send.");
+							TOC = true;
+						}
+						
+					} else if (message == -2) {
+						if (!request.checkFileTOC()){ //checkFileToc is a Time out counter, if the counter reaches zero, it will return false
+							System.out.println("TCP fileTOC error for file "+fileName+" , the file could not be send.");
+							TOC = true;
+						}
+					}
+					
+				} catch (RemoteException e) {
+					// TODO Auto-generated catch block
+					ctci = null;
+					e.printStackTrace();
+				}
+			} 
+		}
+		
+		
+		if (!TOC){
+			//Sending the file:
+			FileInputStream fis = null;
+			BufferedInputStream bis = null;
+			OutputStream os = null;
+			Socket sock = null;
+			try {
+				
+					sock = new Socket(IPDest, SOCKET_PORT);
+					//System.out.println("Accepted connection : " + sock);
+					// send file
+					byte[] mybytearray = new byte[(int) file.length()];
+					fis = new FileInputStream(file);
+					bis = new BufferedInputStream(fis);
+					bis.read(mybytearray, 0, mybytearray.length);
+					os = sock.getOutputStream();
+					//System.out.println("Sending " + file.toString() + "(" + mybytearray.length + " bytes)");
+					os.write(mybytearray, 0, mybytearray.length);
+					os.flush();
+					System.out.println("File "+fileName+" was send using TCP.");
+					
+					if (request.isRemoveFiche()){ //if this node loses the ownership
+						fileManager.removeFicheByName(fileName);
+					}
+					if (request.deleteFileAfterSending()) //if this node must delete the file after sending
+					{
+						fileManager.deleteFileBySendThread(fileName);
+					}
+					tcp.getSemSend().release();
 				
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
-				tcp.getSemSend().release();
-				tcp.getSendBuffer().remove(ID);
+			} finally {
+				
+				try {
+					if (bis != null)
+						bis.close();
+					if (os != null)
+						os.close();
+					if (sock != null)
+						sock.close();
+					tcp.getSemSend().release();
+					
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+					tcp.getSemSend().release();
+				}
 			}
 		}
+		
 	}
 
 }

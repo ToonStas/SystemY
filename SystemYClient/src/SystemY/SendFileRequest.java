@@ -18,8 +18,8 @@ public class SendFileRequest {
 		file = fileToSend;
 		IP = IPDestination;
 		ID = fileID;
-		semTOC = 500;
-		fileTOC = 500;
+		semTOC = 5000;
+		fileTOC = 50;
 		hashReceiver = hashReceiverNode;
 		this.fileName = fileName;
 		this.removeFiche = removeFiche;
