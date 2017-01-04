@@ -183,7 +183,7 @@ public class FileManager {
 			node.refreshNeighbours();
 			int replicationHash = node.getPreviousNode();
 			if (fiche == null){
-				System.out.println("The filefiche requested for file "+fileToSend.getName());
+				System.out.println("The filefiche requested for file "+fileToSend.getName()+" was = null.");
 			}
 			fiche.setNotNewOwner(); //to indicate this file is not gonna be the owner file
 			
@@ -196,11 +196,16 @@ public class FileManager {
 	
 	private BestandFiche getFicheByName(String fileName){
 		BestandFiche fiche = null;
-		updateOwnerFiles();
+		System.out.println("Searching the filefiche for file "+fileName+", the size is: "+fileFiches.size());
 		for (int i = 0; i<fileFiches.size();i++){
+			System.out.println("comparing "+fileFiches.get(i)+": ");
 			if (fileFiches.get(i).getFileName() == fileName){
 				fiche = fileFiches.get(i);
+				System.out.println("match!");
+			} else {
+				System.out.println("not a match");
 			}
+			
 		}
 		return fiche;
 	}
