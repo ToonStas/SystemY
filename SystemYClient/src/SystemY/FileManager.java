@@ -66,28 +66,26 @@ public class FileManager {
 	}
 	
 	//adds a file correctly to the list, they are replicated afterward
-	public int addLocalFile(String nameFile){
+	public void addLocalFile(String nameFile){
 		Bestand newFile = new Bestand(nameFile,"C:/TEMP/LocalFiles/",node.getName(),node.getOwnHash());
-		if (localFiles.contains(newFile)){
-			return -1;
-		} else {
-			localFiles.add(newFile);
-			fileFiches.add(new BestandFiche(newFile.getName(),node.getName()));
-			ClientToNamingServerInterface ni = node.makeNI();
-			try {
-				if(ni.amIFirst()!=1){
-					replicateFile(newFile);
-				}
-				else{
-					filesToReplicate.add(newFile.getName());
-				}
-			} catch (RemoteException e) {
-				System.out.println("Couldn't reach namingserver via RMI.");
-				e.printStackTrace();
+		localFiles.add(newFile);
+		BestandFiche fiche = new BestandFiche(newFile.getName(),node.getName());
+		fileFiches.add(fiche);
+		ClientToNamingServerInterface ni = node.makeNI();
+		try {
+			if(ni.amIFirst()!=1){
+				replicateFile(newFile);
+			}
+			else{
+				filesToReplicate.add(newFile.getName());
 			}
 			ni = null;
-			return 1;
+		} catch (RemoteException e) {
+			ni = null;
+			System.out.println("Couldn't reach namingserver via RMI.");
+			e.printStackTrace();
 		}
+		
 	}
 	
 	//method which checks if all files are replicated correctly, invoked when a new node enters the network
@@ -193,6 +191,7 @@ public class FileManager {
 	
 	private BestandFiche getFicheByName(String fileName){
 		BestandFiche fiche = null;
+		updateOwnerFiles();
 		for (int i = 0; i<fileFiches.size();i++){
 			if (fileFiches.get(i).getFileName() == fileName){
 				fiche = fileFiches.get(i);
