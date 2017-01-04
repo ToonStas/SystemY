@@ -146,7 +146,7 @@ public class NodeClient extends UnicastRemoteObject implements ClientToClientInt
 				//wait until we know the servers ip
 				TimeUnit.SECONDS.sleep(2);
 			}
-			
+			ClientToNamingServerInterface ni = makeNI();
 			ownHash = calculateHash(name);
 			
 			//get our neighbours
@@ -168,7 +168,7 @@ public class NodeClient extends UnicastRemoteObject implements ClientToClientInt
 			//start with loading files and executing replication
 			fileManager = new FileManager(this); 
 			fileManager.loadLocalFiles(); //this automatically loads the local files and start the replication
-			ClientToNamingServerInterface ni = makeNI();
+			
 			if (ni.amIFirst()!=1){
 				checkReplicationPreviousNode(); //this checks the replication from the previous node
 			}
@@ -583,20 +583,6 @@ public class NodeClient extends UnicastRemoteObject implements ClientToClientInt
 	}
 	
 	public ClientToNamingServerInterface makeNI(){
-		//make registry to establish communication of client to server
-		String bindLocation = "NamingServer";
-		Registry reg;
-		try {
-			reg = LocateRegistry.createRegistry(1099);
-			reg.bind(bindLocation, this);
-		} catch (RemoteException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		} catch (AlreadyBoundException e) {
-			
-		}
-		
-		System.out.println("Registry is ready at: " + bindLocation);
 		
 		ClientToNamingServerInterface ni = null;
 		String name = "//" + serverIP + ":1099/NamingServer";
