@@ -101,7 +101,7 @@ public class TCPSendHandlerThread extends Thread {
 						}
 					}
 					else { //semaphore time out counter expired
-						System.out.println("Semphore timeout counter expired from file request with ID "+request.getID());
+						System.out.println("Semaphore timeout counter expired from file request with ID "+request.getID()+" and name "+request.getFileName());
 						ctci = null;
 						sendBuffer.remove(request.getID());
 						tcp.getSemSend().release();

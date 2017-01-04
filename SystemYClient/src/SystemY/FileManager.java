@@ -119,6 +119,7 @@ public class FileManager {
 				fiche.setNewOwner();
 				tcp.sendFile(file, hashNext, fiche);
 			}
+			updateOwnerFiles();
 		}
 		System.out.println("replication finished");
 		
