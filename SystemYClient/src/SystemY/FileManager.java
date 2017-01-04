@@ -73,7 +73,7 @@ public class FileManager {
 		} else {
 			localFiles.add(newFile);
 			fileFiches.add(new BestandFiche(newFile.getName(),node.getName()));
-			ClientToNamingServerInterface ni = node.getNI();
+			ClientToNamingServerInterface ni = node.makeNI();
 			try {
 				if(ni.amIFirst()!=1){
 					replicateFile(newFile);
@@ -85,6 +85,7 @@ public class FileManager {
 				System.out.println("Couldn't reach namingserver via RMI.");
 				e.printStackTrace();
 			}
+			ni = null;
 			return 1;
 		}
 	}
@@ -181,6 +182,7 @@ public class FileManager {
 			
 			tcp.sendFile(fileToSend, replicationHash, fiche);
 		} else {
+			System.out.println("Replicating file "+fileToSend.getName()+" to hash "+ownerHash);
 			tcp.sendFile(fileToSend, ownerHash, fiche);
 		}
 	}

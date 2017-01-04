@@ -27,7 +27,6 @@ public class NodeClient extends UnicastRemoteObject implements ClientToClientInt
 	private int previousNode; //hash for previous node
 	private int ownHash; //hash of this node
 	private Thread multicastReceiverThreadClient; //threaed to receive multicasts by other nodes
-	ClientToNamingServerInterface ni; 
 	String serverIP;
 	private String name;
 	volatile boolean goAhead = false; //the thread should wait untill the interface has been made before communicating via it
@@ -104,7 +103,9 @@ public class NodeClient extends UnicastRemoteObject implements ClientToClientInt
 		case 4:
 			try {
 				System.out.println("Enter file to ask for: ");
+				ClientToNamingServerInterface ni = makeNI();
 				String Filelocation = ni.askLocation((readConsole()));
+				ni = null;
 				System.out.println("The location is: " + Filelocation);
 			} catch (RemoteException e) {
 				System.out.println("Couldn't get location. ");
@@ -146,9 +147,6 @@ public class NodeClient extends UnicastRemoteObject implements ClientToClientInt
 				TimeUnit.SECONDS.sleep(2);
 			}
 			
-			//make interface for communication with namingserver
-			String name = "//" + serverIP + ":1099/NamingServer";
-			ni = (ClientToNamingServerInterface) Naming.lookup(name);
 			ownHash = calculateHash(name);
 			
 			//get our neighbours
@@ -168,11 +166,13 @@ public class NodeClient extends UnicastRemoteObject implements ClientToClientInt
 			//start with loading files and executing replication
 			fileManager = new FileManager(this); 
 			fileManager.loadLocalFiles(); //this automatically loads the local files and start the replication
+			ClientToNamingServerInterface ni = makeNI();
 			if (ni.amIFirst()!=1){
 				checkReplicationPreviousNode(); //this checks the replication from the previous node
 			}
+			ni = null;
 			
-		} catch (MalformedURLException | RemoteException | NotBoundException | UnsupportedEncodingException | InterruptedException e) {
+		} catch (RemoteException | UnsupportedEncodingException | InterruptedException e) {
 			e.printStackTrace();
 		} catch(AlreadyBoundException e){
 			System.out.println("Registry already in use");
@@ -186,7 +186,9 @@ public class NodeClient extends UnicastRemoteObject implements ClientToClientInt
 	public String getFileLocation(String fileName) {
 		String location = "";
 		try {
+			ClientToNamingServerInterface ni = makeNI();
 			location = ni.getFileLocation(fileName);
+			ni = null;
 		} catch (RemoteException e) {
 			System.err.println("NodeClient couldn't fetch filelocation: " + e.getMessage());
 			e.printStackTrace();
@@ -197,7 +199,9 @@ public class NodeClient extends UnicastRemoteObject implements ClientToClientInt
 	public int getHashLocation(String fileName) {
 		int hash = -1;
 		try {
+			ClientToNamingServerInterface ni = makeNI();
 			hash = ni.askHashLocation(fileName);
+			ni = null;
 			System.out.println("There was a hash requested to the server for filename "+fileName+", this hash was given: "+hash);
 		} catch (RemoteException e) {
 			System.err.println("NodeClient couldn't fetch filelocation: " + e.getMessage());
@@ -246,6 +250,7 @@ public class NodeClient extends UnicastRemoteObject implements ClientToClientInt
 		
 		//STEP 2: remove node from server
 		//if you're the first (and this case last) node, you shouldn't notify yourself)
+		ClientToNamingServerInterface ni = makeNI();
 		try {
 			if(ni.amIFirst()!=1){
 				//Tell nextNode his previous, is what yout previous was
@@ -253,15 +258,19 @@ public class NodeClient extends UnicastRemoteObject implements ClientToClientInt
 				notifyNext(previousNode, -1, nextNode);
 				// Tell previousNode his next, is what your next was
 				notifyPrevious(-1, nextNode, previousNode);
+				ni = null;
 			}
 		} catch (RemoteException e1) {
 			System.out.println("Can't get amIFirst");
+			ni = null;
 			e1.printStackTrace();
 		}	
 		try {
 			ni.deleteNode(ownHash);
+			ni = null;
 		} catch (RemoteException e) {
 			System.out.println("Couldn't delete this node from namingserver.");
+			ni = null;
 			e.printStackTrace();
 		}
 		System.exit(0);
@@ -273,8 +282,10 @@ public class NodeClient extends UnicastRemoteObject implements ClientToClientInt
 		int[] neighbours = new int[2];
 		// Get next node and previous node using the current nodes hash number
 		try {
+			ClientToNamingServerInterface ni = makeNI();
 			neighbours = ni.getNeigbours(failingHash);// return previous 0 end next 1 neighbour
 			ni.deleteNode(failingHash); //delete te node from the nodelist of the server
+			ni = null;
 		} catch (RemoteException e) {
 			e.printStackTrace();
 		}
@@ -376,7 +387,9 @@ public class NodeClient extends UnicastRemoteObject implements ClientToClientInt
 	public void refreshNeighbours() {
 		int[] neighbours = new int[2];
 		try {
+			ClientToNamingServerInterface ni = makeNI();
 			neighbours=ni.getNeigbours(ownHash);
+			ni = null;
 			previousNode = neighbours[0];
 			nextNode = neighbours[1];
 		} catch (RemoteException e) {
@@ -521,7 +534,9 @@ public class NodeClient extends UnicastRemoteObject implements ClientToClientInt
 		
 		String ip="";
 		try {
+			ClientToNamingServerInterface ni = makeNI();
 			ip = ni.getIP(hash);
+			ni = null;
 		} catch (RemoteException e1) {
 			System.out.println("Couldn't fetch IP from Namingserver");
 			failure(hash); //when we can't fetch te ip it's likely the node shut down unexpectedly
@@ -549,7 +564,9 @@ public class NodeClient extends UnicastRemoteObject implements ClientToClientInt
 		ClientToClientInterface ctci = null;
 		int hash;
 		try {
+			ClientToNamingServerInterface ni = makeNI();
 			hash = ni.getHashByName(nodeName);
+			ni = null;
 			ctci = makeCTCI(hash);
 		} catch (RemoteException e) {
 			e.printStackTrace();
@@ -563,7 +580,15 @@ public class NodeClient extends UnicastRemoteObject implements ClientToClientInt
 		return fileManager;
 	}
 	
-	public ClientToNamingServerInterface getNI(){
+	public ClientToNamingServerInterface makeNI(){
+		ClientToNamingServerInterface ni = null;
+		String name = "//" + serverIP + ":1099/NamingServer";
+		try {
+			ni = (ClientToNamingServerInterface) Naming.lookup(name);
+		} catch (MalformedURLException | RemoteException | NotBoundException e) {
+			System.out.println("Couldn't create ClientToNamingServerInterface." );
+			e.printStackTrace();
+		}
 		return ni;
 	}
 

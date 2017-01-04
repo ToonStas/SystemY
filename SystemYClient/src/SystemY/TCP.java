@@ -86,7 +86,9 @@ public class TCP {
 		int fileID = ran.nextInt(20000);//The file ID is used in the file receive and send requests, they are compared to know if they are transmitting the right file
 		String ip = "";
 		try {
-			ip = node.getNI().getIP(receiverHash);
+			ClientToNamingServerInterface ni = node.makeNI();
+			ip = ni.getIP(receiverHash);
+			ni = null;
 		} catch (RemoteException e1) {
 			System.out.println("Couldn't fetch IP from Namingserver");
 			node.failure(receiverHash); //when we can't fetch te ip it's likely the node shut down unexpectedly

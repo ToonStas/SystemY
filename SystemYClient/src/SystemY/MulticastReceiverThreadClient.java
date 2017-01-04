@@ -54,7 +54,7 @@ public class MulticastReceiverThreadClient extends Thread {
 
 		String[] parts = nameIp.split(" ");
 		int hash = nodeClient.calculateHash(parts[0]);
-		
+		ClientToNamingServerInterface ni = nodeClient.makeNI();
 		//if hash == 25757 we know it's the server, so wwe shouldn't get it as a neighbour
 		if(hash!=25757){
 			// Check if this node is the first node, if so it shouldn't replace its
@@ -71,7 +71,7 @@ public class MulticastReceiverThreadClient extends Thread {
 				nextNode = nodeClient.getNextNode();
 				
 				//if the node isn't first
-				if (nodeClient.ni.amIFirst() == 0) {
+				if (ni.amIFirst() == 0) {
 					if (hash > ownHash & hash < nextNode) {// if the new node lies between this node and the next node
 						// TODO notify next node with his previous and next hash
 						nodeClient.notifyNext(ownHash /* previous hash */, nextNode /* next hash */, hash /* of node to notify */);
@@ -82,17 +82,18 @@ public class MulticastReceiverThreadClient extends Thread {
 						nodeClient.setPrevious(hash);
 					}
 				//the node is first
-				}else if (nodeClient.ni.amIFirst() == 1) {
+				}else if (ni.amIFirst() == 1) {
 					nodeClient.setNeighbours(ownHash, ownHash);
 					//start agent
 					//nodeClient.activateAgent(null);
 				//the node is second
-				}else if (nodeClient.ni.amIFirst() == 2) {
+				}else if (ni.amIFirst() == 2) {
 					nodeClient.setNeighbours(hash, hash);
 				}
 			} catch (RemoteException | InterruptedException e) {
 				e.printStackTrace();
 			}
+			ni = null;
 		}
 
 		// receive another
