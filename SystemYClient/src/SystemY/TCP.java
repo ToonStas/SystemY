@@ -10,8 +10,8 @@ import java.util.concurrent.Semaphore;
 public class TCP {
 	private final static int SOCKET_PORT = 13267;
 	private Thread receiveThread;
-	private Semaphore semReceive = new Semaphore(1); //only one file can be received at a time
-	private Semaphore semSend = new Semaphore(1); //only one file can be send at a time
+	private volatile Semafoor semReceive = new Semafoor(); //only one file can be received at a time
+	private volatile Semafoor semSend = new Semafoor(); //only one file can be send at a time
 	private ReceiveBuffer receiveBuffer; //buffer which holds the receive requests
 	private NodeClient node;
 	
@@ -25,11 +25,11 @@ public class TCP {
 		return receiveBuffer;
 	}
 	
-	public Semaphore getSemSend(){
+	public Semafoor getSemSend(){
 		return semSend;
 	}
 	
-	public Semaphore getSemReceive(){
+	public Semafoor getSemReceive(){
 		return semReceive;
 	}
 	
