@@ -41,9 +41,11 @@ public class TCPSendThread extends Thread {
 		boolean TOC = false;
 		int message;
 		ClientToClientInterface ctci;
-		
+		int counter = 0;
 		//loop for checking if this node and the receiving node are ready to transmit the file
-		while (sendFile == false && TOC == false){
+		while (sendFile == false){
+			counter++;
+			System.out.println("Waiting in thread for the "+counter+" time for file "+fileName);
 			//sleeping till new request
 			try {
 				Thread.sleep(sleepTimeMillis);
@@ -77,7 +79,7 @@ public class TCPSendThread extends Thread {
 		}
 		
 		
-		if (!TOC){
+		if (true){
 			//Sending the file:
 			FileInputStream fis = null;
 			BufferedInputStream bis = null;
