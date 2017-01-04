@@ -85,7 +85,7 @@ public class MulticastReceiverThreadClient extends Thread {
 				}else if (nodeClient.ni.amIFirst() == 1) {
 					nodeClient.setNeighbours(ownHash, ownHash);
 					//start agent
-					nodeClient.activateAgent(null);
+					//nodeClient.activateAgent(null);
 				//the node is second
 				}else if (nodeClient.ni.amIFirst() == 2) {
 					nodeClient.setNeighbours(hash, hash);

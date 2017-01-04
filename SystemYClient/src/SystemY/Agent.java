@@ -10,6 +10,8 @@ import java.util.Map.Entry;
 import java.util.TreeMap;
 
 public class Agent implements Runnable, Serializable{
+
+	private static final long serialVersionUID = 1L;
 	TreeMap<String, Boolean> allFiles = new TreeMap<>(); //name, isLocked; all files in the system to provide to the clients
 	private NodeClient nodeClient;
 	HashSet<String> owned = new HashSet<>(); //contains all files this node is the owner of

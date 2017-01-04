@@ -31,13 +31,13 @@ public class NodeClient extends UnicastRemoteObject implements ClientToClientInt
 	String serverIP;
 	private String name;
 	volatile boolean goAhead = false; //the thread should wait untill the interface has been made before communicating via it
-	Thread agent; //our agent
+	//Thread agent; //our agent
 	//TreeMap<String, Boolean> allFiles = new TreeMap<>(); //name, isLocked; has all files in the system provided by the agent
 	//HashSet<String> owned = new HashSet<>(); //contains all files this node is the owner of
 	//HashSet<String> locked = new HashSet<>(); //contains all files that should be locked
 	//HashSet<String> unLocked = new HashSet<>(); //contains all files that should be unlocked
 	private TCP tcp;
-	private boolean first = true; //to know if the agent should be made
+	//private boolean first = true; //to know if the agent should be made
 	
 	public static void main(String args[]) {
 		try {
@@ -53,7 +53,7 @@ public class NodeClient extends UnicastRemoteObject implements ClientToClientInt
 		multicastReceiverThreadClient = new Thread(
 				new MulticastReceiverThreadClient(ownHash, this));
 
-		GUI gui = new GUI(this);
+		//GUI gui = new GUI(this);
 
 		startUp();
 
@@ -61,7 +61,7 @@ public class NodeClient extends UnicastRemoteObject implements ClientToClientInt
 		
 
 		
-		// infinite while loop for the gui
+		//infinite while loop for the gui
 		while (true){
 			consoleGUI(); 
 		}
@@ -166,10 +166,11 @@ public class NodeClient extends UnicastRemoteObject implements ClientToClientInt
 			//starting the tcp socket
 			tcp = new TCP(this);
 			//start with loading files and executing replication
-			fileManager = new FileManager(this); //this automatically loads the local files and start the replication
-			fileManager.loadLocalFiles();
-			checkReplicationPreviousNode();
-			
+			fileManager = new FileManager(this); 
+			fileManager.loadLocalFiles(); //this automatically loads the local files and start the replication
+			if (ni.amIFirst()!=1){
+				checkReplicationPreviousNode(); //this checks the replication from the previous node
+			}
 			
 		} catch (MalformedURLException | RemoteException | NotBoundException | UnsupportedEncodingException | InterruptedException e) {
 			e.printStackTrace();
@@ -389,9 +390,9 @@ public class NodeClient extends UnicastRemoteObject implements ClientToClientInt
 	
 	public Integer getOwnHash(){return ownHash;}
 	
-	public void setAllFiles(TreeMap<String, Boolean> allFiles){this.allFiles = allFiles;}
+	//public void setAllFiles(TreeMap<String, Boolean> allFiles){this.allFiles = allFiles;}
 	
-	public void setLocked(HashSet<String> locked2){this.locked = locked2;}
+	//public void setLocked(HashSet<String> locked2){this.locked = locked2;}
 	
 	
 	//sets a receive request in the tcp receive file buffer (used by the file sender via RMI)
@@ -424,7 +425,7 @@ public class NodeClient extends UnicastRemoteObject implements ClientToClientInt
 		fileManager.checkReplication();
 	}
 	
-	// replicatie van van bestanden met grotere hash dan deze node en met kleinere hash vorige node
+	/*// replicatie van van bestanden met grotere hash dan deze node en met kleinere hash vorige node
 	public void getReplicationNewNode(){
 		
 		String ip="";
@@ -445,8 +446,9 @@ public class NodeClient extends UnicastRemoteObject implements ClientToClientInt
 			e.printStackTrace();
 		}
 		
-	}
-	public void sendReplicationToNewNode(int hashNewNode) throws RemoteException {
+	}*/
+	
+	/*public void sendReplicationToNewNode(int hashNewNode) throws RemoteException {
 		ArrayList<Bestand> temp = fileManager.getFilesWithSmallerHash(hashNewNode);
 		if (temp!=null){
 			int size = temp.size();
@@ -510,7 +512,7 @@ public class NodeClient extends UnicastRemoteObject implements ClientToClientInt
 			e.printStackTrace();
 		}
 		
-	}
+	}*/
 	
 	//makes an interface for the specified hash for RMI between nodes
 	public ClientToClientInterface makeCTCI(int hash){
