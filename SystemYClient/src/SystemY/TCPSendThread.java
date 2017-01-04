@@ -71,7 +71,7 @@ public class TCPSendThread extends Thread {
 					}
 					
 				} catch (RemoteException e) {
-					// TODO Auto-generated catch block
+					System.out.println("Couldn't reach client with RMI");
 					ctci = null;
 					e.printStackTrace();
 				}
