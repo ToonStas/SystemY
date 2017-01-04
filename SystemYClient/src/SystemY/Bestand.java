@@ -10,6 +10,9 @@ public class Bestand {
 	private int hash;
 	private int hashLocalOwner;
 	private String nameLocalOwner;
+	private BestandFiche fiche;
+	private boolean isLocked;
+	private boolean isOwner;
 	
 	
 	public Bestand(String naamBestand, String pathBestand, String nameLocalOwner, int hashLocalOwner){
@@ -82,5 +85,70 @@ public class Bestand {
 	
 	public void deleteFile(){
 		bestand.delete();
+	}
+	
+	public boolean addOwnerFiche(String ownerNodeName){ //returns true if Bestand doesn't have a fiche yet
+		if (isOwner){
+			fiche = new BestandFiche(bestand.getName(),ownerNodeName);
+			return false;
+		} else {
+			fiche = new BestandFiche(bestand.getName(),ownerNodeName);
+			isOwner = true;
+			return true;
+		}
+	}
+	
+	public boolean isOwner(){
+		return isOwner;
+	}
+	
+	public boolean removeOwnership(){
+		fiche = null;
+		if (isOwner){
+			isOwner = false;
+			return true; //because he was an owner and the ownership is removed now
+		} else {
+			return false; //because he wasn't an owner
+		}
+	}
+	
+	public boolean addLocation(String newLocationNodeName){
+		if (isOwner){
+			fiche.addFileLocation(newLocationNodeName);
+			return true;
+		} else {
+			return false; //no fiche existing
+		}
+		
+	}
+	
+	public String getRandomFileLocation(){ //return null if there is no fiche
+		String nodeName = null;
+		if (isOwner){
+			nodeName = fiche.getRandomLocation();
+		}
+		return nodeName;
+	}
+	
+	public boolean lock(){
+		if (isLocked){
+			return false;
+		} else {
+			isLocked = true;
+			return true;
+		}
+	}
+	
+	public boolean isLocked(){
+		return isLocked;
+	}
+	
+	public boolean unlock(){
+		if (isLocked){
+			isLocked = false;
+			return true;
+		} else {
+			return false;
+		}
 	}
 }

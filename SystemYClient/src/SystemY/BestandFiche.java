@@ -2,6 +2,7 @@ package SystemY;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Random;
 
 public class BestandFiche implements Serializable {
 	/**
@@ -21,12 +22,12 @@ public class BestandFiche implements Serializable {
 		fileLocations.add(localOwner);
 	}
 	
-	public int addFileLocation(String nodeName){
+	public boolean addFileLocation(String nodeName){
 		if (fileLocations.contains(nodeName)){
-			return -1;
+			return false;
 		} else {
 			fileLocations.add(nodeName);
-			return 1;
+			return true;
 		}
 	}
 	
@@ -69,6 +70,12 @@ public class BestandFiche implements Serializable {
 	
 	public boolean deleteFileAfterSending(){
 		return delete;
+	}
+	
+	public String getRandomLocation(){
+		Random ran = new Random();
+		int index = ran.nextInt(fileLocations.size());
+		return fileLocations.get(index);
 	}
 	
 	

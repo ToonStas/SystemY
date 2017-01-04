@@ -126,4 +126,21 @@ public class FileListWithFile {
 	}
 	return ownerFiles;
 	}
+	
+	public FileListWithFile getOwnerFiles(){
+		FileListWithFile ownerList = new FileListWithFile();
+		for (int i=0; i<list.size(); i++){
+			if (list.get(i).isOwner()){
+				ownerList.add(list.get(i));
+			}
+		}
+		return ownerList;
+	}
+	
+	public void addAll(FileListWithFile newFileList){
+		ArrayList<Bestand> newList = newFileList.getList();
+		for (int i=0;i<newList.size();i++){
+			list.add(newList.get(i));
+		}
+	}
 }

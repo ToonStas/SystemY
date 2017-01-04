@@ -8,11 +8,11 @@ import java.util.ArrayList;
 public class FileManager {
 	private FileListWithFile localFiles = null; //files which the node possesses locally
 	private FileListWithFile repFiles = null; //files which are replicated to this node or file which are download for any other reason
+	private FileListWithFile ownerFiles = null;
 	private ArrayList<BestandFiche> fileFiches = null; //fiches which hold the locations where a file is stored,, only files where this node is owner of, have a fileFiche
 	private ArrayList<String> filesToReplicate = null; //list of files which are not yet replicated because this node was the first one
-	private ArrayList<String> ownerFiles = null;
 	private NodeClient node = null;		
-	private TCP tcp;									
+	private TCP tcp;	
 	
 	
 	public FileManager(NodeClient nodeClient){
@@ -25,7 +25,7 @@ public class FileManager {
 		ownerFiles = new ArrayList<String>();
 		filesToReplicate = new ArrayList<String>();
 		
-		//create the file directories
+		//create the file directories if they not already exist
 		File file = new File("C:/TEMP/LocalFiles/");
 	    if (!file.exists()) {
 	       	file.mkdir();
@@ -55,6 +55,11 @@ public class FileManager {
 			addLocalFile(name);
 			
 		}
+	}
+	
+	public void startCheckLocalFilesThread(){
+		Thread fileChecker = new CheckLocalFilesThread(this);
+		fileChecker.start();
 	}
 	
 	
@@ -230,6 +235,10 @@ public class FileManager {
 	public void deleteFileBySendThread(String fileName){
 		repFiles.removeFileWithName(fileName);
 		//updateAllFiles();
+	}
+	
+	public FileListWithFile getLocalFiles(){
+		return localFiles;
 	}
 	
 	
