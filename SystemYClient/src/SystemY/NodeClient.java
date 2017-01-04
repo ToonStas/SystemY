@@ -175,7 +175,7 @@ public class NodeClient extends UnicastRemoteObject implements ClientToClientInt
 			ni = null;
 			
 			fileManager.startCheckLocalFilesThread();
-			
+			System.out.println("Startup Completed");
 		} catch (RemoteException | UnsupportedEncodingException | InterruptedException e) {
 			e.printStackTrace();
 		} catch(AlreadyBoundException e){
