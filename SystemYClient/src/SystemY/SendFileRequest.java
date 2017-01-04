@@ -66,18 +66,20 @@ public class SendFileRequest {
 	public boolean checkSemTOC(){
 		semTOC--;
 		System.out.println("SemTOC for file "+fileName+", count: "+semTOC);
-		if (semTOC<0)
-			return true;
-		else
+		if (semTOC<0){
 			return false;
+		}
+		else {
+			return true;
+		}
 	}
 	
 	public boolean checkFileTOC(){
 		fileTOC--;
 		if (fileTOC<0)
-			return true;
-		else
 			return false;
+		else
+			return true;
 	}
 
 }
