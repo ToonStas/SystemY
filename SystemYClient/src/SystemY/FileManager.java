@@ -3,7 +3,6 @@ package SystemY;
 import java.io.File;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
-import java.util.HashMap;
 
 //Class which manages all files and the lists it has
 public class FileManager {
@@ -17,6 +16,7 @@ public class FileManager {
 	
 	
 	public FileManager(NodeClient nodeClient){
+		//initializing the private parameters
 		localFiles = new FileListWithFile();
 		repFiles = new FileListWithFile();
 		fileFiches = new ArrayList<BestandFiche>();
@@ -34,8 +34,6 @@ public class FileManager {
 	    if (!file.exists()){
 	    	file.mkdir();
 	    }
-		
-		
 		
 		
 	}
@@ -95,6 +93,7 @@ public class FileManager {
 	public void checkReplication(){
 		//checking if this node still has files that need to be replicated
 		//if the node was the first node, it may not have replicated it files when it was the only node
+		System.out.println("Checking Replication...");
 		while (filesToReplicate.isEmpty()!=true){
 			Bestand file = getFileByName(filesToReplicate.get(0));
 			replicateFile(file);
@@ -117,7 +116,7 @@ public class FileManager {
 				tcp.sendFile(file, hashNext, fiche);
 			}
 		}
-		
+		System.out.println("replication finished");
 		
 	}
 	
