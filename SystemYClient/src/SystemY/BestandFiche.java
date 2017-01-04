@@ -1,8 +1,13 @@
 package SystemY;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
-public class BestandFiche {
+public class BestandFiche implements Serializable {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private String name; //name of the file
 	private ArrayList<String> fileLocations; 
 	private String localOwner; //name of the local owner of the file
