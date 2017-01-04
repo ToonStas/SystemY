@@ -18,7 +18,7 @@ public class TCP {
 	private NodeClient node;
 	
 	public TCP(NodeClient nodeClient) {
-		nodeClient = node;
+		node = nodeClient;
 		receiveBuffer = new ReceiveBuffer();
 		sendBuffer = new SendBuffer();
 		Thread sendHandler = new TCPSendHandlerThread(this,node); 
