@@ -103,10 +103,10 @@ public class NamingServer extends UnicastRemoteObject implements ClientToNamingS
 
 	//returns the ip for the node with hash: hashNode
 	public String getIP(int hashNode){
-		System.out.println("An ip was requested for this hash: "+hashNode);
+		//System.out.println("An ip was requested for this hash: "+hashNode);
 		String ip = "No IP found.";
 		listOfNodes = nodeLijst.getListOfNodes();	
-		System.out.println(hashNode);
+		//System.out.println(hashNode);
 		
 		NodeNamingServer node = nodeLijst.getNode(hashNode);
 		if (node == null){
@@ -130,11 +130,11 @@ public class NamingServer extends UnicastRemoteObject implements ClientToNamingS
 		
 		NodeNamingServer node = nodeLijst.getNodeByName(nameNode);
 		if (node == null){
-			System.out.println("A hashcode was requested for a node that doesn't exist. ");
+			//System.out.println("A hashcode was requested for a node that doesn't exist. ");
 		}
 		else {
 			hash = node.getHash();
-			System.out.println("The following hash was given: "+hash);
+			//System.out.println("The following hash was given: "+hash);
 		}
 		
 		return hash;	
