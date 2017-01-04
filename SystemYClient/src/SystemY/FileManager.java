@@ -71,7 +71,7 @@ public class FileManager {
 		localFiles.add(newFile);
 		BestandFiche fiche = new BestandFiche(newFile.getName(),node.getName());
 		fileFiches.add(fiche);
-		System.out.println("file fiche added for file "+newFile.getName()+", fiche: "+fiche.toString());
+		//System.out.println("file fiche added for file "+newFile.getName()+", fiche: "+fiche.toString());
 		ClientToNamingServerInterface ni = node.makeNI();
 		try {
 			if(ni.amIFirst()!=1){
@@ -93,7 +93,7 @@ public class FileManager {
 	public void checkReplication(){
 		//checking if this node still has files that need to be replicated
 		//if the node was the first node, it may not have replicated it files when it was the only node
-		System.out.println("Checking Replication...");
+		//System.out.println("Checking Replication...");
 		while (filesToReplicate.isEmpty()!=true){
 			Bestand file = getFileByName(filesToReplicate.get(0));
 			replicateFile(file);
@@ -130,7 +130,7 @@ public class FileManager {
 				updateOwnerFiles();
 			}
 		}
-		System.out.println("replication finished");
+		//System.out.println("replication finished");
 		
 	}
 	

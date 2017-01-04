@@ -30,7 +30,6 @@ public class TCPReceiveThread extends Thread {
 	}
 	
 	public void run(){
-		System.out.println("Receive Thread for file "+request.getName()+" started.");
 		int bytesRead;
 		int current;
 		FileOutputStream fos = null;
