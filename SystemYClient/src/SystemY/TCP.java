@@ -58,6 +58,7 @@ public class TCP {
 	public Thread startSendFile(SendFileRequest request){
 		Thread sendThread = new Thread (new TCPSendThread(SOCKET_PORT, node, request));
 		sendThread.start();
+		System.out.println("SendThread for file "+request.getFileName()+" was started.");
 		return sendThread;
 	}
 	
