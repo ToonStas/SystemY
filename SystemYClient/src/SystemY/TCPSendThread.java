@@ -65,10 +65,10 @@ public class TCPSendThread extends Thread {
 					if (message == ID){
 						sendFile = true; //now we can send the file
 					} else if (message == -1) {
-						
+						tcp.getSemSend().release();
 						
 					} else if (message == -2) {
-						
+						tcp.getSemSend().release();
 					}
 					
 				} catch (RemoteException e) {
