@@ -147,6 +147,7 @@ public class FileManager {
 			if (transferOwnerShip){ //if the node is gonna be the new owner, the fileFiche should be added
 				fileFiche.addFileLocation(node.getName());
 				newFile.replaceFiche(fileFiche);
+				repFiles.add(newFile);
 			} else {
 				newFile.removeOwnership(); //for safety
 				repFiles.add(newFile);
