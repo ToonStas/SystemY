@@ -9,8 +9,7 @@ public class FileManager {
 	private FileListWithFile localFiles = null; //files which the node possesses locally
 	private FileListWithFile repFiles = null; //files which are replicated to this node or file which are download for any other reason
 	private FileListWithFile ownerFiles = null;
-	private ArrayList<BestandFiche> fileFiches = null; //fiches which hold the locations where a file is stored,, only files where this node is owner of, have a fileFiche
-	private ArrayList<String> filesToReplicate = null; //list of files which are not yet replicated because this node was the first one
+	private FileListWithFile filesToReplicate = null; //list of files which are not yet replicated because this node was the first one
 	private NodeClient node = null;		
 	private TCP tcp;	
 	
@@ -19,11 +18,10 @@ public class FileManager {
 		//initializing the private parameters
 		localFiles = new FileListWithFile();
 		repFiles = new FileListWithFile();
-		fileFiches = new ArrayList<BestandFiche>();
 		node = nodeClient;
 		tcp = node.getTCP();
-		ownerFiles = new ArrayList<String>();
-		filesToReplicate = new ArrayList<String>();
+		ownerFiles = new FileListWithFile();
+		filesToReplicate = new FileListWithFile();
 		
 		//create the file directories if they not already exist
 		File file = new File("C:/TEMP/LocalFiles/");
@@ -39,9 +37,9 @@ public class FileManager {
 	}
 	
 	public void updateOwnerFiles(){
-		ownerFiles.clear();
-		ownerFiles.addAll(localFiles.getOwnerFiles(fileFiches));
-		ownerFiles.addAll(repFiles.getOwnerFiles(fileFiches));
+		ownerFiles.clearList();
+		ownerFiles.addAll(localFiles.getOwnerFiles());
+		ownerFiles.addAll(repFiles.getOwnerFiles());
 	}
 	
 	
@@ -73,9 +71,9 @@ public class FileManager {
 	//adds a file correctly to the list, they are replicated afterward
 	public void addLocalFile(String nameFile){
 		Bestand newFile = new Bestand(nameFile,"C:/TEMP/LocalFiles/",node.getName(),node.getOwnHash());
+		newFile.addOwnerFiche(node.getName());
 		localFiles.add(newFile);
-		BestandFiche fiche = new BestandFiche(newFile.getName(),node.getName());
-		fileFiches.add(fiche);
+		
 		//System.out.println("file fiche added for file "+newFile.getName()+", fiche: "+fiche.toString());
 		ClientToNamingServerInterface ni = node.makeNI();
 		try {
@@ -83,7 +81,7 @@ public class FileManager {
 				replicateFile(newFile);
 			}
 			else{
-				filesToReplicate.add(newFile.getName());
+				filesToReplicate.add(newFile);
 			}
 			ni = null;
 		} catch (RemoteException e) {
@@ -99,10 +97,11 @@ public class FileManager {
 		//checking if this node still has files that need to be replicated
 		//if the node was the first node, it may not have replicated it files when it was the only node
 		//System.out.println("Checking Replication...");
-		while (filesToReplicate.isEmpty()!=true){
-			Bestand file = getFileByName(filesToReplicate.get(0));
+		ArrayList<Bestand> replicateList = filesToReplicate.getList();
+		while (replicateList.isEmpty()!=true){
+			Bestand file = replicateList.get(0);
 			replicateFile(file);
-			filesToReplicate.remove(0);
+			filesToReplicate.removeFromList(file);
 		}
 		
 		//checking if the replicated files on this node are replicated to the right node, only if this node isn't first or second
@@ -139,24 +138,25 @@ public class FileManager {
 		
 	}
 	
-	public int addRepFile(String nameFile, String nameNode, int hashNode, BestandFiche fileFiche){
+	public int addRepFile(String nameFile, String nameNode, int hashNode, BestandFiche fileFiche, boolean transferOwnerShip){
 		Bestand newFile = new Bestand(nameFile,"C:/TEMP/RepFiles/",nameNode,hashNode);
 		//when the node has the file already but it needs to be the owner of the file
-		if (repFiles.contains(newFile)){
-			if (fileFiche.isNewOwner()){ 
+		if (repFiles.checkFileExistsWithName(nameFile)!=-1){
+			if (transferOwnerShip){ 
 				fileFiche.addFileLocation(node.getName());
-				removeFicheByName(newFile.getName());
-				fileFiches.add(fileFiche);
+				repFiles.getFile(nameFile).replaceFiche(fileFiche);
 			}
 			return -1;
 		
 		//when the node doesn't have the file	
 		} else {
-			if (fileFiche.isNewOwner()){ //if the node is gonna be the new owner, the fileFiche should be added
+			if (transferOwnerShip){ //if the node is gonna be the new owner, the fileFiche should be added
 				fileFiche.addFileLocation(node.getName());
-				fileFiches.add(fileFiche);
+				newFile.replaceFiche(fileFiche);
+			} else {
+				newFile.removeOwnership(); //for safety
+				repFiles.add(newFile);
 			}
-			repFiles.add(newFile);
 			return 1;
 		}
 	}
@@ -174,71 +174,43 @@ public class FileManager {
 	
 	//meegegeven bestand verwijderen uit lijst
 	public int removeRepFile(Bestand toRemove){
-		int check = repFiles.removeFile(toRemove);
+		int check = repFiles.removeWithFile(toRemove);
 		return check;
 	}
 	
 	public int removeLocalFile(Bestand toRemove){
-		int check = localFiles.removeFile(toRemove);
+		int check = localFiles.removeWithFile(toRemove);
 		return check;
 	}
 	
 	
 	//bestand verwijderen op basis van naam
 	public int removeRepFileWithName(String fileName){
-		return repFiles.removeFileWithName(fileName);
+		return repFiles.removeFileWithNameWithFile(fileName);
 		
 	}
 	
+	//method for replicating a file to the right node
 	public void replicateFile(Bestand fileToSend){
 		System.out.println("replicating file "+fileToSend.getName());
 		int ownerHash = node.getHashLocation(fileToSend.getName());
-		BestandFiche fiche = getFicheByName(fileToSend.getName());
-		if (ownerHash == node.getOwnHash()){
+		if (ownerHash == node.getOwnHash()){ //if the ownerhash == this node, the ownership should not be transferred
 			node.refreshNeighbours();
 			int replicationHash = node.getPreviousNode();
-			if (fiche == null){
-				System.out.println("The filefiche requested for file "+fileToSend.getName()+" was = null.");
-			}
-			fiche.setNotNewOwner(); //to indicate this file is not gonna be the owner file
-			
-			tcp.sendFile(fileToSend, replicationHash, fiche);
-		} else {
-			System.out.println("Replicating file "+fileToSend.getName()+" to hash "+ownerHash);
-			tcp.sendFile(fileToSend, ownerHash, fiche);
+			tcp.sendFile(fileToSend, replicationHash, false, false); //first boolean: do not transfer ownerhip, second boolean: do not delete file after sending
+		} else { //transfer ownership
+			tcp.sendFile(fileToSend, ownerHash, true, false);
 		}
 	}
 	
-	private BestandFiche getFicheByName(String fileName){
-		BestandFiche fiche = null;
-		for (int i = 0; i<fileFiches.size();i++){
-			if (fileFiches.get(i).getFileName() == fileName){
-				fiche = fileFiches.get(i);
-			}
-			
-		}
-		return fiche;
-	}
-	
-	public void removeFicheByName(String fileName){
-		int index = -1;
-		for (int i = 0; i<fileFiches.size();i++){
-			if (fileFiches.get(i).getFileName() == fileName){
-				index = i;
-			}
-		}
-		if (index != -1){
-			fileFiches.remove(index);
-		}
-	}
-	
-	public void deleteFileBySendThread(String fileName){
-		repFiles.removeFileWithName(fileName);
-		//updateAllFiles();
-	}
 	
 	public FileListWithFile getLocalFiles(){
 		return localFiles;
+	}
+	
+	public boolean removeOwnerShip(String fileName){
+		Bestand file = getFileByName(fileName);
+		return file.removeOwnership();
 	}
 	
 	

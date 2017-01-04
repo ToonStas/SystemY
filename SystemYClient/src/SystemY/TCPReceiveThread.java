@@ -58,7 +58,7 @@ public class TCPReceiveThread extends Thread {
 					File file = new File("C:/TEMP/RepFiles/"+request.getName());
 					if (file.exists()){
 						System.out.println("ReceiveThread message: " +file.getName()+ " was succesfull received with TCP.");
-						fileManager.addRepFile(request.getName(), request.getNameOwnerNode(), request.getHashOwnerNode(), request.getFiche());
+						fileManager.addRepFile(request.getName(), request.getNameOwnerNode(), request.getHashOwnerNode(), request.getFiche(), request.transferOwnerShip );
 						
 					}
 					else {

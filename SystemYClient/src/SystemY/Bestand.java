@@ -139,6 +139,20 @@ public class Bestand {
 		}
 	}
 	
+	public BestandFiche getFiche(){
+		if (isOwner){
+			return fiche;
+		} else {
+			return new BestandFiche("deleteFiche","deleteFiche"); //for TCP layer, it needs a fiche in its method, so we give it a false fiche
+		}
+	}
+	
+	public void replaceFiche(BestandFiche newFiche){
+		isOwner = true;
+		fiche = newFiche;
+		
+	}
+	
 	public boolean isLocked(){
 		return isLocked;
 	}

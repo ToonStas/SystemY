@@ -30,7 +30,7 @@ public class FileListWithFile {
 		return exists;
 	}
 	
-	public int removeFile(Bestand testFile){
+	public int removeWithFile(Bestand testFile){
 		if (list.contains(testFile)){
 			testFile.deleteFile();
 			list.remove(testFile);
@@ -40,22 +40,32 @@ public class FileListWithFile {
 		}
 	}
 	
-	public int removeFileWithHash(int fileHash){
+	public int removeFileWithHashFromList(int fileHash){
 		int index = checkFileExistsWithHash(fileHash);
 		if (index == -1){
 			return -1;
 		} else {
-			removeFile(list.get(index));
+			removeFromList(list.get(index));
 			return 1;
 		}
 	}
 	
-	public int removeFileWithName(String fileName){
+	public int removeFileWithNameFromList(String fileName){
 		int index = checkFileExistsWithName(fileName);
 		if (index == -1){
 			return -1;
 		} else {
-			removeFile(list.get(index));
+			removeFromList(list.get(index));
+			return 1;
+		}
+	}
+	
+	public int removeFileWithNameWithFile(String fileName){
+		int index = checkFileExistsWithName(fileName);
+		if (index == -1){
+			return -1;
+		} else {
+			removeFromList(list.get(index));
 			return 1;
 		}
 	}
@@ -107,27 +117,11 @@ public class FileListWithFile {
 	
 	public void printFiles(){
 		for (int i = 0; i<list.size(); i++){
-			System.out.println("Name: "+list.get(i).getName() +" hash: "+list.get(i).getHash());
+			System.out.println("Name: "+list.get(i).getName() +" hash: "+list.get(i).getHash()+" is owner? "+list.get(i).isOwner());
 		}
 	}
 	
-	public ArrayList<String> getOwnerFiles(ArrayList<BestandFiche> fileFiches){
-	ArrayList<String> ownerFiles = new ArrayList<>();
-	String testFileName = null;
-	int indexFileList = -1;
-	for(int i=0; i<fileFiches.size();i++){
-		testFileName = fileFiches.get(i).getFileName();
-		indexFileList = checkFileExistsWithName(testFileName);
-		if (indexFileList != -1){
-			ownerFiles.add(testFileName);
-		} else {
-			fileFiches.remove(i);
-		}
-	}
-	return ownerFiles;
-	}
-	
-	public FileListWithFile getOwnerFiles(){
+		public FileListWithFile getOwnerFiles(){
 		FileListWithFile ownerList = new FileListWithFile();
 		for (int i=0; i<list.size(); i++){
 			if (list.get(i).isOwner()){
@@ -143,4 +137,50 @@ public class FileListWithFile {
 			list.add(newList.get(i));
 		}
 	}
+	
+	public void removeAllWithFile(FileListWithFile newFileList){
+		ArrayList<Bestand> newList = newFileList.getList();
+		for (int i=0;i<newList.size();i++){
+			newList.get(i).deleteFile();
+			list.remove(newList.get(i));
+		}
+	}
+	
+	public void removeAllFromList(FileListWithFile newFileList){
+		ArrayList<Bestand> newList = newFileList.getList();
+		for (int i=0;i<newList.size();i++){
+			list.remove(newList.get(i));
+		}
+	}
+	
+	public void clearList(){
+		list.clear();
+	}
+	
+	public void clearWithFiles(){
+		for (int i=0; i<list.size();i++){
+			list.get(i).deleteFile();
+		}
+		list.clear();
+	}
+	
+	public boolean isEmpty(){
+		return list.isEmpty();
+	}
+	
+	public int getSize(){
+		return list.size();
+	}
+	
+	public boolean removeFromList(Bestand file){
+		if (list.contains(file)){
+			list.remove(file);
+			return true;
+		} else {
+			return false;
+			
+		}
+	}
+	
+	
 }

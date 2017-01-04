@@ -11,18 +11,18 @@ public class SendFileRequest {
 	private int semTOC; //time out counter for busy semaphore
 	private int fileTOC; // time out counter for no such file in receive request buffer
 	private int hashReceiver;
-	private boolean removeFiche;
+	private boolean transferOwnerShip;
 	private boolean deleteFileAfterSending;
 	
-	public SendFileRequest(File fileToSend, InetAddress IPDestination, int fileID, int hashReceiverNode, String fileName, boolean removeFiche, boolean deleteFileAfterSending){
+	public SendFileRequest(File fileToSend, InetAddress IPDestination, int fileID, int hashReceiverNode, String fileName, boolean transferOwnerShip, boolean deleteFileAfterSending){
 		file = fileToSend;
 		IP = IPDestination;
 		ID = fileID;
-		semTOC = 5000;
+		semTOC = 500;
 		fileTOC = 50;
 		hashReceiver = hashReceiverNode;
 		this.fileName = fileName;
-		this.removeFiche = removeFiche;
+		this.transferOwnerShip = transferOwnerShip;
 		this.deleteFileAfterSending = deleteFileAfterSending;
 		
 	}
@@ -31,8 +31,8 @@ public class SendFileRequest {
 		return fileName;
 	}
 	
-	public boolean isRemoveFiche(){
-		return removeFiche;
+	public boolean transferOwnerShip(){
+		return transferOwnerShip;
 	}
 	
 	public boolean deleteFileAfterSending(){

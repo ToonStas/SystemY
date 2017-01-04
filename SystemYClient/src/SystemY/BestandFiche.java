@@ -12,8 +12,6 @@ public class BestandFiche implements Serializable {
 	private String name; //name of the file
 	private ArrayList<String> fileLocations; 
 	private String localOwner; //name of the local owner of the file
-	private boolean isNewOwner = true; //this determines if this file will be an ownerfile when it gets send to a another node
-	private boolean delete = false; //this determines if this file will be deleted after being send to another node
 	
 	public BestandFiche(String fileName, String localOwnerFile){
 		name = fileName;
@@ -50,26 +48,6 @@ public class BestandFiche implements Serializable {
 	
 	public ArrayList<String> getfileLocations(){
 		return fileLocations;
-	}
-	
-	public void setNotNewOwner(){
-		isNewOwner = false;
-	}
-	
-	public void setNewOwner(){
-		isNewOwner = true;
-	}
-	
-	public boolean isNewOwner(){
-		return isNewOwner;
-	}
-	
-	public void setDeleteFileAfterSending(){
-		delete = true;
-	}
-	
-	public boolean deleteFileAfterSending(){
-		return delete;
 	}
 	
 	public String getRandomLocation(){

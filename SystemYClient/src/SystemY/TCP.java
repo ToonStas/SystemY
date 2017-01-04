@@ -67,7 +67,7 @@ public class TCP {
 	}
 	
 	
-	public void sendFile(Bestand fileToSend, int receiverHash, BestandFiche fileFiche){
+	public void sendFile(Bestand fileToSend, int receiverHash, boolean transferOwnerShip, boolean deleteFileAfterSending){
 		Random ran = new Random();
 		int fileID = ran.nextInt(20000);//The file ID is used in the file receive and send requests, they are compared to know if they are transmitting the right file
 		String ip = "";
@@ -84,9 +84,8 @@ public class TCP {
 		
 		
 		try {
-			SendFileRequest sendRequest = new SendFileRequest(fileToSend.getFile(),InetAddress.getByName(ip),fileID,receiverHash,fileToSend.getName(),fileFiche.isNewOwner(),fileFiche.deleteFileAfterSending());
-			ReceiveFileRequest receiveRequest = new ReceiveFileRequest(InetAddress.getLocalHost(),fileToSend.getName(),fileSize,fileID, fileToSend.getHashLocalOwner(), fileToSend.getNameLocalOwner(), fileFiche);
-
+			SendFileRequest sendRequest = new SendFileRequest(fileToSend.getFile(),InetAddress.getByName(ip),fileID,receiverHash,fileToSend.getName(), transferOwnerShip,deleteFileAfterSending);
+			ReceiveFileRequest receiveRequest = new ReceiveFileRequest(InetAddress.getLocalHost(),fileToSend.getName(),fileSize,fileID, fileToSend.getHashLocalOwner(), fileToSend.getNameLocalOwner(), fileToSend.getFiche(), transferOwnerShip);
 			ClientToClientInterface ctci = node.makeCTCI(receiverHash);
 			ctci.setReceiveRequest(receiveRequest);
 			ctci = null;
