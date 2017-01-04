@@ -114,8 +114,8 @@ public class FileManager {
 			testHash = node.getHashLocation(fileName);
 			if (testHash == hashNext){
 				file = getFileByName(fileName);
-				System.out.println("requested file fiche for file with name: "+fileName);
 				fiche = getFicheByName(fileName);
+				System.out.println("requested file fiche for file with name: "+fileName+", "+fiche.toString());
 				fiche.setNewOwner();
 				tcp.sendFile(file, hashNext, fiche);
 			}

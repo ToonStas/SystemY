@@ -74,6 +74,8 @@ public class TCPReceiveThread extends Thread {
 						bos.close();
 					if (sock != null)
 						sock.close();
+					tcp.getSemReceive().release();
+					tcp.getReceiveBuffer().remove(request.getID());
 					
 				}
 			
