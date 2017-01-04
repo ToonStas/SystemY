@@ -7,6 +7,7 @@ public class BestandFiche {
 	private ArrayList<String> fileLocations; 
 	private String localOwner; //name of the local owner of the file
 	private boolean isOwner = true;
+	private boolean delete = false;
 	
 	public BestandFiche(String fileName, String localOwnerFile){
 		name = fileName;
@@ -52,6 +53,15 @@ public class BestandFiche {
 	public boolean isOwner(){
 		return isOwner;
 	}
+	
+	public void setDeleteFileAfterSending(){
+		delete = true;
+	}
+	
+	public boolean deleteFileAfterSending(){
+		return delete;
+	}
+	
 	
 
 }

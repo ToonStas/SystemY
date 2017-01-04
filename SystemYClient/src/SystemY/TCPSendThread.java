@@ -54,6 +54,10 @@ public class TCPSendThread extends Thread {
 				if (request.isRemoveFiche()){
 					fileManager.removeFicheByName(fileName);
 				}
+				if (request.deleteFileAfterSending())
+				{
+					fileManager.deleteFileBySendThread();
+				}
 				tcp.getSemSend().release();
 				tcp.getSendBuffer().remove(ID);
 			

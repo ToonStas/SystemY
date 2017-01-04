@@ -3,6 +3,7 @@ package SystemY;
 import java.io.File;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 //Class which manages all files and the lists it has
 public class FileManager {
@@ -10,6 +11,7 @@ public class FileManager {
 	private FileListWithFile repFiles = null; //files which are replicated to this node or file which are download for any other reason
 	private ArrayList<BestandFiche> fileFiches = null; //fiches which hold the locations where a file is stored,, only files where this node is owner of, have a fileFiche
 	private ArrayList<String> filesToReplicate = null; //list of files which are not yet replicated because this node was the first one
+	private ArrayList<String> ownerFiles = null;
 	private NodeClient node = null;		
 	private TCP tcp;									
 	
@@ -25,6 +27,12 @@ public class FileManager {
 		
 		
 		
+	}
+	
+	public void updateOwnerFiles(){
+		ownerFiles.clear();
+		ownerFiles.addAll(localFiles.getOwnerFiles(fileFiches));
+		ownerFiles.addAll(repFiles.getOwnerFiles(fileFiches));
 	}
 	
 	
@@ -83,6 +91,17 @@ public class FileManager {
 		}
 		
 		//checking if the replicated files on this node are replicated to the right node
+		updateOwnerFiles();
+		node.refreshNeighbours();
+		int hashNext = node.getNextNode();
+		int testHash;
+		for (int i=0; i<ownerFiles.size();i++){
+			testHash = node.getHashLocation(ownerFiles.get(i));
+			if (testHash == hashNext){
+				
+			}
+		}
+		
 		
 	}
 	
@@ -162,6 +181,11 @@ public class FileManager {
 		if (index != -1){
 			fileFiches.remove(index);
 		}
+	}
+	
+	public void deleteFileBySendThread(String fileName){
+		repFiles.removeFileWithName(fileName);
+		//updateAllFiles();
 	}
 	
 	

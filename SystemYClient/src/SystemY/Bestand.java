@@ -79,4 +79,8 @@ public class Bestand {
 		else
 			return false;
 	}
+	
+	public void deleteFile(){
+		bestand.delete();
+	}
 }

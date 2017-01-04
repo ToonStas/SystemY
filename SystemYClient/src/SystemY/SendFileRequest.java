@@ -12,8 +12,9 @@ public class SendFileRequest {
 	private int fileTOC; // time out counter for no such file in receive request buffer
 	private int hashReceiver;
 	private boolean removeFiche;
+	private boolean deleteFileAfterSending;
 	
-	public SendFileRequest(File fileToSend, InetAddress IPDestination, int fileID, int hashReceiverNode, String fileName, boolean removeFiche){
+	public SendFileRequest(File fileToSend, InetAddress IPDestination, int fileID, int hashReceiverNode, String fileName, boolean removeFiche, boolean deleteFileAfterSending){
 		file = fileToSend;
 		IP = IPDestination;
 		ID = fileID;
@@ -22,6 +23,8 @@ public class SendFileRequest {
 		hashReceiver = hashReceiverNode;
 		this.fileName = fileName;
 		this.removeFiche = removeFiche;
+		this.deleteFileAfterSending = deleteFileAfterSending;
+		
 	}
 	
 	public String getFileName(){
@@ -30,6 +33,10 @@ public class SendFileRequest {
 	
 	public boolean isRemoveFiche(){
 		return removeFiche;
+	}
+	
+	public boolean deleteFileAfterSending(){
+		return deleteFileAfterSending;
 	}
 	
 	public File getFile(){

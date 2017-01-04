@@ -96,7 +96,7 @@ public class TCP {
 		
 		
 		try {
-			SendFileRequest sendRequest = new SendFileRequest(fileToSend.getFile(),InetAddress.getByName(ip),fileID,receiverHash,fileToSend.getName(),fileFiche.isOwner());
+			SendFileRequest sendRequest = new SendFileRequest(fileToSend.getFile(),InetAddress.getByName(ip),fileID,receiverHash,fileToSend.getName(),fileFiche.isOwner(),fileFiche.deleteFileAfterSending());
 			ReceiveFileRequest receiveRequest = new ReceiveFileRequest(InetAddress.getLocalHost(),fileToSend.getName(),fileSize,fileID, fileToSend.getHashLocalOwner(), fileToSend.getNameLocalOwner(), fileFiche);
 
 			ClientToClientInterface ctci = node.makeCTCI(receiverHash);
