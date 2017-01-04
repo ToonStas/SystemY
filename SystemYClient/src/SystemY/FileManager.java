@@ -22,6 +22,7 @@ public class FileManager {
 		fileFiches = new ArrayList<BestandFiche>();
 		node = nodeClient;
 		tcp = node.getTCP();
+		ownerFiles = new ArrayList<String>();
 		filesToReplicate = new ArrayList<String>();
 		
 		//create the file directories
