@@ -155,11 +155,7 @@ public class NodeClient extends UnicastRemoteObject implements ClientToClientInt
 			//the interface has been made so the multicastreceiverthread can continue
 			goAhead = true;
 			
-			//make registry to establish communication of client to server
-			bindLocation = "NamingServer";
-			reg = LocateRegistry.createRegistry(1099);
-			reg.bind(bindLocation, this);
-			System.out.println("Registry is ready at: " + bindLocation);
+			
 
 			// make registry to establish RMI between nodes
 			bindLocation = "nodeClient";
@@ -587,6 +583,21 @@ public class NodeClient extends UnicastRemoteObject implements ClientToClientInt
 	}
 	
 	public ClientToNamingServerInterface makeNI(){
+		//make registry to establish communication of client to server
+		String bindLocation = "NamingServer";
+		Registry reg;
+		try {
+			reg = LocateRegistry.createRegistry(1099);
+			reg.bind(bindLocation, this);
+		} catch (RemoteException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		} catch (AlreadyBoundException e) {
+			
+		}
+		
+		System.out.println("Registry is ready at: " + bindLocation);
+		
 		ClientToNamingServerInterface ni = null;
 		String name = "//" + serverIP + ":1099/NamingServer";
 		try {
