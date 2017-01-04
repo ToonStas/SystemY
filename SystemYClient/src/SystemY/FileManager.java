@@ -198,7 +198,7 @@ public class FileManager {
 		BestandFiche fiche = null;
 		System.out.println("Searching the filefiche for file "+fileName+", the size is: "+fileFiches.size());
 		for (int i = 0; i<fileFiches.size();i++){
-			System.out.println("comparing "+fileFiches.get(i)+": ");
+			System.out.println("comparing "+fileFiches.get(i).getFileName()+": ");
 			if (fileFiches.get(i).getFileName() == fileName){
 				fiche = fileFiches.get(i);
 				System.out.println("match!");
