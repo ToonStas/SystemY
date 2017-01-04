@@ -62,17 +62,10 @@ public class TCPSendThread extends Thread {
 					if (message == ID){
 						sendFile = true; //now we can send the file
 					} else if (message == -1) {
-						//Semaphore was not available in receiver
-						/*if (!request.checkSemTOC()){
-							System.out.println("TCP semTOC error for file "+fileName+", the file could not be send.");
-							TOC = true;
-						}*/
+						
 						
 					} else if (message == -2) {
-						if (!request.checkFileTOC()){ //checkFileToc is a Time out counter, if the counter reaches zero, it will return false
-							System.out.println("TCP fileTOC error for file "+fileName+" , the file could not be send.");
-							TOC = true;
-						}
+						
 					}
 					
 				} catch (RemoteException e) {
