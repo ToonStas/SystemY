@@ -46,7 +46,7 @@ public class TCPSendThread extends Thread {
 		//loop for checking if this node and the receiving node are ready to transmit the file
 		while (sendFile == false){
 			counter++;
-			System.out.println("Waiting in thread for the "+counter+" time for file "+fileName+" with message "+message+", and ID: "+ID);
+			
 			//sleeping till new request
 			try {
 				Thread.sleep(sleepTimeMillis);
@@ -99,7 +99,7 @@ public class TCPSendThread extends Thread {
 					//System.out.println("Sending " + file.toString() + "(" + mybytearray.length + " bytes)");
 					os.write(mybytearray, 0, mybytearray.length);
 					os.flush();
-					System.out.println("File "+fileName+" was send using TCP.");
+					System.out.println("SendThread message: "+fileName+" was send with TCP.");
 					
 					if (request.isRemoveFiche()){ //if this node loses the ownership
 						fileManager.removeFicheByName(fileName);
