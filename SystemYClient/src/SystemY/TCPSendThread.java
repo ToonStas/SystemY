@@ -59,8 +59,8 @@ public class TCPSendThread extends Thread {
 				{
 					fileManager.deleteFileBySendThread(fileName);
 				}
-				tcp.getSemSend().release();
-				tcp.getSendBuffer().remove(ID);
+				//tcp.getSemSend().release();
+				//tcp.getSendBuffer().remove(ID);
 			
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
