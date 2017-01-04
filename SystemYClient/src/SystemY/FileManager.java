@@ -108,11 +108,14 @@ public class FileManager {
 		int testHash;
 		Bestand file;
 		BestandFiche fiche;
+		String fileName;
 		for (int i=0; i<ownerFiles.size();i++){
-			testHash = node.getHashLocation(ownerFiles.get(i));
+			fileName = ownerFiles.get(i);
+			testHash = node.getHashLocation(fileName);
 			if (testHash == hashNext){
-				file = getFileByName(ownerFiles.get(i));
-				fiche = getFicheByName(ownerFiles.get(i));
+				file = getFileByName(fileName);
+				System.out.println("requested file fiche for file with name: "+fileName);
+				fiche = getFicheByName(fileName);
 				fiche.setNewOwner();
 				tcp.sendFile(file, hashNext, fiche);
 			}

@@ -36,21 +36,21 @@ public class TCPSendThread extends Thread {
 		OutputStream os = null;
 		Socket sock = null;
 		
-		System.out.println("Waiting...");
+		//System.out.println("Waiting...");
 		try {
 			
 				sock = new Socket(IPDest, SOCKET_PORT);
-				System.out.println("Accepted connection : " + sock);
+				//System.out.println("Accepted connection : " + sock);
 				// send file
 				byte[] mybytearray = new byte[(int) file.length()];
 				fis = new FileInputStream(file);
 				bis = new BufferedInputStream(fis);
 				bis.read(mybytearray, 0, mybytearray.length);
 				os = sock.getOutputStream();
-				System.out.println("Sending " + file.toString() + "(" + mybytearray.length + " bytes)");
+				//System.out.println("Sending " + file.toString() + "(" + mybytearray.length + " bytes)");
 				os.write(mybytearray, 0, mybytearray.length);
 				os.flush();
-				System.out.println("File was send using TCP.");
+				System.out.println("File "+fileName+" was send using TCP.");
 				
 				if (request.isRemoveFiche()){ //if this node loses the ownership
 					fileManager.removeFicheByName(fileName);
