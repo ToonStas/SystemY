@@ -204,7 +204,7 @@ public class NodeClient extends UnicastRemoteObject implements ClientToClientInt
 			ClientToNamingServerInterface ni = makeNI();
 			hash = ni.askHashLocation(fileName);
 			ni = null;
-			System.out.println("There was a hash requested to the server for filename "+fileName+", this hash was given: "+hash);
+			//System.out.println("There was a hash requested to the server for filename "+fileName+", this hash was given: "+hash);
 		} catch (RemoteException e) {
 			System.err.println("NodeClient couldn't fetch filelocation: " + e.getMessage());
 			e.printStackTrace();
