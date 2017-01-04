@@ -106,32 +106,26 @@ public class FileManager {
 		
 		//checking if the replicated files on this node are replicated to the right node, only if this node isn't first or second
 		ClientToNamingServerInterface ni = node.makeNI();
-		int test = 3;
+		int numberOfClients = 3;
 		try {
-			 test = ni.amIFirst();
+			 numberOfClients = ni.amIFirst();
 		} catch (RemoteException e) {
 			System.out.println("Couldn't reach NamingServer with RMI.");
 		}
 		ni = null;
-		if (test > 2){
+		if (numberOfClients > 2){ 
 			updateOwnerFiles();
 			node.refreshNeighbours();
 			int hashNext = node.getNextNode();
 			int testHash;
 			Bestand file;
-			BestandFiche fiche;
-			String fileName;
-			for (int i=0; i<ownerFiles.size();i++){
-				fileName = ownerFiles.get(i);
-				testHash = node.getHashLocation(fileName);
+			ArrayList<Bestand> ownerFileList = ownerFiles.getList();
+			for (int i=0; i<ownerFileList.size();i++){
+				file = ownerFileList.get(i);
+				testHash = node.getHashLocation(file.getName());
 				if (testHash == hashNext){
-					file = getFileByName(fileName);
-					fiche = getFicheByName(fileName);
-					System.out.println("requested file fiche for file with name: "+fileName+", "+fiche.toString());
-					fiche.setNewOwner();
-					tcp.sendFile(file, hashNext, fiche);
+					tcp.sendFile(file, hashNext, true, false);
 				}
-				updateOwnerFiles();
 			}
 		}
 		//System.out.println("replication finished");
@@ -210,34 +204,10 @@ public class FileManager {
 	
 	public boolean removeOwnerShip(String fileName){
 		Bestand file = getFileByName(fileName);
-		return file.removeOwnership();
+		boolean isRemoved = file.removeOwnership();
+		updateOwnerFiles();
+		return isRemoved;
 	}
-	
-	
-	
-	
-	
-	
-	/*public ArrayList<Bestand> getFilesWithSmallerHash(int hashNewNode){
-		int size = lijst.size();
-		ArrayList<Bestand> temp = new ArrayList<>();
-		for (int i=0; size>i; i++){
-			if(lijst.get(i).getHash() >= hashNewNode){
-				lijst.get(i).setReplicationNode(hashNewNode);
-				temp.add(lijst.get(i));
-			}	
-		}
-		return temp;
-	}
-	public Bestand getIndex(int index){
-		return lijst.get(index);
-	}
-	
-	public void listAllFiles(){
-		Iterator<Bestand> iter = lijst.iterator();
-		while (iter.hasNext()){
-			System.out.println(iter.next().getName());			
-		}
-	}*/
+
 
 }
