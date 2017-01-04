@@ -100,25 +100,35 @@ public class FileManager {
 			filesToReplicate.remove(0);
 		}
 		
-		//checking if the replicated files on this node are replicated to the right node
-		updateOwnerFiles();
-		node.refreshNeighbours();
-		int hashNext = node.getNextNode();
-		int testHash;
-		Bestand file;
-		BestandFiche fiche;
-		String fileName;
-		for (int i=0; i<ownerFiles.size();i++){
-			fileName = ownerFiles.get(i);
-			testHash = node.getHashLocation(fileName);
-			if (testHash == hashNext){
-				file = getFileByName(fileName);
-				fiche = getFicheByName(fileName);
-				System.out.println("requested file fiche for file with name: "+fileName+", "+fiche.toString());
-				fiche.setNewOwner();
-				tcp.sendFile(file, hashNext, fiche);
-			}
+		//checking if the replicated files on this node are replicated to the right node, only if this node isn't first or second
+		ClientToNamingServerInterface ni = node.makeNI();
+		int test = 3;
+		try {
+			 test = ni.amIFirst();
+		} catch (RemoteException e) {
+			System.out.println("Couldn't reach NamingServer with RMI.");
+		}
+		ni = null;
+		if (test > 2){
 			updateOwnerFiles();
+			node.refreshNeighbours();
+			int hashNext = node.getNextNode();
+			int testHash;
+			Bestand file;
+			BestandFiche fiche;
+			String fileName;
+			for (int i=0; i<ownerFiles.size();i++){
+				fileName = ownerFiles.get(i);
+				testHash = node.getHashLocation(fileName);
+				if (testHash == hashNext){
+					file = getFileByName(fileName);
+					fiche = getFicheByName(fileName);
+					System.out.println("requested file fiche for file with name: "+fileName+", "+fiche.toString());
+					fiche.setNewOwner();
+					tcp.sendFile(file, hashNext, fiche);
+				}
+				updateOwnerFiles();
+			}
 		}
 		System.out.println("replication finished");
 		
