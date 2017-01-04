@@ -8,6 +8,7 @@ import java.io.OutputStream;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.rmi.RemoteException;
+import java.util.Random;
 
 public class TCPSendThread extends Thread {
 	private static int SOCKET_PORT;
@@ -19,7 +20,7 @@ public class TCPSendThread extends Thread {
 	private FileManager fileManager;
 	private int ID;
 	private String fileName;
-	private long sleepTimeMillis = 100;
+	private long sleepTimeMillis = 500;
 	private int receiverHash;
 	
 	//Thread who sends a file
@@ -42,11 +43,13 @@ public class TCPSendThread extends Thread {
 		int message = 0;
 		ClientToClientInterface ctci;
 		int counter = 0;
+		Random ran = new Random();
 		//loop for checking if this node and the receiving node are ready to transmit the file
 		while (sendFile == false){
 			counter++;
 			System.out.println("Waiting in thread for the "+counter+" time for file "+fileName+" with message "+message);
 			//sleeping till new request
+			sleepTimeMillis = (long) (ran.nextInt(500)+100);
 			try {
 				Thread.sleep(sleepTimeMillis);
 			} catch (InterruptedException e) {
