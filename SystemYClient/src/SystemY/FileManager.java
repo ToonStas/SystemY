@@ -24,6 +24,16 @@ public class FileManager {
 		tcp = node.getTCP();
 		filesToReplicate = new ArrayList<String>();
 		
+		//create the file directories
+		File file = new File("C:/TEMP/LocalFiles/");
+	    if (!file.exists()) {
+	       	file.mkdir();
+	    }
+	    file = new File("C:/TEMP/RepFiles/");
+	    if (!file.exists()){
+	    	file.mkdir();
+	    }
+		
 		
 		
 		
