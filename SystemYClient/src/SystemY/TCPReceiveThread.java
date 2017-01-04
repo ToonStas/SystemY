@@ -41,7 +41,7 @@ public class TCPReceiveThread extends Thread {
 			
 				try {
 					sock = servSock.accept();
-					System.out.println("Succesful TCP connection with " + sock.getInetAddress().toString() + ", ready for receiving file.");
+					//System.out.println("Succesful TCP connection with " + sock.getInetAddress().toString() + ", ready for receiving file.");
 					byte[] byteArray = new byte[size];
 					InputStream in = sock.getInputStream();
 					fos = new FileOutputStream("C:/TEMP/RepFiles/"+request.getName());
