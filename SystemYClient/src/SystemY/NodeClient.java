@@ -156,7 +156,7 @@ public class NodeClient extends UnicastRemoteObject implements ClientToClientInt
 			goAhead = true;
 			
 			//make registry to establish communication of client to server
-			bindLocation = "Server";
+			bindLocation = "NamingServer";
 			reg = LocateRegistry.createRegistry(1099);
 			reg.bind(bindLocation, this);
 			System.out.println("Registry is ready at: " + bindLocation);
