@@ -176,11 +176,15 @@ public class FileManager {
 	}
 	
 	public void replicateFile(Bestand fileToSend){
+		System.out.println("replicating file "+fileToSend.getName());
 		int ownerHash = node.getHashLocation(fileToSend.getName());
 		BestandFiche fiche = getFicheByName(fileToSend.getName());
 		if (ownerHash == node.getOwnHash()){
 			node.refreshNeighbours();
 			int replicationHash = node.getPreviousNode();
+			if (fiche == null){
+				System.out.println("The filefiche requested for file "+fileToSend.getName());
+			}
 			fiche.setNotNewOwner(); //to indicate this file is not gonna be the owner file
 			
 			tcp.sendFile(fileToSend, replicationHash, fiche);
