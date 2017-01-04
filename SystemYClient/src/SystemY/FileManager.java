@@ -95,10 +95,15 @@ public class FileManager {
 		node.refreshNeighbours();
 		int hashNext = node.getNextNode();
 		int testHash;
+		Bestand file;
+		BestandFiche fiche;
 		for (int i=0; i<ownerFiles.size();i++){
 			testHash = node.getHashLocation(ownerFiles.get(i));
 			if (testHash == hashNext){
-				
+				file = getFileByName(ownerFiles.get(i));
+				fiche = getFicheByName(ownerFiles.get(i));
+				fiche.setNewOwner();
+				tcp.sendFile(file, hashNext, fiche);
 			}
 		}
 		
@@ -107,12 +112,21 @@ public class FileManager {
 	
 	public int addRepFile(String nameFile, String nameNode, int hashNode, BestandFiche fileFiche){
 		Bestand newFile = new Bestand(nameFile,"C:/TEMP/RepFiles/",nameNode,hashNode);
+		//when the node has the file already but it needs to be the owner of the file
 		if (repFiles.contains(newFile)){
-			if (fileFiche.isOwner()){ //if the node is gonna be the new owner, the fileFiche should be added
+			if (fileFiche.isNewOwner()){ 
+				fileFiche.addFileLocation(node.getName());
+				removeFicheByName(newFile.getName());
 				fileFiches.add(fileFiche);
 			}
 			return -1;
+		
+		//when the node doesn't have the file	
 		} else {
+			if (fileFiche.isNewOwner()){ //if the node is gonna be the new owner, the fileFiche should be added
+				fileFiche.addFileLocation(node.getName());
+				fileFiches.add(fileFiche);
+			}
 			repFiles.add(newFile);
 			return 1;
 		}
@@ -150,11 +164,11 @@ public class FileManager {
 	public void replicateFile(Bestand fileToSend){
 		int ownerHash = node.getHashLocation(fileToSend.getName());
 		BestandFiche fiche = getFicheByName(fileToSend.getName());
-		fiche.addFileLocation(node.getName());
 		if (ownerHash == node.getOwnHash()){
 			node.refreshNeighbours();
 			int replicationHash = node.getPreviousNode();
-			fiche.setNotOwner(); //to indicate this file is not gonna be the owner file
+			fiche.setNotNewOwner(); //to indicate this file is not gonna be the owner file
+			
 			tcp.sendFile(fileToSend, replicationHash, fiche);
 		} else {
 			tcp.sendFile(fileToSend, ownerHash, fiche);

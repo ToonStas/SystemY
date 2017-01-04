@@ -51,12 +51,13 @@ public class TCPSendThread extends Thread {
 				os.write(mybytearray, 0, mybytearray.length);
 				os.flush();
 				System.out.println("File was send using TCP.");
-				if (request.isRemoveFiche()){
+				
+				if (request.isRemoveFiche()){ //if this node loses the ownership
 					fileManager.removeFicheByName(fileName);
 				}
-				if (request.deleteFileAfterSending())
+				if (request.deleteFileAfterSending()) //if this node must delete the file after sending
 				{
-					fileManager.deleteFileBySendThread();
+					fileManager.deleteFileBySendThread(fileName);
 				}
 				tcp.getSemSend().release();
 				tcp.getSendBuffer().remove(ID);

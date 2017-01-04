@@ -6,8 +6,8 @@ public class BestandFiche {
 	private String name; //name of the file
 	private ArrayList<String> fileLocations; 
 	private String localOwner; //name of the local owner of the file
-	private boolean isOwner = true;
-	private boolean delete = false;
+	private boolean isNewOwner = true; //this determines if this file will be an ownerfile when it gets send to a another node
+	private boolean delete = false; //this determines if this file will be deleted after being send to another node
 	
 	public BestandFiche(String fileName, String localOwnerFile){
 		name = fileName;
@@ -46,12 +46,16 @@ public class BestandFiche {
 		return fileLocations;
 	}
 	
-	public void setNotOwner(){
-		isOwner = false;
+	public void setNotNewOwner(){
+		isNewOwner = false;
 	}
 	
-	public boolean isOwner(){
-		return isOwner;
+	public void setNewOwner(){
+		isNewOwner = true;
+	}
+	
+	public boolean isNewOwner(){
+		return isNewOwner;
 	}
 	
 	public void setDeleteFileAfterSending(){

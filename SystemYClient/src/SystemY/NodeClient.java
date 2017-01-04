@@ -410,7 +410,18 @@ public class NodeClient extends UnicastRemoteObject implements ClientToClientInt
 	}
 	
 	public void checkReplicationPreviousNode(){
-		
+		refreshNeighbours();
+		ClientToClientInterface ctci = makeCTCI(previousNode);
+		try {
+			ctci.checkReplicationFromNextNode();
+		} catch (RemoteException e) {
+			failure(previousNode);
+			e.printStackTrace();
+		}
+	}
+	
+	public void checkReplicationFromNextNode(){
+		fileManager.checkReplication();
 	}
 	
 	// replicatie van van bestanden met grotere hash dan deze node en met kleinere hash vorige node
