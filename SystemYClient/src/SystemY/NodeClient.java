@@ -423,7 +423,9 @@ public class NodeClient extends UnicastRemoteObject implements ClientToClientInt
 	
 	//checks if TCP is ready to receive a file with the following file ID
 	public int checkReceiveAvailable(int fileID) throws RemoteException{
-		return tcp.checkReceiveAvailable(fileID);
+		int message = tcp.checkReceiveAvailable(fileID);
+		System.out.println("This node was checked for receiveAvailable with return message: "+message);
+		return message;
 	}
 	
 	public void checkReplicationPreviousNode(){
