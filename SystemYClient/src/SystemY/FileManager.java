@@ -71,6 +71,7 @@ public class FileManager {
 		localFiles.add(newFile);
 		BestandFiche fiche = new BestandFiche(newFile.getName(),node.getName());
 		fileFiches.add(fiche);
+		System.out.println("file fiche added for file "+newFile.getName()+", fiche: "+fiche.toString());
 		ClientToNamingServerInterface ni = node.makeNI();
 		try {
 			if(ni.amIFirst()!=1){
