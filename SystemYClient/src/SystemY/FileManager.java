@@ -187,7 +187,7 @@ public class FileManager {
 				if (file.isOwner()){
 					fiche = file.getFiche();
 					fiche.removeFileLocation(node.getName());
-					node.transferOwnerShipToNode(fiche.getLocalOwner(), fiche);
+					node.transferOwnerShipToNode(node.getPreviousNode(), fiche);
 				} else {
 					node.removeLocationFromFileFromOtherNode(file.getName(), node.getName(), file.getNameLocalOwner());
 				}

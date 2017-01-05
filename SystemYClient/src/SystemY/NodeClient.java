@@ -658,6 +658,20 @@ public class NodeClient extends UnicastRemoteObject implements ClientToClientInt
 		ctci = null;
 	}
 	
+	public void transferOwnerShipToNode(int hashNode, BestandFiche fiche){
+		ClientToClientInterface ctci = makeCTCI(hashNode);
+		try {
+			ctci.transferOwnerShip(fiche);
+		} catch (RemoteException e) {
+			if (hashNode != -1){
+				failure(hashNode);
+			}
+
+			e.printStackTrace();
+		}
+		ctci = null;
+	}
+	
 	public void transferOwnerShip(BestandFiche fiche){
 		fileManager.transferOwnerShip(fiche);
 	}
