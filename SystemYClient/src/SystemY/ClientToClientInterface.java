@@ -1,6 +1,5 @@
 package SystemY;
 
-import java.net.InetAddress;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 
@@ -11,5 +10,6 @@ public interface ClientToClientInterface extends Remote {
 	public void checkReplicationFromNextNode() throws RemoteException;
 	//public void activateAgent(Thread agent) throws RemoteException;
 	public int checkReceiveAvailable(int fileID) throws RemoteException;
+	public int getPreviousNode() throws RemoteException;
 	
 }

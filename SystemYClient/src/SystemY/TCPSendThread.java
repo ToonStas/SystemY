@@ -38,6 +38,7 @@ public class TCPSendThread extends Thread {
 	}
 	
 	public void run(){
+		tcp.addThread(ID);
 		boolean sendFile = false;
 		boolean TOC = false;
 		int message = 0;
@@ -116,6 +117,7 @@ public class TCPSendThread extends Thread {
 						fileManager.removeRepFileWithName(fileName);
 					}
 					tcp.getSemSend().release();
+					tcp.addThread(ID);
 				
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
@@ -135,6 +137,7 @@ public class TCPSendThread extends Thread {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 					tcp.getSemSend().release();
+					tcp.addThread(ID);
 				}
 			}
 		}

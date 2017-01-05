@@ -24,13 +24,21 @@ public class FileManager {
 		filesToReplicate = new FileListWithFile();
 		
 		//create the file directories if they not already exist
-		File file = new File("C:/TEMP/LocalFiles/");
-	    if (!file.exists()) {
-	       	file.mkdir();
+		File dir = new File("C:/TEMP/LocalFiles/");
+	    if (!dir.exists()) {
+	       	dir.mkdir();
+	    } else {
+	    	for (File f : dir.listFiles()) {
+	    		f.delete();
+	    	}
 	    }
-	    file = new File("C:/TEMP/RepFiles/");
-	    if (!file.exists()){
-	    	file.mkdir();
+	    dir = new File("C:/TEMP/RepFiles/");
+	    if (!dir.exists()){
+	    	dir.mkdir();
+	    } else {
+	    	for (File f : dir.listFiles()) {
+	    		f.delete();
+	    	}
 	    }
 		
 		
@@ -106,14 +114,14 @@ public class FileManager {
 		
 		//checking if the replicated files on this node are replicated to the right node, only if this node isn't first or second
 		ClientToNamingServerInterface ni = node.makeNI();
-		int numberOfClients = 3;
+		int numberOfClients = 0;
 		try {
 			 numberOfClients = ni.amIFirst();
 		} catch (RemoteException e) {
 			System.out.println("Couldn't reach NamingServer with RMI.");
 		}
 		ni = null;
-		if (numberOfClients > 2){ 
+		if (numberOfClients == 0){ 
 			updateOwnerFiles();
 			node.refreshNeighbours();
 			int hashNext = node.getNextNode();
@@ -132,7 +140,55 @@ public class FileManager {
 		
 	}
 	
-	public void shutDownReplication(){
+	public void shutDownReplication() {
+		System.out.println("The files are beïng replicated to other nodes. Please wait...");
+		
+		//STEP 1: replacing all the replicated files to the right nodes
+		ArrayList<Bestand> repList = repFiles.getList();
+		node.refreshNeighbours();
+		int hashPrevious = node.getPreviousNode();
+		int numberOfNodes = 0;
+		ClientToNamingServerInterface ni = node.makeNI();
+		try {
+			numberOfNodes = ni.amIFirst();
+		} catch (RemoteException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		ni = null;
+		//for more then two nodes:
+		if (numberOfNodes == 0){
+			int hashPreviousPrevious = node.getPreviousPreviousNode();
+			Bestand file;
+			for (int i=0;i<repList.size();i++){
+				file = repList.get(i);
+				file.removeLocation(node.getName());
+				if (file.isOwner()){
+					tcp.sendFile(file, hashPrevious, true, false);
+				} else {
+					tcp.sendFile(file, hashPreviousPrevious, false, false);
+				}
+			}
+			System.out.println("Waiting untill files are replicated...");
+			long sleepTime = 100;
+			while(!tcp.checkSendThreadList()){
+				try {
+					Thread.sleep(sleepTime);
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+			
+		} else if ( numberOfNodes == 1) {
+			//do nothing
+		} else if ( numberOfNodes == 2) {
+			
+		}
+		
+		
+		//STEP 2: removing all the local files from this node in the network
+		
 		
 	}
 	

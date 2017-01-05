@@ -29,12 +29,12 @@ public class BestandFiche implements Serializable {
 		}
 	}
 	
-	public int removeFileLocation(String nodeName){
+	public boolean removeFileLocation(String nodeName){
 		if (fileLocations.contains(nodeName)){
-			return -1;
-		} else {
 			fileLocations.remove(nodeName);
-			return 1;
+			return true;
+		} else {
+			return false;
 		}
 	}
 	

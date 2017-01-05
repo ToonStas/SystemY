@@ -373,6 +373,18 @@ public class NodeClient extends UnicastRemoteObject implements ClientToClientInt
 	public void setPrevious(int hash) {previousNode=hash;}
 
 	public int getPreviousNode() {refreshNeighbours(); return previousNode;}
+	
+	public int getPreviousPreviousNode(){
+		int previousPreviousHash = -1;
+		ClientToClientInterface ctci = makeCTCI(getPreviousNode());
+		try {
+			previousPreviousHash = ctci.getPreviousNode();
+		} catch (RemoteException e) {
+			failure(previousNode);
+			e.printStackTrace();
+		}
+		return previousPreviousHash;
+	}
 
 	public int getNextNode() {refreshNeighbours(); return nextNode;}
 	

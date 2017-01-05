@@ -122,6 +122,10 @@ public class Bestand {
 		
 	}
 	
+	public boolean removeLocation(String locationNodeNameToDelete){
+		return fiche.removeFileLocation(locationNodeNameToDelete);
+	}
+	
 	public String getRandomFileLocation(){ //return null if there is no fiche
 		String nodeName = null;
 		if (isOwner){
