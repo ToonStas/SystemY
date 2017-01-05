@@ -3,10 +3,10 @@ package SystemY;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public class FileListWithFile {
+public class FileWithFileList {
 	private ArrayList<FileWithFile> list;
 	
-	public FileListWithFile(){
+	public FileWithFileList(){
 		list = new ArrayList<FileWithFile>();
 	}
 	
@@ -169,8 +169,8 @@ public class FileListWithFile {
 		}
 	}
 	
-	public FileListWithFile getOwnerFiles(){
-		FileListWithFile ownerList = new FileListWithFile();
+	public FileWithFileList getOwnerFiles(){
+		FileWithFileList ownerList = new FileWithFileList();
 		for (int i=0; i<list.size(); i++){
 			if (list.get(i).isOwner()){
 				ownerList.add(list.get(i));
@@ -179,14 +179,14 @@ public class FileListWithFile {
 		return ownerList;
 	}
 	
-	public void addAll(FileListWithFile newFileList){
+	public void addAll(FileWithFileList newFileList){
 		ArrayList<FileWithFile> newList = newFileList.getList();
 		for (int i=0;i<newList.size();i++){
 			list.add(newList.get(i));
 		}
 	}
 	
-	public void removeAllWithFile(FileListWithFile newFileList){
+	public void removeAllWithFile(FileWithFileList newFileList){
 		ArrayList<FileWithFile> newList = newFileList.getList();
 		for (int i=0;i<newList.size();i++){
 			newList.get(i).deleteFile();
@@ -194,7 +194,7 @@ public class FileListWithFile {
 		}
 	}
 	
-	public void removeAllFromList(FileListWithFile newFileList){
+	public void removeAllFromList(FileWithFileList newFileList){
 		ArrayList<FileWithFile> newList = newFileList.getList();
 		for (int i=0;i<newList.size();i++){
 			list.remove(newList.get(i));
@@ -252,8 +252,8 @@ public class FileListWithFile {
 		return requestList;
 	}
 	
-	public FileListWithFile getFileListLockRequests(){
-		FileListWithFile requestList = new FileListWithFile();
+	public FileWithFileList getFileListLockRequests(){
+		FileWithFileList requestList = new FileWithFileList();
 		for (int i=0;i<list.size();i++){
 			if (list.get(i).isLockRequest()){
 				requestList.add(list.get(i));

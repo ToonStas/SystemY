@@ -6,10 +6,13 @@ import java.util.ArrayList;
 
 //Class which manages all files and the lists it has
 public class FileManager {
-	private FileListWithFile localFiles = null; //files which the node possesses locally
-	private FileListWithFile repFiles = null; //files which are replicated to this node or file which are download for any other reason
-	private FileListWithFile ownerFiles = null;
-	private FileListWithFile filesToReplicate = null; //list of files which are not yet replicated because this node was the first one
+	private FileWithFileList localFiles = null; //files which the node possesses locally
+	private FileWithFileList repFiles = null; //files which are replicated to this node or file which are download for any other reason
+	private FileWithFileList ownedFiles = null; //files which are owned and located locally
+	private FileWithFileList filesToReplicate = null; //list of files which are not yet replicated because this node was the first one
+	private FileWithoutFileList allNetworkFiles = null; //list of all the files in the network
+	private FileWithoutFileList lockedFiles = null; //list of all locked files on this node;
+	private FileWithoutFileList ownedFilesWithoutFile = null; //list of all owned files on this node;
 	private NodeClient node = null;		
 	private TCP tcp;	
 	private Thread fileChecker;
@@ -17,12 +20,15 @@ public class FileManager {
 	
 	public FileManager(NodeClient nodeClient){
 		//initializing the private parameters
-		localFiles = new FileListWithFile();
-		repFiles = new FileListWithFile();
+		localFiles = new FileWithFileList();
+		repFiles = new FileWithFileList();
 		node = nodeClient;
 		tcp = node.getTCP();
-		ownerFiles = new FileListWithFile();
-		filesToReplicate = new FileListWithFile();
+		ownedFiles = new FileWithFileList();
+		filesToReplicate = new FileWithFileList();
+		allNetworkFiles = new FileWithoutFileList();
+		lockedFiles = new FileWithoutFileList();
+		ownedFilesWithoutFile = new FileWithoutFileList();
 		
 		//create the file directories if they not already exist
 		File dir = new File("C:/TEMP/LocalFiles/");
@@ -42,9 +48,9 @@ public class FileManager {
 	}
 	
 	public void updateOwnerFiles(){
-		ownerFiles.clearList();
-		ownerFiles.addAll(localFiles.getOwnerFiles());
-		ownerFiles.addAll(repFiles.getOwnerFiles());
+		ownedFiles.clearList();
+		ownedFiles.addAll(localFiles.getOwnerFiles());
+		ownedFiles.addAll(repFiles.getOwnerFiles());
 	}
 	
 	
@@ -136,7 +142,7 @@ public class FileManager {
 			int hashNext = node.getNextNode();
 			int testHash;
 			FileWithFile file;
-			ArrayList<FileWithFile> ownerFileList = ownerFiles.getList();
+			ArrayList<FileWithFile> ownerFileList = ownedFiles.getList();
 			for (int i=0; i<ownerFileList.size();i++){
 				file = ownerFileList.get(i);
 				testHash = node.getHashLocation(file.getName());
@@ -349,7 +355,7 @@ public class FileManager {
 	}
 	
 	
-	public FileListWithFile getLocalFiles(){
+	public FileWithFileList getLocalFiles(){
 		return localFiles;
 	}
 	
@@ -380,15 +386,15 @@ public class FileManager {
 	
 	public boolean isLockRequest(){
 		updateOwnerFiles();
-		return ownerFiles.isLockRequest();
+		return ownedFiles.isLockRequest();
 	}
 	
 	public ArrayList<String> getNameListLockRequests(){
-		return ownerFiles.getNameListLockRequests();
+		return ownedFiles.getNameListLockRequests();
 	}
 	
-	public FileListWithFile getFileListLockRequests(){
-		return ownerFiles.getFileListLockRequests();
+	public FileWithFileList getFileListLockRequests(){
+		return ownedFiles.getFileListLockRequests();
 	}
 
 

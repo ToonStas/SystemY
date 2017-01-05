@@ -3,10 +3,12 @@ package SystemY;
 import java.io.Serializable;
 import java.util.ArrayList;
 
-public class FileListWithoutFile implements Serializable{
+public class FileWithoutFileList implements Serializable{
+
+	private static final long serialVersionUID = 1L;
 	private ArrayList<FileWithoutFile> list;
 	
-	public FileListWithoutFile(){
+	public FileWithoutFileList(){
 		list = new ArrayList<>();
 	}
 	
@@ -39,8 +41,8 @@ public class FileListWithoutFile implements Serializable{
 		return lockList;
 	}
 	
-	public FileListWithoutFile getFileListLockedFiles(){
-		FileListWithoutFile fileList = new FileListWithoutFile();
+	public FileWithoutFileList getFileListLockedFiles(){
+		FileWithoutFileList fileList = new FileWithoutFileList();
 		for (int i=0;i<list.size();i++){
 			if(list.get(i).isLocked()){
 				fileList.addFile(list.get(i));
@@ -63,7 +65,7 @@ public class FileListWithoutFile implements Serializable{
 		return list;
 	}
 	
-	public void addAll(FileListWithoutFile newFileList){
+	public void addAll(FileWithoutFileList newFileList){
 		if (newFileList != null){
 			ArrayList<FileWithoutFile> newList = newFileList.getList();
 			for (int i=0;i<newList.size();i++){
@@ -80,6 +82,15 @@ public class FileListWithoutFile implements Serializable{
 				if (!list.contains(newList.get(i))){
 					list.add(newList.get(i));
 				}
+			}
+		}
+	}
+	
+	public void addAllFiles(FileWithFileList fileList){
+		ArrayList<FileWithFile> newList = fileList.getList();
+		{
+			for (int i=0;i<newList.size();i++){
+				
 			}
 		}
 	}

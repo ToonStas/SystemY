@@ -4,7 +4,7 @@ import java.io.File;
 
 public class CheckLocalFilesThread extends Thread {
 	private FileManager fileManager;
-	private FileListWithFile localFiles;
+	private FileWithFileList localFiles;
 	private static long SLEEPTIME = 2000; //Milliseconds
 	
 	
