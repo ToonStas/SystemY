@@ -65,7 +65,6 @@ public class TCPSendFileRequest {
 
 	public boolean checkSemTOC(){
 		semTOC--;
-		System.out.println("SemTOC for file "+fileName+", count: "+semTOC);
 		if (semTOC<0){
 			return true;
 		}
