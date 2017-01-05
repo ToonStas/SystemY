@@ -2,18 +2,18 @@ package SystemY;
 
 import java.util.TreeMap;
 //buffer which holds the different file requests
-public class ReceiveBuffer {
+public class TCPReceiveBuffer {
 
-	private TreeMap<Integer,ReceiveFileRequest> map;
-	public ReceiveBuffer(){
-		map = new TreeMap<Integer,ReceiveFileRequest>();
+	private TreeMap<Integer,TCPReceiveFileRequest> map;
+	public TCPReceiveBuffer(){
+		map = new TreeMap<Integer,TCPReceiveFileRequest>();
 	}
 	
-	public void add(ReceiveFileRequest fileRequest){
+	public void add(TCPReceiveFileRequest fileRequest){
 		map.put(fileRequest.getID(), fileRequest);
 	}
 	
-	public ReceiveFileRequest get(int fileID){
+	public TCPReceiveFileRequest get(int fileID){
 		return map.get(fileID);
 	}
 	

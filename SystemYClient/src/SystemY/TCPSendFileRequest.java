@@ -3,7 +3,7 @@ package SystemY;
 import java.io.File;
 import java.net.InetAddress;
 // class with the information needed for a file send request
-public class SendFileRequest {
+public class TCPSendFileRequest {
 	private File file;
 	private InetAddress IP;
 	private String fileName;
@@ -14,7 +14,7 @@ public class SendFileRequest {
 	private boolean transferOwnerShip;
 	private boolean deleteFileAfterSending;
 	
-	public SendFileRequest(File fileToSend, InetAddress IPDestination, int fileID, int hashReceiverNode, String fileName, boolean transferOwnerShip, boolean deleteFileAfterSending){
+	public TCPSendFileRequest(File fileToSend, InetAddress IPDestination, int fileID, int hashReceiverNode, String fileName, boolean transferOwnerShip, boolean deleteFileAfterSending){
 		file = fileToSend;
 		IP = IPDestination;
 		ID = fileID;

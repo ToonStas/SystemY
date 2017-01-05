@@ -12,17 +12,17 @@ public class TCP {
 	private Thread receiveThread;
 	private volatile Semafoor semReceive = new Semafoor(); //only one file can be received at a time
 	private volatile Semafoor semSend = new Semafoor(); //only one file can be send at a time
-	private ReceiveBuffer receiveBuffer; //buffer which holds the receive requests
+	private TCPReceiveBuffer tCPReceiveBuffer; //buffer which holds the receive requests
 	private NodeClient node;
 	
 	public TCP(NodeClient nodeClient) {
 		node = nodeClient;
-		receiveBuffer = new ReceiveBuffer();
+		tCPReceiveBuffer = new TCPReceiveBuffer();
 	}
 	
 	
-	public ReceiveBuffer getReceiveBuffer(){
-		return receiveBuffer;
+	public TCPReceiveBuffer getReceiveBuffer(){
+		return tCPReceiveBuffer;
 	}
 	
 	public Semafoor getSemSend(){
@@ -35,9 +35,9 @@ public class TCP {
 	
 	//this method uses the sender of a file to know if this receiver is ready to receive a file
 	public int checkReceiveAvailable(int fileID){
-		if (receiveBuffer.contains(fileID)){
+		if (tCPReceiveBuffer.contains(fileID)){
 			if (semReceive.tryAcquire()){
-				this.startReceiveFile(receiveBuffer.get(fileID));
+				this.startReceiveFile(tCPReceiveBuffer.get(fileID));
 				return fileID;
 			}
 			else {
@@ -49,21 +49,21 @@ public class TCP {
 		}
 	}
 	
-	public Thread startReceiveFile(ReceiveFileRequest request){
+	public Thread startReceiveFile(TCPReceiveFileRequest request){
 		receiveThread = new Thread (new TCPReceiveThread(SOCKET_PORT, this, node, request, node.getFileManager()));
 		receiveThread.start();
 		return receiveThread;
 	}
 	
-	public Thread startSendFile(SendFileRequest request){
+	public Thread startSendFile(TCPSendFileRequest request){
 		Thread sendThread = new Thread (new TCPSendThread(SOCKET_PORT, node, request));
 		sendThread.start();
 		return sendThread;
 	}
 	
 	//Adds the request to the buffer
-	public void addReceiveRequest(ReceiveFileRequest request) throws IOException {
-		receiveBuffer.add(request);
+	public void addReceiveRequest(TCPReceiveFileRequest request) throws IOException {
+		tCPReceiveBuffer.add(request);
 	}
 	
 	
@@ -84,8 +84,8 @@ public class TCP {
 		
 		
 		try {
-			SendFileRequest sendRequest = new SendFileRequest(fileToSend.getFile(),InetAddress.getByName(ip),fileID,receiverHash,fileToSend.getName(), transferOwnerShip,deleteFileAfterSending);
-			ReceiveFileRequest receiveRequest = new ReceiveFileRequest(InetAddress.getLocalHost(),fileToSend.getName(),fileSize,fileID, fileToSend.getHashLocalOwner(), fileToSend.getNameLocalOwner(), fileToSend.getFiche(), transferOwnerShip);
+			TCPSendFileRequest sendRequest = new TCPSendFileRequest(fileToSend.getFile(),InetAddress.getByName(ip),fileID,receiverHash,fileToSend.getName(), transferOwnerShip,deleteFileAfterSending);
+			TCPReceiveFileRequest receiveRequest = new TCPReceiveFileRequest(InetAddress.getLocalHost(),fileToSend.getName(),fileSize,fileID, fileToSend.getHashLocalOwner(), fileToSend.getNameLocalOwner(), fileToSend.getFiche(), transferOwnerShip);
 			ClientToClientInterface ctci = node.makeCTCI(receiverHash);
 			ctci.setReceiveRequest(receiveRequest);
 			ctci = null;

@@ -404,7 +404,7 @@ public class NodeClient extends UnicastRemoteObject implements ClientToClientInt
 	
 	
 	//sets a receive request in the tcp receive file buffer (used by the file sender via RMI)
-	public void setReceiveRequest(ReceiveFileRequest request) throws RemoteException{
+	public void setReceiveRequest(TCPReceiveFileRequest request) throws RemoteException{
 		try {
 			tcp.addReceiveRequest(request);
 		} catch (IOException e) {

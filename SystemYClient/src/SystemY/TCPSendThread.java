@@ -14,7 +14,7 @@ public class TCPSendThread extends Thread {
 	private static int SOCKET_PORT;
 	private NodeClient node;
 	private File file;
-	private SendFileRequest request;
+	private TCPSendFileRequest request;
 	private InetAddress IPDest;
 	private TCP tcp;
 	private FileManager fileManager;
@@ -24,7 +24,7 @@ public class TCPSendThread extends Thread {
 	private int receiverHash;
 	
 	//Thread who sends a file
-	public TCPSendThread(int SocketPort, NodeClient nodeClient, SendFileRequest sendRequest){
+	public TCPSendThread(int SocketPort, NodeClient nodeClient, TCPSendFileRequest sendRequest){
 		SOCKET_PORT = SocketPort;
 		request = sendRequest;
 		file = request.getFile();

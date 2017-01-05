@@ -15,11 +15,11 @@ public class TCPReceiveThread extends Thread {
 	private TCP tcp;
 	private int ID;
 	private NodeClient node;
-	private ReceiveFileRequest request;
+	private TCPReceiveFileRequest request;
 	private FileManager fileManager;
 	
 	//Thread who receives a file
-	public TCPReceiveThread(int Socket_Port,TCP thisTcp, NodeClient nodeClient, ReceiveFileRequest receiveRequest, FileManager theFileManager){
+	public TCPReceiveThread(int Socket_Port,TCP thisTcp, NodeClient nodeClient, TCPReceiveFileRequest receiveRequest, FileManager theFileManager){
 		SOCKET_PORT = Socket_Port;
 		request = receiveRequest;
 		size = request.getSize();
