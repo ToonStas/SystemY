@@ -90,7 +90,11 @@ public class FileWithoutFileList implements Serializable{
 		ArrayList<FileWithFile> newList = fileList.getList();
 		{
 			for (int i=0;i<newList.size();i++){
-				
+				for (int j=0;j<list.size();j++){
+					if (!newList.get(i).getName().equals(list.get(j).getName())){
+						addNewFile(newList.get(i).getName(),false);
+					}
+				}
 			}
 		}
 	}
