@@ -132,6 +132,10 @@ public class FileManager {
 		
 	}
 	
+	public void shutDownReplication(){
+		
+	}
+	
 	public int addRepFile(String nameFile, String nameNode, int hashNode, BestandFiche fileFiche, boolean transferOwnerShip){
 		Bestand newFile = new Bestand(nameFile,"C:/TEMP/RepFiles/",nameNode,hashNode);
 		//when the node has the file already but it needs to be the owner of the file

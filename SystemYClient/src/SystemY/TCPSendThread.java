@@ -43,8 +43,8 @@ public class TCPSendThread extends Thread {
 		int message = 0;
 		ClientToClientInterface ctci;
 		int counter = 0;
-		//loop for checking if this node and the receiving node are ready to transmit the file
-		while (sendFile == false){
+		//STEP 1: loop for checking if this node and the receiving node are ready to transmit the file
+		while (sendFile == false && TOC == false){
 			counter++;
 			
 			//sleeping till new request
@@ -66,9 +66,16 @@ public class TCPSendThread extends Thread {
 						sendFile = true; //now we can send the file
 					} else if (message == -1) {
 						tcp.getSemSend().release();
-						
+						if (request.checkSemTOC()){
+							TOC = true;
+							System.out.println("TCP error: semaphore time out counter expired for file "+fileName+", the file could not be send.");
+						}
 					} else if (message == -2) {
 						tcp.getSemSend().release();
+						if (request.checkFileTOC()){
+							TOC = true;
+							System.out.println("TCP error: fileRequest not found on receiver time out counter expired for file "+fileName+", the file could not be send.");
+						}
 					}
 					
 				} catch (RemoteException e) {
@@ -80,7 +87,7 @@ public class TCPSendThread extends Thread {
 		}
 		
 		
-		if (true){
+		if (!TOC){
 			//Sending the file:
 			FileInputStream fis = null;
 			BufferedInputStream bis = null;
