@@ -171,7 +171,7 @@ public class Nodelijst {
     	NodeNamingServer node = null;
     	for(Map.Entry<Integer,NodeNamingServer> entry : listOfNodes.entrySet()) {
     		  node = entry.getValue();
-    		  if (node.getName()==nodeName){
+    		  if (node.getName().equals(nodeName)){
     			  hash = entry.getKey();
     		  }
     	}
