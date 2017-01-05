@@ -36,11 +36,11 @@ public class TCP {
 		}
 	}
 	
-	public boolean checkSendThreadList(){
+	public boolean sendThreadRunning(){
 		if (sendThreadList.isEmpty()){
-			return true;
-		} else {
 			return false;
+		} else {
+			return true;
 		}
 	}
 	

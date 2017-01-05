@@ -242,6 +242,7 @@ public class NodeClient extends UnicastRemoteObject implements ClientToClientInt
 		//STEP 1: replicate/move files
 		fileManager.stopCheckLocalFilesThread();
 		fileManager.shutDownReplication();
+
 		
 		//STEP 2: remove node from server
 		//if you're the first (and this case last) node, you shouldn't notify yourself)
