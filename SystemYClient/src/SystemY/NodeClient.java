@@ -104,7 +104,7 @@ public class NodeClient extends UnicastRemoteObject implements ClientToClientInt
 			try {
 				System.out.println("Enter file to ask for: ");
 				ClientToNamingServerInterface ni = makeNI();
-				String Filelocation = ni.askLocation((readConsole()));
+				String Filelocation = ni.getFileLocation(readConsole());
 				ni = null;
 				System.out.println("The location is: " + Filelocation);
 			} catch (RemoteException e) {
@@ -204,7 +204,7 @@ public class NodeClient extends UnicastRemoteObject implements ClientToClientInt
 		int hash = -1;
 		try {
 			ClientToNamingServerInterface ni = makeNI();
-			hash = ni.askHashLocation(fileName);
+			hash = ni.getHashNode(fileName);
 			ni = null;
 			//System.out.println("There was a hash requested to the server for filename "+fileName+", this hash was given: "+hash);
 		} catch (RemoteException e) {
@@ -545,7 +545,7 @@ public class NodeClient extends UnicastRemoteObject implements ClientToClientInt
 		String ip="";
 		try {
 			ClientToNamingServerInterface ni = makeNI();
-			ip = ni.getIP(hash);
+			ip = ni.getIPNode(hash);
 			ni = null;
 		} catch (RemoteException e1) {
 			System.out.println("Couldn't fetch IP from Namingserver");
@@ -575,7 +575,7 @@ public class NodeClient extends UnicastRemoteObject implements ClientToClientInt
 		int hash;
 		try {
 			ClientToNamingServerInterface ni = makeNI();
-			hash = ni.getHashByName(nodeName);
+			hash = ni.getHashNodeByNodeName(nodeName);
 			ni = null;
 			ctci = makeCTCI(hash);
 		} catch (RemoteException e) {
@@ -615,7 +615,7 @@ public class NodeClient extends UnicastRemoteObject implements ClientToClientInt
 		int hashOwner = -1;
 		ClientToNamingServerInterface ni = makeNI();
 		try {
-			hashOwner = ni.askHashLocation(fileName);
+			hashOwner = ni.getHashNode(fileName);
 		} catch (RemoteException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -713,7 +713,7 @@ public class NodeClient extends UnicastRemoteObject implements ClientToClientInt
 		}
 	}
 
-	public void addLocationToFileFromOwnerNode(String fileName, int hashNodeToAdd) {
+	public void addLocationToFileFromOwnerNodeByHash(String fileName, int hashNodeToAdd) {
 		ClientToNamingServerInterface ni = makeNI();
 		String nodeName = null;
 		try {
@@ -723,10 +723,10 @@ public class NodeClient extends UnicastRemoteObject implements ClientToClientInt
 			e.printStackTrace();
 		}
 		ni = null;
-		addLocationToFileFromOwnerNode(fileName,nodeName);
+		addLocationToFileFromOwnerNodeByName(fileName,nodeName);
 	}
 	
-	public void addLocationToFileFromOwnerNode(String fileName, String nameNodeToAdd) {
+	public void addLocationToFileFromOwnerNodeByName(String fileName, String nameNodeToAdd) {
 		ClientToNamingServerInterface ni = makeNI();
 		int hashOwner = -1;
 		try {
@@ -737,7 +737,14 @@ public class NodeClient extends UnicastRemoteObject implements ClientToClientInt
 		}
 		ni = null;
 		
-		
+		ClientToClientInterface ctci = makeCTCI(hashOwner);
+		try {
+			ctci.addLocationToFile(fileName,nameNodeToAdd);
+		} catch (RemoteException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		ctci = null;
 		
 	}
 }

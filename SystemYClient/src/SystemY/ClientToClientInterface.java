@@ -12,7 +12,7 @@ public interface ClientToClientInterface extends Remote {
 	public int checkReceiveAvailable(int fileID) throws RemoteException;
 	public int getPreviousNode() throws RemoteException;
 	public void removeLocationFromFile(String fileName, String nodeNameToRemove) throws RemoteException;
+	public void addLocationToFile(String fileName, String nodeNameToAdd) throws RemoteException;
 	public void transferOwnerShip(BestandFiche fiche) throws RemoteException;
 	public void removeFileFromNetwork(String fileName, int hashOriginalNode) throws RemoteException;
-	
 }

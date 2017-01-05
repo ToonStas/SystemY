@@ -96,7 +96,7 @@ public class TCP {
 		String ip = "";
 		try {
 			ClientToNamingServerInterface ni = node.makeNI();
-			ip = ni.getIP(receiverHash);
+			ip = ni.getIPNode(receiverHash);
 			ni = null;
 		} catch (RemoteException e1) {
 			System.out.println("Couldn't fetch IP from Namingserver");

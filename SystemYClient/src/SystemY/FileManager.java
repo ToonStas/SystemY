@@ -181,11 +181,13 @@ public class FileManager {
 					}
 				} else { //if this node isn't the owner of the file
 					if (file.getHashLocalOwner()==hashPrevious){
-						
+						tcp.sendFile(file, hashPrevious, false, false);
+						node.removeLocationFromFileFromOwnerNode(file.getName(), node.getName());
+						node.addLocationToFileFromOwnerNodeByHash(file.getName(), hashPrevious);
 					} else {
 						tcp.sendFile(file, hashPreviousPrevious, false, false);
 						node.removeLocationFromFileFromOwnerNode(file.getName(), node.getName());
-						node.addLocationToFileFromOwnerNode(file.getName(), hashPreviousPrevious);
+						node.addLocationToFileFromOwnerNodeByHash(file.getName(), hashPreviousPrevious);
 					}
 				}
 			}
@@ -325,9 +327,12 @@ public class FileManager {
 	}
 
 	public void addFileLocation(String fileName, String nodeNameToAdd) {
-		
-		if ()
-		
+		Bestand file = getFileByName(fileName);
+		if (file != null){
+			file.addLocation(nodeNameToAdd);
+		} else {
+			System.out.println("Node was trying to add this node to the locations of file "+fileName+", but this node doesn't have the file.");
+		}
 	}
 
 
