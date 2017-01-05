@@ -152,7 +152,7 @@ public class FileManager {
 	public void shutDownReplication() {
 		System.out.println("The files are beïng replicated to other nodes. Please wait...");
 		
-		//STEP 1: replacing all the replicated files to the right nodes
+		//STEP 1: sending all the replicated files to the right nodes and adjusting the file fiches
 		ArrayList<Bestand> repList = repFiles.getList();
 		node.refreshNeighbours();
 		int hashPrevious = node.getPreviousNode();
@@ -171,11 +171,22 @@ public class FileManager {
 			Bestand file;
 			for (int i=0;i<repList.size();i++){
 				file = repList.get(i);
-				file.removeLocation(node.getName());
-				if (file.isOwner()){
-					tcp.sendFile(file, hashPrevious, true, false);
-				} else {
-					tcp.sendFile(file, hashPreviousPrevious, false, false);
+				if (file.isOwner()){ //if this node is the owner of the file
+					file.removeLocation(node.getName());
+					if (file.getHashLocalOwner()==hashPrevious){// if the previous node has the file locally
+						node.transferOwnerShipToNode(hashPrevious, file.getFiche());
+						tcp.sendFile(file, hashPreviousPrevious, false, false);
+					} else { // if the previous node doesn't have the file locally
+						tcp.sendFile(file, hashPrevious, true, false);
+					}
+				} else { //if this node isn't the owner of the file
+					if (file.getHashLocalOwner()==hashPrevious){
+						
+					} else {
+						tcp.sendFile(file, hashPreviousPrevious, false, false);
+						node.removeLocationFromFileFromOwnerNode(file.getName(), node.getName());
+						node.addLocationToFileFromOwnerNode(file.getName(), hashPreviousPrevious);
+					}
 				}
 			}
 			
@@ -202,7 +213,7 @@ public class FileManager {
 					fiche.removeFileLocation(node.getName());
 					node.transferOwnerShipToNode(node.getPreviousNode(), fiche);
 				} else {
-					node.removeLocationFromFileFromOtherNode(file.getName(), node.getName(), file.getNameLocalOwner());
+					node.removeLocationFromFileFromOwnerNode(file.getName(), node.getName());
 				}
 			}
 		}
@@ -311,6 +322,12 @@ public class FileManager {
 			System.out.println("transfer ownership error: file = null, fiche: "+fiche.getFileName());
 		}
 		file.replaceFiche(fiche);
+	}
+
+	public void addFileLocation(String fileName, String nodeNameToAdd) {
+		
+		if ()
+		
 	}
 
 

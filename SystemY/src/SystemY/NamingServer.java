@@ -46,7 +46,7 @@ public class NamingServer extends UnicastRemoteObject implements ClientToNamingS
 	}
 	
 	//Ask where the file with fileName should be placed
-	public String askLocation(String fileName){
+	public String getIPFile(String fileName){
 		String location = "ipadres";
 		int hash = nodeLijst.calculateHash(fileName);
 		
@@ -59,7 +59,7 @@ public class NamingServer extends UnicastRemoteObject implements ClientToNamingS
 		return location;
 	}
 	
-	public int askHashLocation(String fileName){
+	public int getHashNode(String fileName){
 		int hashNode = -1;
 		int hashFile = nodeLijst.calculateHash(fileName);
 		
@@ -90,8 +90,8 @@ public class NamingServer extends UnicastRemoteObject implements ClientToNamingS
 	public int[] getNeigbours(int hashNode){
 		int[] neighbours = new int[2]; //neigbours[0] = previous, 1 = next
 		
-		neighbours[0] = getPrevious(hashNode);
-		neighbours[1] = getNext(hashNode);
+		neighbours[0] = getHashPreviousNode(hashNode);
+		neighbours[1] = getHashNextNode(hashNode);
 		return neighbours;
 	}
 
@@ -102,7 +102,7 @@ public class NamingServer extends UnicastRemoteObject implements ClientToNamingS
 	}
 
 	//returns the ip for the node with hash: hashNode
-	public String getIP(int hashNode){
+	public String getIPNode(int hashNode){
 		//System.out.println("An ip was requested for this hash: "+hashNode);
 		String ip = "No IP found.";
 		listOfNodes = nodeLijst.getListOfNodes();	
@@ -123,7 +123,7 @@ public class NamingServer extends UnicastRemoteObject implements ClientToNamingS
 	}
 	
 	//gets the nodes hash using his name
-	public int getHashByName(String nameNode){
+	public int getHashNodeByNodeName(String nameNode){
 		System.out.println("An ip was requested for this name: "+nameNode);
 		int hash = -1;
 		listOfNodes = nodeLijst.getListOfNodes();	
@@ -141,7 +141,7 @@ public class NamingServer extends UnicastRemoteObject implements ClientToNamingS
 	}
 	
 	//get hash of a node by it's ip
-	public int getHash(String ip){
+	public int getHashNodeByIP(String ip){
 		int hash = -1;
 		for(NodeNamingServer node : listOfNodes.values()){
 			//return the hash if the ip exists
@@ -154,12 +154,12 @@ public class NamingServer extends UnicastRemoteObject implements ClientToNamingS
 	}
 
 	public void activateAgent(int hashOfNode){
-		int next = getNext(hashOfNode);
+		int next = getHashNextNode(hashOfNode);
 		//listOfNodes.get(next).getInterface().activateAgent();
 	}
 
 	//method to return the next node
-	private int getNext(int hashOfNode) {
+	private int getHashNextNode(int hashOfNode) {
 		int next;
 		if(listOfNodes.higherEntry(hashOfNode) == null){ //if there is no higher hash
 			return next = listOfNodes.firstEntry().getValue().getHash();
@@ -168,7 +168,7 @@ public class NamingServer extends UnicastRemoteObject implements ClientToNamingS
 		}		
 	}
 	
-	private int getPrevious(int hashNode) {
+	private int getHashPreviousNode(int hashNode) {
 		int previous;
 		//give hash of the first node < given hash
 		if(listOfNodes.floorEntry(hashNode-1)==null){ //if there is no lowest node, return the highest node
@@ -176,5 +176,17 @@ public class NamingServer extends UnicastRemoteObject implements ClientToNamingS
 		}else{
 			return previous = listOfNodes.floorEntry(hashNode-1).getValue().getHash(); //give the hash of the node below 
 		}
+	}
+	
+	public String getNameNode(int hashNode) {
+		if (listOfNodes.containsKey(hashNode)){
+			NodeNamingServer node = listOfNodes.get(hashNode);
+			return node.getName();
+		} else {
+			String str = null;
+			System.out.println("A node name was requested for a false hash: "+hashNode);
+			return str;
+		}
+		
 	}
 }

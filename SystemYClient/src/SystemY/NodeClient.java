@@ -611,23 +611,23 @@ public class NodeClient extends UnicastRemoteObject implements ClientToClientInt
 		return tcp;
 	}
 	
-	public void removeLocationFromFileFromOtherNode(String fileName, String nodeNameToRemove, String nodeNameToSendTo){
-		int hash = -1;
+	public void removeLocationFromFileFromOwnerNode(String fileName, String nodeNameToRemove){
+		int hashOwner = -1;
 		ClientToNamingServerInterface ni = makeNI();
 		try {
-			hash = ni.getHashByName(nodeNameToSendTo);
+			hashOwner = ni.askHashLocation(fileName);
 		} catch (RemoteException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		ni = null;
-		System.out.println("remove location message : removing location from file "+fileName+", hash node: "+hash);
-		ClientToClientInterface ctci = makeCTCI(hash);
+		System.out.println("remove location message : removing location from file "+fileName+", hash node: "+hashOwner);
+		ClientToClientInterface ctci = makeCTCI(hashOwner);
 		try {
 			ctci.removeLocationFromFile(fileName,nodeNameToRemove);
 		} catch (RemoteException e) {
-			if (hash != -1){
-				failure(hash);
+			if (hashOwner != -1){
+				failure(hashOwner);
 			}
 
 			e.printStackTrace();
@@ -639,11 +639,15 @@ public class NodeClient extends UnicastRemoteObject implements ClientToClientInt
 		fileManager.removeLocationFromFile(fileName,nodeNameToRemove);
 	}
 	
+	public void addLocationToFile(String fileName, String nodeNameToAdd){
+		fileManager.addFileLocation(fileName,nodeNameToAdd);
+	}
+	
 	public void transferOwnerShipToNode(String nodeName, BestandFiche fiche){
 		int hash = -1;
 		ClientToNamingServerInterface ni = makeNI();
 		try {
-			hash = ni.getHashByName(nodeName);
+			hash = ni.getHashNodeByNodeName(nodeName);
 		} catch (RemoteException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -707,5 +711,33 @@ public class NodeClient extends UnicastRemoteObject implements ClientToClientInt
 			}
 			ctci = null;
 		}
+	}
+
+	public void addLocationToFileFromOwnerNode(String fileName, int hashNodeToAdd) {
+		ClientToNamingServerInterface ni = makeNI();
+		String nodeName = null;
+		try {
+			nodeName = ni.getNameNode(hashNodeToAdd);
+		} catch (RemoteException e) {
+			System.out.println("Couldn't reach namingserver");
+			e.printStackTrace();
+		}
+		ni = null;
+		addLocationToFileFromOwnerNode(fileName,nodeName);
+	}
+	
+	public void addLocationToFileFromOwnerNode(String fileName, String nameNodeToAdd) {
+		ClientToNamingServerInterface ni = makeNI();
+		int hashOwner = -1;
+		try {
+			hashOwner = ni.getHashNode(fileName);
+		} catch (RemoteException e) {
+			System.out.println("Couldn't reach namingserver");
+			e.printStackTrace();
+		}
+		ni = null;
+		
+		
+		
 	}
 }
