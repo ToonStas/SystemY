@@ -29,7 +29,7 @@ public class NodeNamingServer implements Remote {
 	
 	public int setName (String name){
 		this.name = name;
-		if(name == getName())
+		if(name.equals(getName()))
 			return 0;
 		else{
 			node.put("Name",this.name);

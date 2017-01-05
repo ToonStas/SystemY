@@ -31,7 +31,9 @@ public class CheckLocalFilesThread extends Thread {
 			}
 			//test
 		}
-		run();
+		if (fileManager.runThread){
+			run();
+		}
 	}
 
 }

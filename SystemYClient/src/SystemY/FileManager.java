@@ -12,7 +12,8 @@ public class FileManager {
 	private FileListWithFile filesToReplicate = null; //list of files which are not yet replicated because this node was the first one
 	private NodeClient node = null;		
 	private TCP tcp;	
-	
+	private Thread fileChecker;
+	public volatile boolean runThread = false;
 	
 	public FileManager(NodeClient nodeClient){
 		//initializing the private parameters
@@ -60,8 +61,14 @@ public class FileManager {
 	}
 	
 	public void startCheckLocalFilesThread(){
-		Thread fileChecker = new CheckLocalFilesThread(this);
+		runThread = true;
+		fileChecker = new CheckLocalFilesThread(this);
 		fileChecker.start();
+	}
+	
+	
+	public void stopCheckLocalFilesThread(){
+		runThread = false;
 	}
 	
 	
