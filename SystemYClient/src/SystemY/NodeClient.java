@@ -608,4 +608,86 @@ public class NodeClient extends UnicastRemoteObject implements ClientToClientInt
 		return tcp;
 	}
 	
+	public void removeLocationFromFileFromOtherNode(String fileName, String nodeNameToRemove, String nodeNameToSendTo){
+		int hash = -1;
+		ClientToNamingServerInterface ni = makeNI();
+		try {
+			hash = ni.getHashByName(nodeNameToSendTo);
+		} catch (RemoteException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		ni = null;
+		ClientToClientInterface ctci = makeCTCI(hash);
+		try {
+			ctci.removeLocationFromFile(fileName,nodeNameToRemove);
+		} catch (RemoteException e) {
+			if (hash != -1){
+				failure(hash);
+			}
+
+			e.printStackTrace();
+		}
+		ctci = null;
+	}
+	
+	public void removeLocationFromFile(String fileName, String nodeNameToRemove){
+		fileManager.removeLocationFromFile(fileName,nodeNameToRemove);
+	}
+	
+	public void transferOwnerShipToNode(String nodeName, BestandFiche fiche){
+		int hash = -1;
+		ClientToNamingServerInterface ni = makeNI();
+		try {
+			hash = ni.getHashByName(nodeName);
+		} catch (RemoteException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		ni = null;
+		ClientToClientInterface ctci = makeCTCI(hash);
+		try {
+			ctci.transferOwnerShip(fiche);
+		} catch (RemoteException e) {
+			if (hash != -1){
+				failure(hash);
+			}
+
+			e.printStackTrace();
+		}
+		ctci = null;
+	}
+	
+	public void transferOwnerShip(BestandFiche fiche){
+		fileManager.transferOwnerShip(fiche);
+	}
+	
+	public void removeFileFromNetwork(String fileName){
+		removeFileFromNetwork(fileName,0);
+	}
+	
+	public void removeFileFromNetwork(String fileName, int hashOriginalNode){
+		if (hashOriginalNode == 0){
+			ClientToClientInterface ctci = makeCTCI(nextNode);
+			try {
+				ctci.removeFileFromNetwork(fileName,ownHash);
+			} catch (RemoteException e) {
+				failure(nextNode);
+				e.printStackTrace();
+			}
+			ctci = null;
+		} else if (hashOriginalNode == ownHash){
+			//do nothing, ring command ends
+		} else {
+			fileManager.removeRepFileWithName(fileName);
+			ClientToClientInterface ctci = makeCTCI(nextNode);
+			try {
+				ctci.removeFileFromNetwork(fileName,hashOriginalNode);
+			} catch (RemoteException e) {
+				failure(nextNode);
+				e.printStackTrace();
+			}
+			ctci = null;
+		}
+	}
 }

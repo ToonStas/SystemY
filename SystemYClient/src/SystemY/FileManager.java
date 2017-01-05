@@ -169,7 +169,7 @@ public class FileManager {
 					tcp.sendFile(file, hashPreviousPrevious, false, false);
 				}
 			}
-			System.out.println("Waiting untill files are replicated...");
+			
 			long sleepTime = 100;
 			while(!tcp.checkSendThreadList()){
 				try {
@@ -183,12 +183,32 @@ public class FileManager {
 		} else if ( numberOfNodes == 1) {
 			//do nothing
 		} else if ( numberOfNodes == 2) {
-			
+			//We don't need to send files but we need to remove this node from the download locations and make that node owner
+			Bestand file;
+			BestandFiche fiche;
+			for (int i=0;i<repList.size();i++){
+				file = repList.get(i);
+				if (file.isOwner()){
+					fiche = file.getFiche();
+					fiche.removeFileLocation(node.getName());
+					node.transferOwnerShipToNode(fiche.getLocalOwner(), fiche);
+				} else {
+					node.removeLocationFromFileFromOtherNode(file.getName(), node.getName(), file.getNameLocalOwner());
+				}
+			}
 		}
+		System.out.println("All the files are replicated correctly.");
 		
 		
 		//STEP 2: removing all the local files from this node in the network
-		
+		System.out.println("Removing this nodes local files from the network.");
+		ArrayList<Bestand> localList = localFiles.getList();
+		Bestand file;
+		String name;
+		for (int i=0;i<localList.size();i++){
+			file = localList.get(i);
+			node.removeFileFromNetwork(file.getName());
+		}
 		
 	}
 	
@@ -216,7 +236,10 @@ public class FileManager {
 		}
 	}
 	
-	
+	public void removeLocationFromFile(String fileName, String nodeName){
+		Bestand file = getFileByName(fileName);
+		file.removeLocation(nodeName);
+	}
 	
 	//D.m.v. bestandsnaam bestand opvragen als deze voorkomt.
 	public Bestand getFileByName(String fileName){
@@ -268,6 +291,12 @@ public class FileManager {
 		boolean isRemoved = file.removeOwnership();
 		updateOwnerFiles();
 		return isRemoved;
+	}
+
+	public void transferOwnerShip(BestandFiche fiche) {
+		Bestand file = getFileByName(fiche.getFileName());
+		fiche.addFileLocation(node.getName()); //to be sure
+		file.replaceFiche(fiche);
 	}
 
 
