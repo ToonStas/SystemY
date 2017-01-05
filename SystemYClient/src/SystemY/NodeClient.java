@@ -260,6 +260,7 @@ public class NodeClient extends UnicastRemoteObject implements ClientToClientInt
 			ni = null;
 			e1.printStackTrace();
 		}	
+		ni = makeNI();
 		try {
 			ni.deleteNode(ownHash);
 			ni = null;
