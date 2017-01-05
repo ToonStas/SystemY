@@ -74,7 +74,7 @@ public class FileManager {
 	
 	public void printAllFiles(){
 		System.out.println("");
-		System.out.println("Printing all the files on this node: ");
+		System.out.println("Printing all the files on this node: (Hash: "+node.getOwnHash()+" )");
 		System.out.println("");
 		System.out.println("The local files are: ");
 		localFiles.printFiles();

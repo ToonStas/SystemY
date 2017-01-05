@@ -37,6 +37,7 @@ public class TCP {
 	}
 	
 	public boolean sendThreadRunning(){
+		System.out.println("checked if thread was running: "+sendThreadList.toString());
 		if (sendThreadList.isEmpty()){
 			return false;
 		} else {
