@@ -192,16 +192,7 @@ public class FileManager {
 				}
 			}
 			
-			//waiting till all files are send
-			long sleepTime = 100;
-			while(tcp.sendThreadRunning()){
-				try {
-					Thread.sleep(sleepTime);
-				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			}
+			
 			
 		} else if ( numberOfNodes == 1) {
 			//do nothing
@@ -218,6 +209,16 @@ public class FileManager {
 				} else {
 					node.removeLocationFromFileFromOwnerNode(file.getName(), node.getName());
 				}
+			}
+		}
+		//waiting till all files are send
+		long sleepTime = 100;
+		while(tcp.sendThreadRunning()){
+			try {
+				Thread.sleep(sleepTime);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
 		}
 		System.out.println("All the files are replicated correctly.");

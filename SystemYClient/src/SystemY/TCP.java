@@ -32,7 +32,7 @@ public class TCP {
 	
 	public void addThread(int ID){
 		if (!sendThreadList.contains(ID)){
-			
+			sendThreadList.add(ID);
 		}
 	}
 	
