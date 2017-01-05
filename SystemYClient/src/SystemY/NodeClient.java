@@ -269,6 +269,7 @@ public class NodeClient extends UnicastRemoteObject implements ClientToClientInt
 			ni = null;
 			e.printStackTrace();
 		}
+		System.out.println("The node has succesfully shut down.");
 		System.exit(0);
 	}
 	
