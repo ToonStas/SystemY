@@ -216,15 +216,15 @@ public class FileManager {
 		
 	}
 	
-	public int addRepFile(String nameFile, String nameNode, int hashNode, BestandFiche fileFiche, boolean transferOwnerShip){
+	public boolean addRepFile(String nameFile, String nameNode, int hashNode, BestandFiche fileFiche, boolean transferOwnerShip){
 		Bestand newFile = new Bestand(nameFile,"C:/TEMP/RepFiles/",nameNode,hashNode);
 		//when the node has the file already but it needs to be the owner of the file
-		if (repFiles.checkFileExistsWithName(nameFile)!=-1){
+		if (repFiles.checkFileExists(nameFile)){
 			if (transferOwnerShip){ 
 				fileFiche.addFileLocation(node.getName());
 				repFiles.getFile(nameFile).replaceFiche(fileFiche);
 			}
-			return -1;
+			return false;
 		
 		//when the node doesn't have the file	
 		} else {
@@ -236,7 +236,7 @@ public class FileManager {
 				newFile.removeOwnership(); //for safety
 				repFiles.add(newFile);
 			}
-			return 1;
+			return true;
 		}
 	}
 	
@@ -267,8 +267,8 @@ public class FileManager {
 	
 	
 	//bestand verwijderen op basis van naam
-	public int removeRepFileWithName(String fileName){
-		return repFiles.removeFileWithNameWithFile(fileName);
+	public boolean removeRepFile(String fileName){
+		return repFiles.removeFileWithFile(fileName);
 		
 	}
 	

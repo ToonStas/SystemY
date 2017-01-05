@@ -26,7 +26,7 @@ public class CheckLocalFilesThread extends Thread {
 		File dir = new File("C:/TEMP/LocalFiles/");
 		for (File f : dir.listFiles()) {
 			name = f.getName();
-			if (localFiles.checkFileExistsWithName(name)!=-1){
+			if (!localFiles.checkFileExists(name)){
 				fileManager.addLocalFile(name);
 			}
 			//test

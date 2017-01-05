@@ -114,7 +114,7 @@ public class TCPSendThread extends Thread {
 					}
 					if (request.deleteFileAfterSending()) //if this node must delete the file after sending, this will do it
 					{
-						fileManager.removeRepFileWithName(fileName);
+						fileManager.removeRepFile(fileName);
 					}
 					tcp.getSemSend().release();
 					tcp.addThread(ID);

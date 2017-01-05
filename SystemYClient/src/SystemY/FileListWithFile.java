@@ -40,8 +40,8 @@ public class FileListWithFile {
 		}
 	}
 	
-	public int removeFileWithHashFromList(int fileHash){
-		int index = checkFileExistsWithHash(fileHash);
+	public int removeFileFromList(int fileHash){
+		int index = checkFileExists(fileHash);
 		if (index == -1){
 			return -1;
 		} else {
@@ -50,37 +50,53 @@ public class FileListWithFile {
 		}
 	}
 	
-	public int removeFileWithNameFromList(String fileName){
-		int index = checkFileExistsWithName(fileName);
-		if (index == -1){
-			return -1;
-		} else {
-			removeFromList(list.get(index));
-			return 1;
-		}
-	}
-	
-	public int removeFileWithNameWithFile(String fileName){
-		int index = checkFileExistsWithName(fileName);
-		if (index == -1){
-			return -1;
-		} else {
-			removeFromList(list.get(index));
-			return 1;
-		}
-	}
-	
-	//returns -1 if the file doesn't exist, otherwise the index number
-	public int checkFileExistsWithName(String fileName){
+	public int getIndexFile(String fileName){
 		int index = -1;
-		Bestand testFile = null;
-		for (int i = 0; i<list.size(); i++){
-			testFile = list.get(i);
-			if (testFile.getName().equals(fileName)){
+		for (int i=0;i<list.size();i++){
+			if (list.get(i).getName().equals(fileName)){
 				index = i;
 			}
 		}
 		return index;
+	}
+	
+	public boolean removeFileFromList(String fileName){
+		int index = getIndexFile(fileName);
+		int minOne = -1;
+		if (index == minOne){
+			return false;
+		} else {
+			list.remove(index);
+			return true;
+		}
+	}
+	
+	public boolean removeFileFromList(Bestand file){
+		return list.remove(file);
+	}
+	
+	public boolean removeFileWithFile(String fileName){
+		if (checkFileExists(fileName)){
+			Bestand file = getFile(fileName);
+			file.deleteFile();
+			removeFromList(file);
+			return true;
+		} else {
+			return false;
+		}
+	}
+	
+	//returns -1 if the file doesn't exist, otherwise the index number
+	public boolean checkFileExists(String fileName){
+		boolean exists = false;
+		Bestand testFile = null;
+		for (int i = 0; i<list.size(); i++){
+			testFile = list.get(i);
+			if (testFile.getName().equals(fileName)){
+				exists = true;
+			}
+		}
+		return exists;
 	}
 	
 	public Bestand getFile(String fileName){
@@ -95,7 +111,7 @@ public class FileListWithFile {
 		return file;
 	}
 	
-	public int checkFileExistsWithHash(int fileHash){
+	public int checkFileExists(int fileHash){
 		int index = -1;
 		Bestand testFile = null;
 		for (int i = 0; i<list.size(); i++){
@@ -108,7 +124,7 @@ public class FileListWithFile {
 	}
 	
 	public Bestand getFileWithHash(int fileHash){
-		int index = checkFileExistsWithHash(fileHash);
+		int index = checkFileExists(fileHash);
 		Bestand testFile = null;
 		if (index == -1){
 			return testFile;

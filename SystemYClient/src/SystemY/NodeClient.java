@@ -240,6 +240,7 @@ public class NodeClient extends UnicastRemoteObject implements ClientToClientInt
 	//method to call when the node wants to shut down (2 steps: 1: replicate/move files, 2: remove node from server
 	private void shutdown() {
 		//STEP 1: replicate/move files
+		fileManager.stopCheckLocalFilesThread();
 		fileManager.shutDownReplication();
 		
 		//STEP 2: remove node from server
@@ -693,7 +694,7 @@ public class NodeClient extends UnicastRemoteObject implements ClientToClientInt
 		} else if (hashOriginalNode == ownHash){
 			//do nothing, ring command ends
 		} else {
-			fileManager.removeRepFileWithName(fileName);
+			fileManager.removeRepFile(fileName);
 			ClientToClientInterface ctci = makeCTCI(nextNode);
 			try {
 				ctci.removeFileFromNetwork(fileName,hashOriginalNode);
