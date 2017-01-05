@@ -569,7 +569,7 @@ public class NodeClient extends UnicastRemoteObject implements ClientToClientInt
 	}
 	
 	//makes an interface for the specified hash for RMI between nodes
-	public ClientToClientInterface makeCTCIByName(String nodeName){
+	public ClientToClientInterface makeCTCI(String nodeName){
 		ClientToClientInterface ctci = null;
 		int hash;
 		try {
@@ -620,6 +620,7 @@ public class NodeClient extends UnicastRemoteObject implements ClientToClientInt
 			e.printStackTrace();
 		}
 		ni = null;
+		System.out.println("remove location message : removing location from file "+fileName+", hash node: "+hash);
 		ClientToClientInterface ctci = makeCTCI(hash);
 		try {
 			ctci.removeLocationFromFile(fileName,nodeNameToRemove);
