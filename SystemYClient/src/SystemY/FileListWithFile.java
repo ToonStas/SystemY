@@ -76,7 +76,7 @@ public class FileListWithFile {
 		Bestand testFile = null;
 		for (int i = 0; i<list.size(); i++){
 			testFile = list.get(i);
-			if (testFile.getName()==fileName){
+			if (testFile.getName().equals(fileName)){
 				index = i;
 			}
 		}
@@ -87,7 +87,7 @@ public class FileListWithFile {
 		Bestand file = null;
 		int i = 0;
 		while(i<list.size() && file == null){
-			if (list.get(i).getName() == fileName){
+			if (list.get(i).getName().equals(fileName)){
 				file = list.get(i);
 			}
 			i++;
