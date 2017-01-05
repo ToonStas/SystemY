@@ -84,13 +84,15 @@ public class FileListWithFile {
 	}
 	
 	public Bestand getFile(String fileName){
-		int index = checkFileExistsWithName(fileName);
-		Bestand testFile = null;
-		if (index == -1){
-			return testFile;
-		} else {
-			return list.get(index);
+		Bestand file = null;
+		int i = 0;
+		while(i<list.size() && file == null){
+			if (list.get(i).getName() == fileName){
+				file = list.get(i);
+			}
+			i++;
 		}
+		return file;
 	}
 	
 	public int checkFileExistsWithHash(int fileHash){
