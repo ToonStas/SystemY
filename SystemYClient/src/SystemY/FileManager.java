@@ -333,6 +333,15 @@ public class FileManager {
 		if (ownerHash == node.getOwnHash()){ //if the ownerhash == this node, the ownership should not be transferred
 			node.refreshNeighbours();
 			int replicationHash = node.getPreviousNode();
+			ClientToNamingServerInterface ni = node.makeNI();
+			try {
+				String nodeName;
+				nodeName = ni.getNameNode(replicationHash);
+				fileToSend.addLocation(nodeName);
+			} catch (RemoteException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 			tcp.sendFile(fileToSend, replicationHash, false, false); //first boolean: do not transfer ownerhip, second boolean: do not delete file after sending
 		} else { //transfer ownership
 			tcp.sendFile(fileToSend, ownerHash, true, false);
