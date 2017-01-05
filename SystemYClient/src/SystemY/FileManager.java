@@ -171,23 +171,57 @@ public class FileManager {
 			Bestand file;
 			for (int i=0;i<repList.size();i++){
 				file = repList.get(i);
-				if (file.isOwner()){ //if this node is the owner of the file
-					file.removeLocation(node.getName());
-					if (file.getHashLocalOwner()==hashPrevious){// if the previous node has the file locally
-						node.transferOwnerShipToNode(hashPrevious, file.getFiche());
-						tcp.sendFile(file, hashPreviousPrevious, false, false);
-					} else { // if the previous node doesn't have the file locally
-						tcp.sendFile(file, hashPrevious, true, false);
-					}
-				} else { //if this node isn't the owner of the file
-					if (file.getHashLocalOwner()==hashPrevious){
-						tcp.sendFile(file, hashPrevious, false, false);
-						node.removeLocationFromFileFromOwnerNode(file.getName(), node.getName());
-						node.addLocationToFileFromOwnerNodeByHash(file.getName(), hashPrevious);
-					} else {
-						tcp.sendFile(file, hashPreviousPrevious, false, false);
+				if (file.getHashLocalOwner()==hashPrevious){ //if the previous node has the file locally
+					if (file.isOwner()){// if this node is the owner
+						//do:
+						//- remove this node from the fiche
+						//- add previousPrevious to the fiche
+						//- send file to previous previous with no ownership
+						file.removeLocation(node.getName());
+						ni = node.makeNI();
+						try {
+							String nodeName = ni.getNameNode(hashPreviousPrevious);
+							file.addLocation(nodeName);
+						} catch (RemoteException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+						ni = null;
+						tcp.sendFile(file, hashPreviousPrevious, true, false);
+					} else { // if this node isn't the owner
+						//do:
+						//- remove this node from the fiche from the owner
+						//- add previousPrevious to the fiche from the owner
+						//- send file to previous previous with no ownership
 						node.removeLocationFromFileFromOwnerNode(file.getName(), node.getName());
 						node.addLocationToFileFromOwnerNodeByHash(file.getName(), hashPreviousPrevious);
+						tcp.sendFile(file, hashPreviousPrevious, false, false);
+					}
+				} else { //if the previous node doesn't have the file lovally
+					if (file.isOwner()){ //if this node is the owner
+						//do:
+						//- remove this node from the fiche
+						//- add previous to the fiche
+						//- send file to previous with ownership
+						file.removeLocation(node.getName());
+						ni = node.makeNI();
+						try {
+							String nodeName = ni.getNameNode(hashPrevious);
+							file.addLocation(nodeName);
+						} catch (RemoteException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+						ni = null;
+						tcp.sendFile(file, hashPrevious, true, false);
+					} else { //if this node isn't the owner
+						//do:
+						//- remove this node from the fiche from the owner
+						//- add previous to the fiche from the owner
+						//- send file to previous with no ownership
+						node.removeLocationFromFileFromOwnerNode(file.getName(), node.getName());
+						node.addLocationToFileFromOwnerNodeByHash(file.getName(), hashPrevious);
+						tcp.sendFile(file, hashPrevious, false, false);
 					}
 				}
 			}
@@ -318,7 +352,6 @@ public class FileManager {
 	}
 
 	public void transferOwnerShip(BestandFiche fiche) {
-		System.out.println("transfer ownership message: searching file for fiche: "+fiche.getFileName());
 		Bestand file = getFileByName(fiche.getFileName());
 		fiche.addFileLocation(node.getName()); //to be sure
 		if (file == null){
