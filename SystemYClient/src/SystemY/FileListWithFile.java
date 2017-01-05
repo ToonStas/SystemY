@@ -117,7 +117,7 @@ public class FileListWithFile {
 	
 	public void printFiles(){
 		for (int i = 0; i<list.size(); i++){
-			System.out.println("Name: "+list.get(i).getName() +" hash: "+list.get(i).getHash()+" is owner? "+list.get(i).isOwner());
+			System.out.println("Owner: "+list.get(i).isOwner()+", hash: "+list.get(i).getHash()+", Name: "+list.get(i).getName());
 		}
 	}
 	
