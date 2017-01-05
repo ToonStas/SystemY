@@ -90,7 +90,7 @@ public class TCP {
 	}
 	
 	
-	public void sendFile(Bestand fileToSend, int receiverHash, boolean transferOwnerShip, boolean deleteFileAfterSending){
+	public void sendFile(FileWithFile fileToSend, int receiverHash, boolean transferOwnerShip, boolean deleteFileAfterSending){
 		Random ran = new Random();
 		int fileID = ran.nextInt(20000);//The file ID is used in the file receive and send requests, they are compared to know if they are transmitting the right file
 		String ip = "";

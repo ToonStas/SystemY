@@ -2,20 +2,20 @@ package SystemY;
 
 import java.io.File;
 
-//klasse voor een bestand in te bewaren.
-public class Bestand {
+//klasse voor een fileWithFile in te bewaren.
+public class FileWithFile {
 	private String name;
 	private String path;
 	private File bestand;
 	private int hash;
 	private int hashLocalOwner;
 	private String nameLocalOwner;
-	private BestandFiche fiche;
+	private FileFiche fiche;
 	private boolean isLocked;
 	private boolean isOwner;
 	
 	
-	public Bestand(String naamBestand, String pathBestand, String nameLocalOwner, int hashLocalOwner){
+	public FileWithFile(String naamBestand, String pathBestand, String nameLocalOwner, int hashLocalOwner){
 		name = naamBestand;
 		path = pathBestand;
 		bestand = new File(path+"/" + name);
@@ -87,12 +87,12 @@ public class Bestand {
 		bestand.delete();
 	}
 	
-	public boolean addOwnerFiche(String ownerNodeName){ //returns true if Bestand doesn't have a fiche yet
+	public boolean addOwnerFiche(String ownerNodeName){ //returns true if FileWithFile doesn't have a fiche yet
 		if (isOwner){
-			fiche = new BestandFiche(bestand.getName(),ownerNodeName);
+			fiche = new FileFiche(bestand.getName(),ownerNodeName);
 			return false;
 		} else {
-			fiche = new BestandFiche(bestand.getName(),ownerNodeName);
+			fiche = new FileFiche(bestand.getName(),ownerNodeName);
 			isOwner = true;
 			return true;
 		}
@@ -143,15 +143,15 @@ public class Bestand {
 		}
 	}
 	
-	public BestandFiche getFiche(){
+	public FileFiche getFiche(){
 		if (isOwner){
 			return fiche;
 		} else {
-			return new BestandFiche("deleteFiche","deleteFiche"); //for TCP layer, it needs a fiche in its method, so we give it a false fiche
+			return new FileFiche("deleteFiche","deleteFiche"); //for TCP layer, it needs a fiche in its method, so we give it a false fiche
 		}
 	}
 	
-	public void replaceFiche(BestandFiche newFiche){
+	public void replaceFiche(FileFiche newFiche){
 		isOwner = true;
 		fiche = newFiche;
 		
@@ -168,5 +168,9 @@ public class Bestand {
 		} else {
 			return false;
 		}
+	}
+	
+	public boolean isLockRequest(){
+		return fiche.isLockRequest();
 	}
 }

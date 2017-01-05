@@ -4,13 +4,13 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 public class FileListWithFile {
-	private ArrayList<Bestand> list;
+	private ArrayList<FileWithFile> list;
 	
 	public FileListWithFile(){
-		list = new ArrayList<Bestand>();
+		list = new ArrayList<FileWithFile>();
 	}
 	
-	public int add(Bestand newFile){
+	public int add(FileWithFile newFile){
 		if (list.contains(newFile)){
 			return -1;
 		} else {
@@ -19,18 +19,18 @@ public class FileListWithFile {
 		}
 	}
 	
-	public ArrayList<Bestand> getList(){
+	public ArrayList<FileWithFile> getList(){
 		return list;
 	}
 	
-	public boolean contains(Bestand testFile){
+	public boolean contains(FileWithFile testFile){
 		boolean exists = false;
 		if (list.contains(testFile))
 			exists = true;
 		return exists;
 	}
 	
-	public int removeWithFile(Bestand testFile){
+	public int removeWithFile(FileWithFile testFile){
 		if (list.contains(testFile)){
 			testFile.deleteFile();
 			list.remove(testFile);
@@ -71,13 +71,13 @@ public class FileListWithFile {
 		}
 	}
 	
-	public boolean removeFileFromList(Bestand file){
+	public boolean removeFileFromList(FileWithFile file){
 		return list.remove(file);
 	}
 	
 	public boolean removeFileWithFile(String fileName){
 		if (checkFileExists(fileName)){
-			Bestand file = getFile(fileName);
+			FileWithFile file = getFile(fileName);
 			file.deleteFile();
 			removeFromList(file);
 			return true;
@@ -89,7 +89,7 @@ public class FileListWithFile {
 	//returns -1 if the file doesn't exist, otherwise the index number
 	public boolean checkFileExists(String fileName){
 		boolean exists = false;
-		Bestand testFile = null;
+		FileWithFile testFile = null;
 		for (int i = 0; i<list.size(); i++){
 			testFile = list.get(i);
 			if (testFile.getName().equals(fileName)){
@@ -99,8 +99,8 @@ public class FileListWithFile {
 		return exists;
 	}
 	
-	public Bestand getFile(String fileName){
-		Bestand file = null;
+	public FileWithFile getFile(String fileName){
+		FileWithFile file = null;
 		int i = 0;
 		while(i<list.size() && file == null){
 			if (list.get(i).getName().equals(fileName)){
@@ -113,7 +113,7 @@ public class FileListWithFile {
 	
 	public int checkFileExists(int fileHash){
 		int index = -1;
-		Bestand testFile = null;
+		FileWithFile testFile = null;
 		for (int i = 0; i<list.size(); i++){
 			testFile = list.get(i);
 			if (testFile.getHash()==fileHash){
@@ -123,9 +123,9 @@ public class FileListWithFile {
 		return index;
 	}
 	
-	public Bestand getFileWithHash(int fileHash){
+	public FileWithFile getFileWithHash(int fileHash){
 		int index = checkFileExists(fileHash);
-		Bestand testFile = null;
+		FileWithFile testFile = null;
 		if (index == -1){
 			return testFile;
 		} else {
@@ -180,14 +180,14 @@ public class FileListWithFile {
 	}
 	
 	public void addAll(FileListWithFile newFileList){
-		ArrayList<Bestand> newList = newFileList.getList();
+		ArrayList<FileWithFile> newList = newFileList.getList();
 		for (int i=0;i<newList.size();i++){
 			list.add(newList.get(i));
 		}
 	}
 	
 	public void removeAllWithFile(FileListWithFile newFileList){
-		ArrayList<Bestand> newList = newFileList.getList();
+		ArrayList<FileWithFile> newList = newFileList.getList();
 		for (int i=0;i<newList.size();i++){
 			newList.get(i).deleteFile();
 			list.remove(newList.get(i));
@@ -195,7 +195,7 @@ public class FileListWithFile {
 	}
 	
 	public void removeAllFromList(FileListWithFile newFileList){
-		ArrayList<Bestand> newList = newFileList.getList();
+		ArrayList<FileWithFile> newList = newFileList.getList();
 		for (int i=0;i<newList.size();i++){
 			list.remove(newList.get(i));
 		}
@@ -220,7 +220,7 @@ public class FileListWithFile {
 		return list.size();
 	}
 	
-	public boolean removeFromList(Bestand file){
+	public boolean removeFromList(FileWithFile file){
 		if (list.contains(file)){
 			list.remove(file);
 			return true;
@@ -230,5 +230,35 @@ public class FileListWithFile {
 		}
 	}
 	
+	public boolean isLockRequest(){
+		boolean isRequest = false;
+		int i = 0;
+		while (i<list.size() && isRequest == false){
+			if (list.get(i).isLockRequest()){
+				isRequest = true;
+			}
+			i++;
+		}
+		return isRequest;
+	}
 	
+	public ArrayList<String> getNameListLockRequests(){
+		ArrayList<String> requestList = new ArrayList<>();
+		for (int i=0;i<list.size();i++){
+			if (list.get(i).isLockRequest()){
+				requestList.add(list.get(i).getName());
+			}
+		}
+		return requestList;
+	}
+	
+	public FileListWithFile getFileListLockRequests(){
+		FileListWithFile requestList = new FileListWithFile();
+		for (int i=0;i<list.size();i++){
+			if (list.get(i).isLockRequest()){
+				requestList.add(list.get(i));
+			}
+		}
+		return requestList;
+	}
 }

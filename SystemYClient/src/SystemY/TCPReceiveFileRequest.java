@@ -12,8 +12,8 @@ public class TCPReceiveFileRequest implements Serializable {
 	private int hashOwnerNode;
 	private String nameOwnerNode;
 	boolean transferOwnerShip;
-	private BestandFiche fiche;
-	public TCPReceiveFileRequest(InetAddress IPSender,String fileName, int fileSize, int fileID, int hashOwnerNode, String nameOwnerNode, BestandFiche fileFiche, boolean transferOwnerShip){
+	private FileFiche fiche;
+	public TCPReceiveFileRequest(InetAddress IPSender,String fileName, int fileSize, int fileID, int hashOwnerNode, String nameOwnerNode, FileFiche fileFiche, boolean transferOwnerShip){
 		size = fileSize;
 		ID = fileID;
 		IP = IPSender;
@@ -53,7 +53,7 @@ public class TCPReceiveFileRequest implements Serializable {
 		return nameOwnerNode;
 	}
 
-	public BestandFiche getFiche(){
+	public FileFiche getFiche(){
 		return fiche;
 	}
 }

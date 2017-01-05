@@ -474,7 +474,7 @@ public class NodeClient extends UnicastRemoteObject implements ClientToClientInt
 	}*/
 	
 	/*public void sendReplicationToNewNode(int hashNewNode) throws RemoteException {
-		ArrayList<Bestand> temp = fileManager.getFilesWithSmallerHash(hashNewNode);
+		ArrayList<FileWithFile> temp = fileManager.getFilesWithSmallerHash(hashNewNode);
 		if (temp!=null){
 			int size = temp.size();
 			for (int i=0; size>i; i++){
@@ -644,7 +644,7 @@ public class NodeClient extends UnicastRemoteObject implements ClientToClientInt
 		fileManager.addFileLocation(fileName,nodeNameToAdd);
 	}
 	
-	public void transferOwnerShipToNode(String nodeName, BestandFiche fiche){
+	public void transferOwnerShipToNode(String nodeName, FileFiche fiche){
 		int hash = -1;
 		ClientToNamingServerInterface ni = makeNI();
 		try {
@@ -667,7 +667,7 @@ public class NodeClient extends UnicastRemoteObject implements ClientToClientInt
 		ctci = null;
 	}
 	
-	public void transferOwnerShipToNode(int hashNode, BestandFiche fiche){
+	public void transferOwnerShipToNode(int hashNode, FileFiche fiche){
 		ClientToClientInterface ctci = makeCTCI(hashNode);
 		try {
 			ctci.transferOwnerShip(fiche);
@@ -681,7 +681,7 @@ public class NodeClient extends UnicastRemoteObject implements ClientToClientInt
 		ctci = null;
 	}
 	
-	public void transferOwnerShip(BestandFiche fiche){
+	public void transferOwnerShip(FileFiche fiche){
 		fileManager.transferOwnerShip(fiche);
 	}
 	

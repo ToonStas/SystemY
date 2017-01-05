@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Random;
 
-public class BestandFiche implements Serializable {
+public class FileFiche implements Serializable {
 	/**
 	 * 
 	 */
@@ -12,12 +12,26 @@ public class BestandFiche implements Serializable {
 	private String name; //name of the file
 	private ArrayList<String> fileLocations; 
 	private String localOwner; //name of the local owner of the file
+	private boolean lockRequest;
 	
-	public BestandFiche(String fileName, String localOwnerFile){
+	public FileFiche(String fileName, String localOwnerFile){
 		name = fileName;
 		localOwner = localOwnerFile;
 		fileLocations = new ArrayList<String>();
 		fileLocations.add(localOwner);
+		lockRequest = false;
+	}
+	
+	public void setLockRequest(){
+		lockRequest = true;
+	}
+	
+	public boolean isLockRequest(){
+		return lockRequest;
+	}
+	
+	public void releaseLockRequest(){
+		lockRequest = false;
 	}
 	
 	public boolean addFileLocation(String nodeName){

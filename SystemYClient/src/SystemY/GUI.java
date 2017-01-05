@@ -19,7 +19,7 @@ public class GUI extends JFrame implements ActionListener {
 	JButton logout = new JButton("LOG OUT");
 	JButton openbuttons[] = new JButton[length];
 	JButton deletebuttons[] = new JButton[length];
-	Bestand bestand; //een bestand
+	FileWithFile fileWithFile; //een fileWithFile
 	
 	public GUI(NodeClient nodeClient){
 		this.nodeClient = nodeClient;
@@ -50,10 +50,10 @@ public class GUI extends JFrame implements ActionListener {
 		{
 			JPanel p = new JPanel();
 			p.setLayout(new GridLayout(1, 4));
-			p.add(new JTextField(bestand.getName()));	//get filename
+			p.add(new JTextField(fileWithFile.getName()));	//get filename
 			p.add(openbuttons[i]);
 			p.add(deletebuttons[i]);
-			//if(checkOwned(Bestand.getNaam(), FileManager.BestandenLijst())){								//Check if file is local file
+			//if(checkOwned(FileWithFile.getNaam(), FileManager.BestandenLijst())){								//Check if file is local file
 			//	p.add(new JButton("LOCAL_DELETE"));
 			// }
 			frame.add(p);
@@ -72,10 +72,10 @@ public class GUI extends JFrame implements ActionListener {
 		JButton b = (JButton) e.getSource();
 		int i=0;
 		if(b == openbuttons[i]){
-			bestand.getFile();
+			fileWithFile.getFile();
 		}
 		if(b == deletebuttons[i]){
-			String name = bestand.getName();
+			String name = fileWithFile.getName();
 			fileManager.verwijderBestandMetNaam(name);
 		}
 		
