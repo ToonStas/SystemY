@@ -201,7 +201,7 @@ public class FileManager {
 		
 		
 		//STEP 2: removing all the local files from this node in the network
-		System.out.println("Removing this nodes local files from the network.");
+		System.out.println("Removing this nodes local files from the network...");
 		ArrayList<Bestand> localList = localFiles.getList();
 		Bestand file;
 		String name;
@@ -209,6 +209,7 @@ public class FileManager {
 			file = localList.get(i);
 			node.removeFileFromNetwork(file.getName());
 		}
+		System.out.println("All the nodes local files are removed from the network.");
 		
 	}
 	
