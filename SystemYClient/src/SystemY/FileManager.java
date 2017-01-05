@@ -293,6 +293,9 @@ public class FileManager {
 	public void transferOwnerShip(BestandFiche fiche) {
 		Bestand file = getFileByName(fiche.getFileName());
 		fiche.addFileLocation(node.getName()); //to be sure
+		if (file == null){
+			System.out.println("transfer ownership error: file = null, fiche: "+fiche.getFileName());
+		}
 		file.replaceFiche(fiche);
 	}
 
