@@ -134,12 +134,37 @@ public class FileListWithFile {
 	}
 	
 	public void printFiles(){
+		String str;
+		Integer hash;
 		for (int i = 0; i<list.size(); i++){
-			System.out.println("Owner: "+list.get(i).isOwner()+", hash: "+list.get(i).getHash()+", Name: "+list.get(i).getName());
+			System.out.print("Filename: ");
+			//making name exact 30 characters wide
+			str = list.get(i).getName();
+			if (str.length()<=30){
+				while (str.length()<30){
+					str = str + " ";
+				}
+			} else {
+				str = str.substring(0, 27);
+				str = str + "...";
+			}
+			System.out.print(str+" , Hash: ");
+			hash = list.get(i).getHash();
+			str = hash.toString();
+			while (str.length()<5){
+				str = " " + str;
+			}
+			System.out.print(" , ");
+			if (list.get(i).isOwner()){
+				System.out.print("This node is the owner.");
+			} else {
+				System.out.print("This node is NOT the owner.");
+			}
+			System.out.print("\n");
 		}
 	}
 	
-		public FileListWithFile getOwnerFiles(){
+	public FileListWithFile getOwnerFiles(){
 		FileListWithFile ownerList = new FileListWithFile();
 		for (int i=0; i<list.size(); i++){
 			if (list.get(i).isOwner()){
