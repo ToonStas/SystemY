@@ -73,10 +73,16 @@ public class FileManager {
 	
 	
 	public void printAllFiles(){
+		System.out.println("");
+		System.out.println("Printing all the files on this node: ");
+		System.out.println("");
 		System.out.println("The local files are: ");
 		localFiles.printFiles();
+		System.out.println("");
 		System.out.println("The replication and downloaded files are: ");
 		repFiles.printFiles();
+		System.out.println("");
+		System.out.println("");
 	}
 	
 	//adds a file correctly to the list, they are replicated afterward

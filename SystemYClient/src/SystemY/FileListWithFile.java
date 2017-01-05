@@ -140,21 +140,21 @@ public class FileListWithFile {
 			System.out.print("Filename: ");
 			//making name exact 30 characters wide
 			str = list.get(i).getName();
-			if (str.length()<=30){
-				while (str.length()<30){
+			if (str.length()<=40){
+				while (str.length()<40){
 					str = str + " ";
 				}
 			} else {
-				str = str.substring(0, 27);
+				str = str.substring(0, 37);
 				str = str + "...";
 			}
-			System.out.print(str+" , Hash: ");
+			System.out.print(str+"   Hash: ");
 			hash = list.get(i).getHash();
 			str = hash.toString();
 			while (str.length()<5){
 				str = " " + str;
 			}
-			System.out.print(" , ");
+			System.out.print(str+"    ");
 			if (list.get(i).isOwner()){
 				System.out.print("This node is the owner.");
 			} else {
