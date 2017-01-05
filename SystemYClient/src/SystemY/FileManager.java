@@ -27,10 +27,6 @@ public class FileManager {
 		File dir = new File("C:/TEMP/LocalFiles/");
 	    if (!dir.exists()) {
 	       	dir.mkdir();
-	    } else {
-	    	for (File f : dir.listFiles()) {
-	    		f.delete();
-	    	}
 	    }
 	    dir = new File("C:/TEMP/RepFiles/");
 	    if (!dir.exists()){

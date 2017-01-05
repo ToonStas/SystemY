@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Random;
 import java.util.concurrent.Semaphore;
 
@@ -13,14 +14,14 @@ public class TCP {
 	private Thread receiveThread;
 	private volatile Semafoor semReceive = new Semafoor(); //only one file can be received at a time
 	private volatile Semafoor semSend = new Semafoor(); //only one file can be send at a time
-	private volatile ArrayList<Integer> sendThreadList;
+	private volatile HashSet<Integer> sendThreadList;
 	private TCPReceiveBuffer tCPReceiveBuffer; //buffer which holds the receive requests
 	private NodeClient node;
 	
 	public TCP(NodeClient nodeClient) {
 		node = nodeClient;
 		tCPReceiveBuffer = new TCPReceiveBuffer();
-		sendThreadList = new ArrayList<>();
+		sendThreadList = new HashSet<>();
 	}
 	
 	public void clearThread(int ID){
@@ -31,7 +32,7 @@ public class TCP {
 	
 	public void addThread(int ID){
 		if (!sendThreadList.contains(ID)){
-			sendThreadList.remove(ID);
+			
 		}
 	}
 	
