@@ -211,6 +211,18 @@ public class FileManager {
 				}
 			}
 		}
+		
+		
+		
+		//STEP 2: removing all the local files from this node in the network
+		System.out.println("Removing this nodes local files from the network...");
+		ArrayList<Bestand> localList = localFiles.getList();
+		Bestand file;
+		for (int i=0;i<localList.size();i++){
+			file = localList.get(i);
+			node.removeFileFromNetwork(file.getName());
+		}
+
 		//waiting till all files are send
 		long sleepTime = 100;
 		while(tcp.sendThreadRunning()){
@@ -222,19 +234,6 @@ public class FileManager {
 			}
 		}
 		System.out.println("All the files are replicated correctly.");
-		
-		
-		//STEP 2: removing all the local files from this node in the network
-		System.out.println("Removing this nodes local files from the network...");
-		ArrayList<Bestand> localList = localFiles.getList();
-		Bestand file;
-		String name;
-		for (int i=0;i<localList.size();i++){
-			file = localList.get(i);
-			node.removeFileFromNetwork(file.getName());
-		}
-		System.out.println("All the nodes local files are removed from the network.");
-		
 	}
 	
 	public boolean addRepFile(String nameFile, String nameNode, int hashNode, BestandFiche fileFiche, boolean transferOwnerShip){

@@ -43,10 +43,10 @@ public class TCPSendThread extends Thread {
 		boolean TOC = false;
 		int message = 0;
 		ClientToClientInterface ctci;
-		int counter = 0;
+
 		//STEP 1: loop for checking if this node and the receiving node are ready to transmit the file
 		while (sendFile == false && TOC == false){
-			counter++;
+
 			
 			//sleeping till new request
 			try {
@@ -117,11 +117,12 @@ public class TCPSendThread extends Thread {
 						fileManager.removeRepFile(fileName);
 					}
 					tcp.getSemSend().release();
-					tcp.addThread(ID);
+					tcp.clearThread(ID);
 				
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
+				tcp.clearThread(ID);
 			} finally {
 				
 				try {
@@ -132,12 +133,13 @@ public class TCPSendThread extends Thread {
 					if (sock != null)
 						sock.close();
 					tcp.getSemSend().release();
+					tcp.clearThread(ID);
 					
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 					tcp.getSemSend().release();
-					tcp.addThread(ID);
+					tcp.clearThread(ID);
 				}
 			}
 		}
