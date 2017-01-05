@@ -156,10 +156,15 @@ public class FileListWithFile {
 			}
 			System.out.print(str+"    ");
 			if (list.get(i).isOwner()){
-				System.out.print("This node is the owner.");
+				System.out.print("This node is the owner and the file locations are: ");
+				ArrayList<String> locations = list.get(i).getFiche().getfileLocations();
+				for (int j=0;j<locations.size();j++){
+					System.out.print(locations.get(j)+" ");
+				}
 			} else {
 				System.out.print("This node is NOT the owner.");
 			}
+			
 			System.out.print("\n");
 		}
 	}
