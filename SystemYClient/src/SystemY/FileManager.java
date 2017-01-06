@@ -424,63 +424,76 @@ public class FileManager {
 		allNetworkFiles.printAllFiles();
 	}
 	
+	public boolean isFileLocked(String fileName){
+		if (allNetworkFiles.lockFileWithName(fileName)){
+			return true;
+		} else {
+			return false;
+		}
+	}
 	
 	//method for opening a file, if this node doesn't have this file, it will be downloaded.
 	public void openFile(String fileName){
-		//checking the localfiles
-		if (localFiles.checkFileExists(fileName)){
-			System.out.println("The file "+fileName+" was located on this node. ");
-			System.out.println("Opening the file: ");
-			FileWithFile file = localFiles.getFile(fileName);
-			file.open();
-			
-		//checking the replication files on this node	
-		} else if (repFiles.checkFileExists(fileName)){
-			System.out.println("The file "+fileName+" was replicated on this node. ");
-			System.out.println("Opening the file: ");
-			FileWithFile file = repFiles.getFile(fileName);
-			file.open();
-			
-		//checking the network	
-		} else if (allNetworkFiles.existsWithName(fileName)){
-			ClientToNamingServerInterface ni = node.makeNI();
-			try {
-				int hashOwner = ni.getHashFileLocation(fileName);
-				ni = null;
-				ClientToClientInterface ctci = node.makeCTCI(hashOwner);
-				boolean isFound = ctci.sendFileTo(fileName, node.getOwnHash());
-				// if the file is found
-				if (isFound){
-					System.out.println("The file "+fileName+" is being send to this node...");
-					long sleepTime = 100;
-					while (tcp.threadRunning()){
-					//sleep a bit if the file is not yet been received. 
-						try {
-							Thread.sleep(sleepTime);
-						} catch (InterruptedException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
+		// if the file is not locked
+		if (!isFileLocked(fileName)){
+			//checking the localfiles
+			if (localFiles.checkFileExists(fileName)){
+				System.out.println("The file "+fileName+" was located on this node. ");
+				System.out.println("Opening the file: ");
+				FileWithFile file = localFiles.getFile(fileName);
+				file.open();
+				
+			//checking the replication files on this node	
+			} else if (repFiles.checkFileExists(fileName)){
+				System.out.println("The file "+fileName+" was replicated on this node. ");
+				System.out.println("Opening the file: ");
+				FileWithFile file = repFiles.getFile(fileName);
+				file.open();
+				
+			//checking the network	
+			} else if (allNetworkFiles.existsWithName(fileName)){
+				ClientToNamingServerInterface ni = node.makeNI();
+				try {
+					int hashOwner = ni.getHashFileLocation(fileName);
+					ni = null;
+					ClientToClientInterface ctci = node.makeCTCI(hashOwner);
+					boolean isFound = ctci.sendFileTo(fileName, node.getOwnHash());
+					// if the file is found
+					if (isFound){
+						System.out.println("The file "+fileName+" is being send to this node...");
+						long sleepTime = 100;
+						while (tcp.threadRunning()){
+						//sleep a bit if the file is not yet been received. 
+							try {
+								Thread.sleep(sleepTime);
+							} catch (InterruptedException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
 						}
+						System.out.println("Opening the file: ");
+						FileWithFile file = getFileWithFile(fileName);
+						file.open();
+						
+					// if the file wasn't found
+					} else {
+						System.out.println("The file couldn't be found on the network.");
 					}
-					System.out.println("Opening the file: ");
-					FileWithFile file = getFileWithFile(fileName);
-					file.open();
 					
-				// if the file wasn't found
-				} else {
-					System.out.println("The file couldn't be found on the network.");
+				} catch (RemoteException e) {
+					e.printStackTrace();
+					ni = null;
 				}
 				
-			} catch (RemoteException e) {
-				e.printStackTrace();
-				ni = null;
+				
+			} else {
+				System.out.println("The file couldn't be found on the network.");
 			}
-			
-			
 		} else {
-			System.out.println("The file couldn't be found on the network.");
+			System.out.println("The file is locked and can not be opened/downloaded");
 		}
 	}
+		
 	
 	public boolean hasFile(String fileName){
 		boolean exists = false;
