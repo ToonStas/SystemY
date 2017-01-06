@@ -328,11 +328,13 @@ public class FileManager {
 	
 	//meegegeven fileWithFile verwijderen uit lijst
 	public int removeRepFile(FileWithFile toRemove){
+		ownedFiles.removeFileFromList(toRemove);
 		int check = repFiles.removeWithFile(toRemove);
 		return check;
 	}
 	
 	public int removeLocalFile(FileWithFile toRemove){
+		ownedFiles.removeFileFromList(toRemove);
 		int check = localFiles.removeWithFile(toRemove);
 		return check;
 	}
@@ -340,6 +342,7 @@ public class FileManager {
 	
 	//fileWithFile verwijderen op basis van naam
 	public boolean removeRepFile(String fileName){
+		ownedFiles.removeFileFromList(fileName);
 		return repFiles.removeFileWithFile(fileName);
 		
 	}
@@ -727,5 +730,39 @@ public class FileManager {
 		if (repFiles.checkFileExists(fileName)){
 			repFiles.removeFileWithFile(fileName);
 		}
+	}
+	
+	public ArrayList<String> getListAllFiles(){
+		return allNetworkFiles.getNameList();
+	}
+	
+	public ArrayList<String> getListAllFilesThatCanBeDeletedLocally(){
+		ArrayList<String> list = getListAllFiles();
+		ArrayList<String> canDeleteList = new ArrayList<>();
+		ClientToClientInterface ctci;
+		ClientToNamingServerInterface ni;
+		int hashOwner;
+		boolean canBeDeleted;
+		for(int i=0;i<list.size();i++){
+			if (!ownedFiles.checkFileExists(list.get(i))){
+				ni = node.makeNI();
+				try {
+					hashOwner = ni.getHashFileLocation(list.get(i));
+					ni = null;
+					ctci = node.makeCTCI(hashOwner);
+					canBeDeleted = ctci.canFileBeDeleted(list.get(i));
+					ctci = null;
+					if (canBeDeleted){
+						canDeleteList.add(list.get(i));
+					}
+				} catch (RemoteException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+					ni = null;
+					ctci = null;
+				}
+			}
+		}
+		return canDeleteList;
 	}
 }

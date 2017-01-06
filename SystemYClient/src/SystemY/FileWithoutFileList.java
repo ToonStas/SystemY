@@ -219,4 +219,12 @@ public class FileWithoutFileList implements Serializable{
 		}
 		return isLocked;
 	}
+	
+	public ArrayList<String> getNameList(){
+		ArrayList<String> nameList = new ArrayList<>();
+		for (int i=0;i<list.size();i++){
+			nameList.add(list.get(i).getName());
+		}
+		return nameList;
+	}
 }
