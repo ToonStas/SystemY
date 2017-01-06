@@ -7,6 +7,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Random;
 import java.util.TreeMap;
 
 public class Agent extends Thread implements Serializable {
@@ -44,8 +45,12 @@ public class Agent extends Thread implements Serializable {
 		
 		//now we set the new allFile list in the node
 		fileManager.setAllFileList(allFiles);
-		System.out.println("agent passed with files:  ");
-		allFiles.printAllFiles();
+		Random ran = new Random();
+		if (ran.nextInt(100)==50){
+			System.out.println("agent passed with files:  ");
+			allFiles.printAllFiles();
+		}
+		
 		node.passAgent(allFiles);
 	}
 	
