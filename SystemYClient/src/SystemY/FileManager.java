@@ -10,10 +10,10 @@ public class FileManager {
 	private FileWithFileList repFiles = null; //files which are replicated to this node or file which are download for any other reason
 	private FileWithFileList ownedFiles = null; //files which are owned and located locally
 	private FileWithFileList filesToReplicate = null; //list of files which are not yet replicated because this node was the first one
-	private FileWithoutFileList allNetworkFiles = null; //list of all the files in the network
-	private FileWithoutFileList allNodeOwnedFiles = null; //list of all owned files on this node, we use the lock function to implement lock requests
-	private ArrayList<String> unlockList = null; //list of all the unlocks this node has, contains the names of the files that may by unlocked
-	private ArrayList<String> deletedFiles = null; //list for the agent that holds the deleted files
+	private volatile FileWithoutFileList allNetworkFiles = null; //list of all the files in the network
+	private volatile FileWithoutFileList allNodeOwnedFiles = null; //list of all owned files on this node, we use the lock function to implement lock requests
+	private volatile ArrayList<String> unlockList = null; //list of all the unlocks this node has, contains the names of the files that may by unlocked
+	private volatile ArrayList<String> deletedFiles = null; //list for the agent that holds the deleted files
 	private NodeClient node = null;		
 	private TCP tcp;	
 	private Thread fileChecker;
@@ -564,6 +564,7 @@ public class FileManager {
 	
 	//method for opening a file, if this node doesn't have this file, it will be downloaded.
 	public void openFile(String fileName){
+		//STEP 1: check if the agent is active by checking the number of clients
 		int numberOfClients = 4;
 		ClientToNamingServerInterface ni = node.makeNI();
 		try {
