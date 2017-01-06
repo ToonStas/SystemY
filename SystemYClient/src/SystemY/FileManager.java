@@ -272,7 +272,7 @@ public class FileManager {
 		FileWithFile file;
 		for (int i=0;i<localList.size();i++){
 			file = localList.get(i);
-			node.removeFileFromNetwork(file.getName());
+			node.removeRepFileFromNetwork(file.getName());
 		}
 
 		//waiting till all files are send
@@ -432,13 +432,87 @@ public class FileManager {
 		}
 	}
 	
+	//method for deleting a file in the whole network
+	public void deleteFileFromNetwork(String fileName){
+		if (allNetworkFiles.existsWithName(fileName)){
+			if (allNetworkFiles.isLockOnFile(fileName)){
+				System.out.println("The file can't be deleted because there is a lock on it.");
+			} else {
+				System.out.println("Setting the lock request: ");
+				allNodeOwnedFiles.lockFileWithName(fileName);
+				long sleepTime = 100;
+				while (allNetworkFiles.isLockOnFile(fileName)){
+					try {
+						Thread.sleep(sleepTime);
+					} catch (InterruptedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+				System.out.println("The lock was set by the agent.");
+				node.removeFileFromNetwork(fileName);
+				unlockList.add(fileName);
+				allNetworkFiles.unlockFile(fileName);
+			}
+			
+			
+		} else {
+			System.out.println("The file doesn't exist.");
+		}
+	}
+	
 	//method for deleting a file locally, can only be done if this node isn't the owner and there are still two copies in the network
 	public void deleteFileLocally(String fileName){
 		if (hasFile(fileName)){
 			if (ownedFiles.checkFileExists(fileName) && localFiles.checkFileExists(fileName)){
 				System.out.println("This node is the (local) owner, cannot delete this file.");
 			} else {
-				
+				int hashOwner = -1;
+				ClientToNamingServerInterface ni = node.makeNI();
+				try {
+					hashOwner = ni.getHashFileLocation(fileName);
+				} catch (RemoteException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				ni = null;
+				boolean canBeDeleted = false;
+				ClientToClientInterface ctci = node.makeCTCI(hashOwner);
+				try {
+					canBeDeleted = ctci.canFileBeDeleted(fileName);
+				} catch (RemoteException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				if (canBeDeleted){
+					if (allNetworkFiles.isLockOnFile(fileName)){
+						System.out.println("The file can't be deleted because there is a lock on it.");
+					} else {
+						allNodeOwnedFiles.lockFileWithName(fileName);
+						System.out.println("The lock request is set.");
+						long sleepTime = 100;
+						while (allNodeOwnedFiles.isLockOnFile(fileName)){
+							//sleep a bit if the lock is not yet set 
+							try {
+								Thread.sleep(sleepTime);
+							} catch (InterruptedException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
+						}
+						System.out.println("The file was locked by the agent. Now we can delete the file.");
+						node.removeLocationFromFileFromOwnerNode(fileName, node.getName());
+						//fileWithFile verwijderen op basis van naam
+						removeRepFile(fileName);
+						System.out.println("The file was deleted.");
+						unlockList.add(fileName);
+						allNetworkFiles.unlockFile(fileName);
+					}
+					
+					
+				} else {
+					System.out.println("The file can't be deleted because there are only 2 copies.");
+				}
 			}
 			
 		} else {
@@ -455,7 +529,6 @@ public class FileManager {
 			System.out.println("The lock request is set.");
 			long sleepTime = 100;
 			while (allNodeOwnedFiles.isLockOnFile(fileName)){
-				System.out.println("The file was locked by the agent. Now we search the file: ");
 				//sleep a bit if the lock is not yet set 
 				try {
 					Thread.sleep(sleepTime);
@@ -464,6 +537,7 @@ public class FileManager {
 					e.printStackTrace();
 				}
 			}
+			System.out.println("The file was locked by the agent. Now we search the file: ");
 			if (localFiles.checkFileExists(fileName)){
 				System.out.println("The file "+fileName+" was located on this node. ");
 				System.out.println("Opening the file: ");
@@ -589,5 +663,17 @@ public class FileManager {
 			can = ownedFiles.canFileBeDeleted(fileName);
 		}
 		return can;
+	}
+	
+	public void removeFileWithFile(String fileName){
+		if (ownedFiles.checkFileExists(fileName)){
+			ownedFiles.removeFileFromList(fileName);
+		}
+		if (localFiles.checkFileExists(fileName)){
+			localFiles.removeFileWithFile(fileName);
+		}
+		if (repFiles.checkFileExists(fileName)){
+			repFiles.removeFileWithFile(fileName);
+		}
 	}
 }

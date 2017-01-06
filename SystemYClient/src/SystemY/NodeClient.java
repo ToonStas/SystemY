@@ -609,15 +609,15 @@ public class NodeClient extends UnicastRemoteObject implements ClientToClientInt
 		fileManager.transferOwnerShip(fiche);
 	}
 	
-	public void removeFileFromNetwork(String fileName){
-		removeFileFromNetwork(fileName,0);
+	public void removeRepFileFromNetwork(String fileName){
+		removeRepFileFromNetwork(fileName,0);
 	}
 	
-	public void removeFileFromNetwork(String fileName, int hashOriginalNode){
+	public void removeRepFileFromNetwork(String fileName, int hashOriginalNode){
 		if (hashOriginalNode == 0){
 			ClientToClientInterface ctci = makeCTCI(nextNode);
 			try {
-				ctci.removeFileFromNetwork(fileName,ownHash);
+				ctci.removeRepFileFromNetwork(fileName,ownHash);
 			} catch (RemoteException e) {
 				failure(nextNode);
 				e.printStackTrace();
@@ -629,7 +629,36 @@ public class NodeClient extends UnicastRemoteObject implements ClientToClientInt
 			fileManager.removeRepFile(fileName);
 			ClientToClientInterface ctci = makeCTCI(nextNode);
 			try {
-				ctci.removeFileFromNetwork(fileName,hashOriginalNode);
+				ctci.removeRepFileFromNetwork(fileName,hashOriginalNode);
+			} catch (RemoteException e) {
+				failure(nextNode);
+				e.printStackTrace();
+			}
+			ctci = null;
+		}
+	}
+	
+	public void removeFileFromNetwork(String fileName){
+		removeRepFileFromNetwork(fileName,0);
+	}
+	
+	public void removeFileFromNetwork(String fileName, int hashOriginalNode){
+		if (hashOriginalNode == 0){
+			ClientToClientInterface ctci = makeCTCI(nextNode);
+			try {
+				ctci.removeRepFileFromNetwork(fileName,ownHash);
+			} catch (RemoteException e) {
+				failure(nextNode);
+				e.printStackTrace();
+			}
+			ctci = null;
+		} else if (hashOriginalNode == ownHash){
+			//do nothing, ring command ends
+		} else {
+			fileManager.removeFileWithFile(fileName);
+			ClientToClientInterface ctci = makeCTCI(nextNode);
+			try {
+				ctci.removeRepFileFromNetwork(fileName,hashOriginalNode);
 			} catch (RemoteException e) {
 				failure(nextNode);
 				e.printStackTrace();

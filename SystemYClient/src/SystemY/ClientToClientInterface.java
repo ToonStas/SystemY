@@ -15,8 +15,9 @@ public interface ClientToClientInterface extends Remote {
 	public void removeLocationFromFile(String fileName, String nodeNameToRemove) throws RemoteException;
 	public void addLocationToFile(String fileName, String nodeNameToAdd) throws RemoteException;
 	public void transferOwnerShip(FileFiche fiche) throws RemoteException;
-	public void removeFileFromNetwork(String fileName, int hashOriginalNode) throws RemoteException;
+	public void removeRepFileFromNetwork(String fileName, int hashOriginalNode) throws RemoteException;
 	public void startAgent(FileWithoutFileList allFiles) throws RemoteException;
 	public boolean sendFileTo(String fileName, int hashNodeToSend) throws RemoteException;
 	public boolean canFileBeDeleted(String fileName) throws RemoteException;
+	public void removeFileFromNetwork(String fileName, int hashOriginalNode) throws RemoteException;
 }
