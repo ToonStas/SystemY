@@ -450,70 +450,10 @@ public class NodeClient extends UnicastRemoteObject implements ClientToClientInt
 		fileManager.checkReplication();
 	}
 	
-	/*// replicatie van van bestanden met grotere hash dan deze node en met kleinere hash vorige node
-	public void getReplicationNewNode(){
-		
-		String ip="";
-		try {
-			ip = ni.getIP(previousNode);
-		} catch (RemoteException e1) {
-			System.out.println("Couldn't fetch IP from Namingserver");
-			failure(previousNode); //when we can't fetch te ip it's likely the node shut down unexpectedly
-			e1.printStackTrace();
-		}
-		try {
-			ClientToClientInterface ctci = makeCTCI(previousNode);
-			ctci.sendReplicationToNewNode(ownHash);
-			
-		}catch (RemoteException e) {
-			System.err.println("NamingServer exception: " + e.getMessage());
-			failure(previousNode); //when we can't connect to the node we assume it failed.
-			e.printStackTrace();
-		}
-		
-	}*/
-	
-	/*public void sendReplicationToNewNode(int hashNewNode) throws RemoteException {
-		ArrayList<FileWithFile> temp = fileManager.getFilesWithSmallerHash(hashNewNode);
-		if (temp!=null){
-			int size = temp.size();
-			for (int i=0; size>i; i++){
-				sendFile(temp.get(0),hashNewNode);
-			}
-		}
-	}
-	
-	public void shutDownReplication(){
-		int size = fileManager.getSize();
-		for(int i=0; size>i; i++){
-			if(fileManager.getIndex(i).getHashReplicationNode()== ownHash){ //als dit deze node replicatienode is
-				fileManager.getIndex(i).setReplicationNode(previousNode);
-				sendFile(fileManager.getIndex(i),previousNode);
-			}
-			else if (fileManager.getIndex(i).getHashOwner()== ownHash){ //als deze node eigenaar is
-				
-			}
-		}
-	}
-	
-
-	public void setOwned(HashSet<String> owned) {this.owned = owned;}
-	
-	//Return true if file exists in owned
-
-	public boolean checkOwned(String fileName, HashSet<String> owned){
-		
-		for (String s : owned) {
-		    if(s == fileName ){
-		    	return true;
-		    }
-		}
-		return false;
-	}
 	
 	
 
-	public HashSet<String> getUnlocked() {return unLocked;}
+	/*public HashSet<String> getUnlocked() {return unLocked;}
 
 	//method called on this client, that the agent should be started
 	public void activateAgent(Thread agent) throws RemoteException {

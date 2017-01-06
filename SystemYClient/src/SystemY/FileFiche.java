@@ -5,9 +5,7 @@ import java.util.ArrayList;
 import java.util.Random;
 
 public class FileFiche implements Serializable {
-	/**
-	 * 
-	 */
+	
 	private static final long serialVersionUID = 1L;
 	private String name; //name of the file
 	private ArrayList<String> fileLocations; 

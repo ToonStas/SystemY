@@ -11,8 +11,7 @@ public class FileManager {
 	private FileWithFileList ownedFiles = null; //files which are owned and located locally
 	private FileWithFileList filesToReplicate = null; //list of files which are not yet replicated because this node was the first one
 	private FileWithoutFileList allNetworkFiles = null; //list of all the files in the network
-	private FileWithoutFileList lockedFiles = null; //list of all locked files on this node;
-	private FileWithoutFileList ownedFilesWithoutFile = null; //list of all owned files on this node;
+	private FileWithoutFileList lockRequestList = null; //list of all owned files on this node, we use the lock function to implement lock requests;
 	private NodeClient node = null;		
 	private TCP tcp;	
 	private Thread fileChecker;
@@ -27,8 +26,7 @@ public class FileManager {
 		ownedFiles = new FileWithFileList();
 		filesToReplicate = new FileWithFileList();
 		allNetworkFiles = new FileWithoutFileList();
-		lockedFiles = new FileWithoutFileList();
-		ownedFilesWithoutFile = new FileWithoutFileList();
+		lockRequestList = new FileWithoutFileList();
 		
 		//create the file directories if they not already exist
 		File dir = new File("C:/TEMP/LocalFiles/");
@@ -47,13 +45,21 @@ public class FileManager {
 		
 	}
 	
-	public void updateOwnerFiles(){
+	public void setAllFileList(FileWithoutFileList newAllFileList){
+		allNetworkFiles = newAllFileList;
+	}
+	
+	public void updateOwnedFiles(){
 		ownedFiles.clearList();
 		ownedFiles.addAll(localFiles.getOwnerFiles());
 		ownedFiles.addAll(repFiles.getOwnerFiles());
+		lockRequestList.addAllFilesNotAlreadyAdded(ownedFiles); //add the new files
+		lockRequestList.removeFilesNotContaining(ownedFiles); //remove the deleted files
 	}
 	
-	
+	public FileWithoutFileList getLockRequestList(){
+		return lockRequestList;
+	}
 
 
 	//voegt alle locale bestanden toe bij het opstarten van de node en maakt hun fileFiches aan
@@ -137,7 +143,7 @@ public class FileManager {
 		}
 		ni = null;
 		if (numberOfClients == 0){ 
-			updateOwnerFiles();
+			updateOwnedFiles();
 			node.refreshNeighbours();
 			int hashNext = node.getNextNode();
 			int testHash;
@@ -362,7 +368,7 @@ public class FileManager {
 	public boolean removeOwnerShip(String fileName){
 		FileWithFile file = getFileByName(fileName);
 		boolean isRemoved = file.removeOwnership();
-		updateOwnerFiles();
+		updateOwnedFiles();
 		return isRemoved;
 	}
 
@@ -385,7 +391,7 @@ public class FileManager {
 	}
 	
 	public boolean isLockRequest(){
-		updateOwnerFiles();
+		updateOwnedFiles();
 		return ownedFiles.isLockRequest();
 	}
 	

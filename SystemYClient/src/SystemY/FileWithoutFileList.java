@@ -31,6 +31,18 @@ public class FileWithoutFileList implements Serializable{
 		}
 	}
 	
+	public boolean removeFileWithName(String fileName){
+		boolean removed = false;
+		for (int i=0;i<list.size();i++){
+			if (list.get(i).getName().equals(fileName)){
+				list.remove(i);
+				removed = true;
+				i--;
+			}
+		}
+		return removed;
+	}
+	
 	public ArrayList<String> getNameListLockedFiles(){
 		ArrayList<String> lockList = new ArrayList<>();
 		for (int i=0;i<list.size();i++){
@@ -86,7 +98,7 @@ public class FileWithoutFileList implements Serializable{
 		}
 	}
 	
-	public void addAllFiles(FileWithFileList fileList){
+	public void addAllFilesNotAlreadyAdded(FileWithFileList fileList){
 		ArrayList<FileWithFile> newList = fileList.getList();
 		{
 			for (int i=0;i<newList.size();i++){
@@ -96,6 +108,32 @@ public class FileWithoutFileList implements Serializable{
 					}
 				}
 			}
+		}
+	}
+	
+	//this function removes the files which are not found in the file list with files
+	public void removeFilesNotContaining(FileWithFileList fileListWithFiles){
+		ArrayList<String> nameList = new ArrayList<>();
+		ArrayList<FileWithFile> fileList = fileListWithFiles.getList();
+		//getting a list of all the names which this should contain
+		for (int i=0;i<fileList.size();i++){
+			nameList.add(fileList.get(i).getName());
+		}
+		ArrayList<String> nameListThis = new ArrayList<>();
+		//getting a list of all the names this list contains
+		for (int i=0;i<list.size();i++){
+			nameListThis.add(list.get(i).getName());
+		}
+		
+		//removing the names which they both contain, the files which this list contains and the other doesn't, remain
+		for (int i=0;i<nameList.size();i++){
+			if (nameListThis.contains(nameList.get(i))){
+				nameListThis.remove(nameList.get(i));
+			}
+		}
+		//removing the remaining files by name
+		for (int i=0;i<nameListThis.size();i++){
+			removeFileWithName(nameListThis.get(i));
 		}
 	}
 }
