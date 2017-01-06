@@ -423,5 +423,61 @@ public class FileManager {
 	public void printAllFilesInTheNetwork() {
 		allNetworkFiles.printAllFiles();
 	}
+	
+	public void openFile(String fileName){
+		//checking the localfiles
+		if (localFiles.checkFileExists(fileName)){
+			FileWithFile file = localFiles.getFile(fileName);
+			file.open();
+			
+		//checking the replication files on this node	
+		} else if (repFiles.checkFileExists(fileName)){
+			FileWithFile file = repFiles.getFile(fileName);
+			file.open();
+			
+		//checking the network	
+		} else if (allNetworkFiles.existsWithName(fileName)){
+			ClientToNamingServerInterface ni = node.makeNI();
+			try {
+				int hashOwner = ni.getHashFileLocation(fileName);
+				ni = null;
+				ClientToClientInterface ctci = node.makeCTCI(hashOwner);
+				boolean isFound = ctci.sendFileTo(fileName, node.getOwnHash());
+				
+			} catch (RemoteException e) {
+				e.printStackTrace();
+				ni = null;
+			}
+			
+			
+		} else {
+			
+		}
+	}
+	
+	public boolean hasFile(String fileName){
+		boolean exists = false;
+		if (localFiles.checkFileExists(fileName)){
+			exists = true;
+			if (!exists){
+				if (repFiles.checkFileExists(fileName)){
+					exists = true;
+				}
+			}
+		}
+		return exists;
+	}
 
+	public void downloadRequestTo(String fileName, int hashNodeToSend) {
+		//getting the file
+		FileWithFile file = null;
+		if (localFiles.checkFileExists(fileName)){
+			file = localFiles.getFile(fileName);
+		} else if (repFiles.checkFileExists(fileName)){
+			file = repFiles.getFile(fileName);
+		} else {
+			System.out.println("Download request of file "+fileName+" that doesn't exist on this node to node "+hashNodeToSend);
+		}
+		
+	}
 }

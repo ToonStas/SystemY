@@ -1,6 +1,8 @@
 package SystemY;
 
+import java.awt.Desktop;
 import java.io.File;
+import java.io.IOException;
 
 //klasse voor een fileWithFile in te bewaren.
 public class FileWithFile {
@@ -172,5 +174,20 @@ public class FileWithFile {
 	
 	public boolean isLockRequest(){
 		return fiche.isLockRequest();
+	}
+	
+	public boolean open(){
+		boolean isOpened = false;
+		Desktop desktop = Desktop.getDesktop();
+		if (bestand.exists()){
+			try {
+				desktop.open(bestand);
+				isOpened = true;
+			} catch (IOException e) {
+				isOpened = false;
+				e.printStackTrace();
+			}
+		}
+		return isOpened;
 	}
 }

@@ -32,7 +32,7 @@ public class NamingServer extends UnicastRemoteObject implements ClientToNamingS
 	
 	
 	//ip adres opvragen van waar het bestand zich bevind
-	public String getFileLocation(String fileName){
+	public String getNameFileLocation(String fileName){
 		String location = "ipadres";
 		int hash = nodeLijst.calculateHash(fileName);
 		
@@ -59,7 +59,7 @@ public class NamingServer extends UnicastRemoteObject implements ClientToNamingS
 		return location;
 	}
 	
-	public int getHashNode(String fileName){
+	public int getHashFileLocation(String fileName){
 		int hashNode = -1;
 		int hashFile = nodeLijst.calculateHash(fileName);
 		

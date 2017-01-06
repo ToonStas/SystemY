@@ -53,7 +53,7 @@ public class RMIServer {
 
 			case 2:
 				System.out.println("Enter file to look for: ");
-				String location = namingServer.getFileLocation(readConsole());
+				String location = namingServer.getNameFileLocation(readConsole());
 				System.out.println("The location is: " + location);
 				break;
 

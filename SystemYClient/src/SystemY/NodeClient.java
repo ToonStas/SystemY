@@ -201,7 +201,7 @@ public class NodeClient extends UnicastRemoteObject implements ClientToClientInt
 		String location = "";
 		try {
 			ClientToNamingServerInterface ni = makeNI();
-			location = ni.getFileLocation(fileName);
+			location = ni.getNameFileLocation(fileName);
 			ni = null;
 		} catch (RemoteException e) {
 			System.err.println("NodeClient couldn't fetch filelocation: " + e.getMessage());
@@ -214,7 +214,7 @@ public class NodeClient extends UnicastRemoteObject implements ClientToClientInt
 		int hash = -1;
 		try {
 			ClientToNamingServerInterface ni = makeNI();
-			hash = ni.getHashNode(fileName);
+			hash = ni.getHashFileLocation(fileName);
 			ni = null;
 			//System.out.println("There was a hash requested to the server for filename "+fileName+", this hash was given: "+hash);
 		} catch (RemoteException e) {
@@ -539,7 +539,7 @@ public class NodeClient extends UnicastRemoteObject implements ClientToClientInt
 		int hashOwner = -1;
 		ClientToNamingServerInterface ni = makeNI();
 		try {
-			hashOwner = ni.getHashNode(fileName);
+			hashOwner = ni.getHashFileLocation(fileName);
 		} catch (RemoteException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -654,7 +654,7 @@ public class NodeClient extends UnicastRemoteObject implements ClientToClientInt
 		ClientToNamingServerInterface ni = makeNI();
 		int hashOwner = -1;
 		try {
-			hashOwner = ni.getHashNode(fileName);
+			hashOwner = ni.getHashFileLocation(fileName);
 		} catch (RemoteException e) {
 			System.out.println("Couldn't reach namingserver");
 			e.printStackTrace();
@@ -691,6 +691,18 @@ public class NodeClient extends UnicastRemoteObject implements ClientToClientInt
 	public void startUpAgent(){
 		FileWithoutFileList list = new FileWithoutFileList();
 		startAgent(list);
+	}
+	
+	public boolean sendFileTo(String fileName, int hashNodeToSend){
+		boolean isFound = false;
+		if (!fileManager.hasFile(fileName)){
+			return false;
+		} else {
+			isFound = true;
+			fileManager.downloadRequestTo(fileName,hashNodeToSend);
+		}
+		
+		return isFound;
 	}
 	
 }
