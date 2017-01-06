@@ -266,8 +266,6 @@ public class FileManager {
 			}
 		}
 		
-		
-		
 		//STEP 2: removing all the local files from this node in the network
 		System.out.println("Removing this nodes local files from the network...");
 		ArrayList<FileWithFile> localList = localFiles.getList();
@@ -289,6 +287,7 @@ public class FileManager {
 		}
 		System.out.println("All the files are replicated correctly.");
 	}
+	
 	
 	public boolean addRepFile(String nameFile, String nameNode, int hashNode, FileFiche fileFiche, boolean transferOwnerShip){
 		FileWithFile newFile = new FileWithFile(nameFile,"C:/TEMP/RepFiles/",nameNode,hashNode);
@@ -469,7 +468,7 @@ public class FileManager {
 					System.out.println("Setting the lock request: ");
 					allNodeOwnedFiles.lockFileWithName(fileName);
 					long sleepTime = 100;
-					while (allNetworkFiles.isLockOnFile(fileName)){
+					while (!allNetworkFiles.isLockOnFile(fileName)){
 						try {
 							Thread.sleep(sleepTime);
 						} catch (InterruptedException e) {
@@ -531,7 +530,7 @@ public class FileManager {
 							allNodeOwnedFiles.lockFileWithName(fileName);
 							System.out.println("The lock request is set.");
 							long sleepTime = 100;
-							while (allNodeOwnedFiles.isLockOnFile(fileName)){
+							while (!allNetworkFiles.isLockOnFile(fileName)){
 								//sleep a bit if the lock is not yet set 
 								try {
 									Thread.sleep(sleepTime);
@@ -574,6 +573,7 @@ public class FileManager {
 			e1.printStackTrace();
 		}
 		ni = null;
+		// if the agent isn't active yet
 		if (numberOfClients == 1){
 			if (localFiles.checkFileExists(fileName)){
 				System.out.println("The file "+fileName+" was located on this node. ");
@@ -583,6 +583,7 @@ public class FileManager {
 			} else {
 				System.out.println("The file wasn't found.");
 			}
+		//if the agent is started
 		} else {
 			// if the file is not locked
 			if (!isFileLocked(fileName)){
@@ -590,7 +591,7 @@ public class FileManager {
 				allNodeOwnedFiles.lockFileWithName(fileName);
 				System.out.println("The lock request is set.");
 				long sleepTime = 100;
-				while (allNodeOwnedFiles.isLockOnFile(fileName)){
+				while (!allNetworkFiles.isLockOnFile(fileName)){
 					//sleep a bit if the lock is not yet set 
 					try {
 						Thread.sleep(sleepTime);
@@ -600,6 +601,8 @@ public class FileManager {
 					}
 				}
 				System.out.println("The file was locked by the agent. Now we search the file: ");
+				
+				//if the file is is in the local files:
 				if (localFiles.checkFileExists(fileName)){
 					System.out.println("The file "+fileName+" was located on this node. ");
 					System.out.println("Opening the file: ");
@@ -654,6 +657,14 @@ public class FileManager {
 				}
 				allNetworkFiles.unlockFile(fileName);
 				unlockList.add(fileName);
+				while (allNetworkFiles.isLockOnFile(fileName)){
+					try {
+						Thread.sleep(sleepTime);
+					} catch (InterruptedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
 				System.out.println("The lock was removed.");
 			} else {
 				System.out.println("The file is locked and can not be opened/downloaded");
