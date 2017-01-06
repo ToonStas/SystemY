@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.net.InetAddress;
 import java.net.MalformedURLException;
@@ -671,11 +672,11 @@ public class NodeClient extends UnicastRemoteObject implements ClientToClientInt
 		
 	}
 	
-	public void passAgent(Agent agent) {
+	public void passAgent(FileWithoutFileList list) {
 		refreshNeighbours();
 		ClientToClientInterface ctci = makeCTCI(nextNode);
 		try {
-			ctci.startAgent(agent);
+			ctci.startAgent(list);
 		} catch (RemoteException e) {
 			failure(nextNode);
 			e.printStackTrace();
@@ -683,15 +684,13 @@ public class NodeClient extends UnicastRemoteObject implements ClientToClientInt
 		ctci = null;
 	}
 	
-	public void startAgent(Agent agent){
-		agent.setNode(this);
-		agent.run();
-		passAgent(agent);
+	public void startAgent(FileWithoutFileList list){
+		new Thread(new Agent(this,list)).start();
 	}
 	
 	public void startUpAgent(){
-		Agent agent = new Agent();
-		startAgent(agent);
+		FileWithoutFileList list = new FileWithoutFileList();
+		startAgent(list);
 	}
 	
 }

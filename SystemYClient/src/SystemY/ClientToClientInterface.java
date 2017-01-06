@@ -1,5 +1,6 @@
 package SystemY;
 
+import java.io.Serializable;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 
@@ -15,5 +16,5 @@ public interface ClientToClientInterface extends Remote {
 	public void addLocationToFile(String fileName, String nodeNameToAdd) throws RemoteException;
 	public void transferOwnerShip(FileFiche fiche) throws RemoteException;
 	public void removeFileFromNetwork(String fileName, int hashOriginalNode) throws RemoteException;
-	public void startAgent(Agent agent) throws RemoteException;
+	public void startAgent(FileWithoutFileList allFiles) throws RemoteException;
 }

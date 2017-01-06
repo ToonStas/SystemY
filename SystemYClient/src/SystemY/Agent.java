@@ -17,14 +17,11 @@ public class Agent implements Serializable,Runnable {
 	private FileWithoutFileList allFiles;
 	private NodeClient node;
 	
-	public Agent(){
-		allFiles = new FileWithoutFileList();
-
-	}
-	
-	public void setNode(NodeClient nodeClient){
+	public Agent(NodeClient nodeClient, FileWithoutFileList allFilesNetwork){
+		allFiles = allFilesNetwork;
 		node = nodeClient;
 	}
+	
 	
 	
 	public void run(){
