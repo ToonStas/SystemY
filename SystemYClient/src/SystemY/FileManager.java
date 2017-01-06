@@ -30,6 +30,7 @@ public class FileManager {
 		allNetworkFiles = new FileWithoutFileList();
 		allNodeOwnedFiles = new FileWithoutFileList();
 		unlockList = new ArrayList<>();
+		deletedFiles = new ArrayList<>();
 		
 		//create the file directories if they not already exist
 		File dir = new File("C:/TEMP/LocalFiles/");
