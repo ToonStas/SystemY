@@ -681,14 +681,14 @@ public class NodeClient extends UnicastRemoteObject implements ClientToClientInt
 	}
 	
 	public void removeFileFromNetwork(String fileName){
-		removeRepFileFromNetwork(fileName,0);
+		removeFileFromNetwork(fileName,0);
 	}
 	
 	public void removeFileFromNetwork(String fileName, int hashOriginalNode){
 		if (hashOriginalNode == 0){
 			ClientToClientInterface ctci = makeCTCI(nextNode);
 			try {
-				ctci.removeRepFileFromNetwork(fileName,ownHash);
+				ctci.removeFileFromNetwork(fileName,ownHash);
 			} catch (RemoteException e) {
 				failure(nextNode);
 				e.printStackTrace();
@@ -700,7 +700,7 @@ public class NodeClient extends UnicastRemoteObject implements ClientToClientInt
 			fileManager.removeFileWithFile(fileName);
 			ClientToClientInterface ctci = makeCTCI(nextNode);
 			try {
-				ctci.removeRepFileFromNetwork(fileName,hashOriginalNode);
+				ctci.removeFileFromNetwork(fileName,hashOriginalNode);
 			} catch (RemoteException e) {
 				failure(nextNode);
 				e.printStackTrace();

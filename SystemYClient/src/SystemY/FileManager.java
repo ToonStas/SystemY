@@ -486,6 +486,7 @@ public class FileManager {
 					addToDeleteList(fileName);
 					unlockList.add(fileName);
 					allNetworkFiles.unlockFile(fileName);
+					removeFileWithFile(fileName);
 				}
 			} else {
 				System.out.println("The file doesn't exist.");
