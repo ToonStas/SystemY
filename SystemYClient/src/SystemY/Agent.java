@@ -61,6 +61,10 @@ public class Agent implements Serializable,Runnable {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		Random ran = new Random();
+		if (ran.nextInt(10)==5){
+			System.out.println("Agent passed");
+		}
 		
 		node.passAgent(allFiles);
 	}
