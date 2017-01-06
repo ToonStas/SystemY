@@ -25,6 +25,12 @@ public class Agent implements Serializable,Runnable {
 	
 	
 	public void run(){
+		Random ran = new Random();
+		boolean printAll = false;
+		if (ran.nextInt(50)==5){
+			printAll = true;
+		}
+		
 		//add the nodes new owned files
 		FileManager fileManager = node.getFileManager();
 		FileWithoutFileList nodeFileList = fileManager.getAllNodeOwnedFiles();
@@ -38,6 +44,11 @@ public class Agent implements Serializable,Runnable {
 		
 		//set the lock request from the node
 		ArrayList<String> lockRequests = nodeFileList.getNameListLockedFiles();
+		if (printAll){
+			for (int i=0;i<lockRequests.size();i++){
+				System.out.println("Agent print: lock request on: "+lockRequests.get(i));
+			}
+		}
 		allFiles.lockAllFilesInThisNameList(lockRequests);
 		
 		//unlock the files with the unlocks this node has
@@ -53,6 +64,10 @@ public class Agent implements Serializable,Runnable {
 		
 		//now we set the new allFile list in the node
 		fileManager.setAllFileList(allFiles);
+		if (printAll){
+			System.out.println("AGENT PRINT: this filelist is set was set in the node: ");
+			allFiles.printAllFiles();
+		}
 		
 		//sleeping a bit
 		try {
@@ -61,10 +76,7 @@ public class Agent implements Serializable,Runnable {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		Random ran = new Random();
-		if (ran.nextInt(10)==5){
-			System.out.println("Agent passed");
-		}
+		
 		
 		node.passAgent(allFiles);
 	}
