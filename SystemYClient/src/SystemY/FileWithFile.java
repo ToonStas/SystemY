@@ -3,6 +3,7 @@ package SystemY;
 import java.awt.Desktop;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 
 //klasse voor een fileWithFile in te bewaren.
 public class FileWithFile {
@@ -189,5 +190,14 @@ public class FileWithFile {
 			}
 		}
 		return isOpened;
+	}
+	
+	public boolean canFileBeDeleted(){
+		boolean can = false;
+		ArrayList<String> nameList = fiche.getfileLocations();
+		if (nameList.size()>1){
+			can = true;
+		}
+		return can;
 	}
 }

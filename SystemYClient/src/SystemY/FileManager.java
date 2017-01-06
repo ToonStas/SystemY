@@ -432,6 +432,20 @@ public class FileManager {
 		}
 	}
 	
+	//method for deleting a file locally, can only be done if this node isn't the owner and there are still two copies in the network
+	public void deleteFileLocally(String fileName){
+		if (hasFile(fileName)){
+			if (ownedFiles.checkFileExists(fileName) && localFiles.checkFileExists(fileName)){
+				System.out.println("This node is the (local) owner, cannot delete this file.");
+			} else {
+				
+			}
+			
+		} else {
+			System.out.println("This node doesn't have that file");
+		}
+	}
+	
 	//method for opening a file, if this node doesn't have this file, it will be downloaded.
 	public void openFile(String fileName){
 		// if the file is not locked
@@ -503,6 +517,7 @@ public class FileManager {
 				System.out.println("The file couldn't be found on the network.");
 			}
 			allNetworkFiles.unlockFile(fileName);
+			unlockList.add(fileName);
 			System.out.println("The lock was removed.");
 		} else {
 			System.out.println("The file is locked and can not be opened/downloaded");
@@ -566,5 +581,13 @@ public class FileManager {
 			file = repFiles.getFile(fileName);
 		}
 		return file;
+	}
+	
+	public boolean canFileBeDeleted(String fileName, String nameNodeToDelete){
+		boolean can = false;
+		if (ownedFiles.checkFileExists(fileName)){
+			can = ownedFiles.canFileBeDeleted(fileName);
+		}
+		return can;
 	}
 }

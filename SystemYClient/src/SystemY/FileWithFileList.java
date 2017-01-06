@@ -261,4 +261,9 @@ public class FileWithFileList {
 		}
 		return requestList;
 	}
+	
+	public boolean canFileBeDeleted(String fileName){
+		FileWithFile file = getFile(fileName);
+		return file.canFileBeDeleted();
+	}
 }
