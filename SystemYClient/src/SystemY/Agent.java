@@ -55,6 +55,8 @@ public class Agent implements Serializable,Runnable {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		
+		node.passAgent(allFiles);
 	}
 	
 	
