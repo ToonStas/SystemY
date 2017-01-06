@@ -3,6 +3,8 @@ package SystemY;
 import java.io.Serializable;
 
 public class FileWithoutFile implements Serializable{
+
+	private static final long serialVersionUID = 1L;
 	private String fileName;
 	private boolean isLocked;
 	

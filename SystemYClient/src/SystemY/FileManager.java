@@ -55,6 +55,7 @@ public class FileManager {
 		ownedFiles.addAll(repFiles.getOwnerFiles());
 		allNodeOwnedFiles.addAllFilesNotAlreadyAdded(ownedFiles); //add the new files
 		allNodeOwnedFiles.removeFilesNotContaining(ownedFiles); //remove the deleted files
+		
 	}
 	
 	public FileWithoutFileList getAllNodeOwnedFiles(){
@@ -345,7 +346,6 @@ public class FileManager {
 	
 	//method for replicating a file to the right node
 	public void replicateFile(FileWithFile fileToSend){
-		System.out.println("replicating file "+fileToSend.getName());
 		int ownerHash = node.getHashLocation(fileToSend.getName());
 		if (ownerHash == node.getOwnHash()){ //if the ownerhash == this node, the ownership should not be transferred
 			node.refreshNeighbours();

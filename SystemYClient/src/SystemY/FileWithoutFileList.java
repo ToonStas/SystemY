@@ -13,13 +13,23 @@ public class FileWithoutFileList implements Serializable{
 	}
 	
 	public boolean addNewFile(String fileName, boolean isLocked){
-		FileWithoutFile file = new FileWithoutFile(fileName,isLocked);
-		if (list.contains(file)){
+		if (existsWithName(fileName)){
 			return false;
 		} else {
-			list.add(file);
+			list.add(new FileWithoutFile(fileName,isLocked));
 			return true;
 		}
+	}
+	
+	public boolean existsWithName(String fileName){
+		boolean exists = false;
+		for (int i=0;i<list.size();i++){
+			if (list.get(i).getName().equals(fileName)){
+				exists = true;
+			}
+		}
+		
+		return exists;
 	}
 	
 	
@@ -101,29 +111,15 @@ public class FileWithoutFileList implements Serializable{
 	
 	public void addAllFilesNotAlreadyAdded(FileWithFileList fileList){
 		ArrayList<FileWithFile> newList = fileList.getList();
-		{
-			for (int i=0;i<newList.size();i++){
-				for (int j=0;j<list.size();j++){
-					
-					if (!newList.get(i).getName().equals(list.get(j).getName())){
-						addNewFile(newList.get(i).getName(),false);
-					}
-					
-				}
-			}
+		for (int i=0;i<newList.size();i++){
+			addNewFile(newList.get(i).getName(),false);
 		}
 	}
 	
 	public void addAllFilesNotAlreadyAdded(FileWithoutFileList fileList){
 		ArrayList<FileWithoutFile> newList = fileList.getList();
-		{
-			for (int i=0;i<newList.size();i++){
-				for (int j=0;j<list.size();j++){
-					if (!newList.get(i).getName().equals(list.get(j).getName())){
-						addNewFile(newList.get(i).getName(),false);
-					}
-				}
-			}
+		for (int i=0;i<newList.size();i++){
+			addNewFile(newList.get(i).getName(),false);
 		}
 	}
 	

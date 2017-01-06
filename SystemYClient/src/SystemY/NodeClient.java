@@ -158,6 +158,7 @@ public class NodeClient extends UnicastRemoteObject implements ClientToClientInt
 			//start with loading files and executing replication
 			fileManager = new FileManager(this); 
 			fileManager.loadLocalFiles(); //this automatically loads the local files and start the replication
+			fileManager.updateOwnedFiles();
 			boolean isFirst = true;
 			if (ni.amIFirst()!=1){
 				isFirst = false;
