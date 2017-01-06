@@ -10,9 +10,10 @@ import java.util.Map.Entry;
 import java.util.Random;
 import java.util.TreeMap;
 
-public class Agent extends Thread implements Serializable {
+public class Agent implements Serializable,Runnable {
 
 	private static final long serialVersionUID = 1L;
+	private static long SLEEPTIME = 200;
 	private FileWithoutFileList allFiles;
 	private NodeClient node;
 	
@@ -45,10 +46,12 @@ public class Agent extends Thread implements Serializable {
 		
 		//now we set the new allFile list in the node
 		fileManager.setAllFileList(allFiles);
-		Random ran = new Random();
-		if (ran.nextInt(100)==50){
-			System.out.println("agent passed with files:  ");
-			allFiles.printAllFiles();
+		
+		try {
+			Thread.sleep(SLEEPTIME);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 		
 		node.passAgent(allFiles);

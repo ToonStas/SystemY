@@ -666,9 +666,7 @@ public class NodeClient extends UnicastRemoteObject implements ClientToClientInt
 		
 	}
 	
-	public void passAgent(FileWithoutFileList listAgent){
-		refreshNeighbours();
-		System.out.println("Sending agent to nextNode: "+nextNode+", this nodes hash is: "+ownHash);
+	public void passAgent(FileWithoutFileList listAgent) {
 		refreshNeighbours();
 		ClientToClientInterface ctci = makeCTCI(nextNode);
 		try {
@@ -681,8 +679,8 @@ public class NodeClient extends UnicastRemoteObject implements ClientToClientInt
 	}
 	
 	public void startAgent(FileWithoutFileList listAgent){
-		Thread agent = new Agent(listAgent,this);
-		agent.start();
+		Agent agent = new Agent(listAgent,this);
+		agent.run();
 	}
 	
 }
