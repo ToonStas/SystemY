@@ -677,7 +677,6 @@ public class NodeClient extends UnicastRemoteObject implements ClientToClientInt
 		ClientToClientInterface ctci = makeCTCI(nextNode);
 		try {
 			ctci.startAgent(list);
-			System.out.println("Agent send to node : "+nextNode+", this nodes hash is: "+ownHash);
 		} catch (RemoteException e) {
 			failure(nextNode);
 			e.printStackTrace();
