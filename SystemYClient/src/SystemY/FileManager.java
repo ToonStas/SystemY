@@ -453,7 +453,7 @@ public class FileManager {
 				if (isFound){
 					System.out.println("The file "+fileName+" is being send to this node...");
 					long sleepTime = 100;
-					while (!hasFile(fileName)){
+					while (tcp.threadRunning()){
 					//sleep a bit if the file is not yet been received. 
 						try {
 							Thread.sleep(sleepTime);
