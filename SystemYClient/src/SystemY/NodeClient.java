@@ -688,9 +688,9 @@ public class NodeClient extends UnicastRemoteObject implements ClientToClientInt
 	}
 	
 	public void startUpAgent(){
-		Agent newAgent = new Agent();{
-			startAgent(newAgent);
-		}
+		Agent agent = new Agent();
+		(new Thread(agent)).start();
+		startAgent(agent);
 	}
 	
 }
