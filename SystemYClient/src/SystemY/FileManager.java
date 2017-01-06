@@ -436,7 +436,7 @@ public class FileManager {
 	}
 	
 	public boolean isFileLocked(String fileName){
-		if (allNetworkFiles.lockFileWithName(fileName)){
+		if (allNetworkFiles.isLockOnFile(fileName)){
 			return true;
 		} else {
 			return false;
