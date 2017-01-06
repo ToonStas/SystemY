@@ -20,6 +20,7 @@ public class Agent implements Serializable,Runnable {
 	
 	public Agent(){
 		allFiles = new FileWithoutFileList();
+		run();
 	}
 	
 	public void setNode(NodeClient nodeClient){
