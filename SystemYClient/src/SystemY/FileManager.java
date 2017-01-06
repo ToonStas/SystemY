@@ -11,7 +11,8 @@ public class FileManager {
 	private FileWithFileList ownedFiles = null; //files which are owned and located locally
 	private FileWithFileList filesToReplicate = null; //list of files which are not yet replicated because this node was the first one
 	private volatile FileWithoutFileList allNetworkFiles = null; //list of all the files in the network
-	private volatile FileWithoutFileList allNodeOwnedFiles = null; //list of all owned files on this node, we use the lock function to implement lock requests
+	private volatile FileWithoutFileList allNodeOwnedFiles = null; //ist of the owned files by this node
+	private volatile FileWithoutFileList lockRequests = null;//list with the files on the network for the lock requests on this node
 	private volatile ArrayList<String> unlockList = null; //list of all the unlocks this node has, contains the names of the files that may by unlocked
 	private volatile ArrayList<String> deletedFiles = null; //list for the agent that holds the deleted files
 	private NodeClient node = null;		
@@ -29,6 +30,7 @@ public class FileManager {
 		filesToReplicate = new FileWithFileList();
 		allNetworkFiles = new FileWithoutFileList();
 		allNodeOwnedFiles = new FileWithoutFileList();
+		lockRequests = new FileWithoutFileList();
 		unlockList = new ArrayList<>();
 		deletedFiles = new ArrayList<>();
 		
@@ -47,9 +49,7 @@ public class FileManager {
 	    }
 	}
 	
-	public void setAllFileList(FileWithoutFileList newAllFileList){
-		allNetworkFiles = newAllFileList;
-	}
+	
 	
 	public void updateOwnedFiles(){
 		ownedFiles.clearList();
@@ -58,15 +58,6 @@ public class FileManager {
 		allNodeOwnedFiles.addAllFilesNotAlreadyAdded(ownedFiles); //add the new files
 		allNodeOwnedFiles.removeFilesNotContaining(ownedFiles); //remove the deleted files
 		
-	}
-	
-	public FileWithoutFileList getAllNodeOwnedFiles(){
-		updateOwnedFiles();
-		return allNodeOwnedFiles;
-	}
-	
-	public void setAllNodeOwnedFiles(FileWithoutFileList newAllNodeOwnedFiles){
-		allNodeOwnedFiles = newAllNodeOwnedFiles;
 	}
 
 
@@ -402,18 +393,32 @@ public class FileManager {
 		}
 	}
 	
+	public void setLockRequestList(FileWithoutFileList newLockRequestList){
+		lockRequests = newLockRequestList;
+	}
+	
+	public FileWithoutFileList getAllNodeOwnedFiles(){
+		updateOwnedFiles();
+		return allNodeOwnedFiles;
+	}
+	
+	public void setAllFileList(FileWithoutFileList newAllFileList){
+		allNetworkFiles = newAllFileList;
+	}
+	
+	public FileWithoutFileList getLockRequests(){
+		return lockRequests;
+	}
+	
 	public boolean isLockRequest(){
 		updateOwnedFiles();
-		return ownedFiles.isLockRequest();
+		return lockRequests.isLock();
 	}
 	
 	public ArrayList<String> getNameListLockRequests(){
-		return ownedFiles.getNameListLockRequests();
+		return lockRequests.getNameListLockedFiles();
 	}
 	
-	public FileWithFileList getFileListLockRequests(){
-		return ownedFiles.getFileListLockRequests();
-	}
 	
 	public void addToUnlockList(String fileNameToUnlock){
 		unlockList.add(fileNameToUnlock);
@@ -466,7 +471,7 @@ public class FileManager {
 					System.out.println("The file can't be deleted because there is a lock on it.");
 				} else {
 					System.out.println("Setting the lock request: ");
-					allNodeOwnedFiles.lockFileWithName(fileName);
+					lockRequests.lockFileWithName(fileName);
 					long sleepTime = 100;
 					while (!allNetworkFiles.isLockOnFile(fileName)){
 						try {
@@ -527,7 +532,7 @@ public class FileManager {
 						if (allNetworkFiles.isLockOnFile(fileName)){
 							System.out.println("The file can't be deleted because there is a lock on it.");
 						} else {
-							allNodeOwnedFiles.lockFileWithName(fileName);
+							lockRequests.lockFileWithName(fileName);
 							System.out.println("The lock request is set.");
 							long sleepTime = 100;
 							while (!allNetworkFiles.isLockOnFile(fileName)){
@@ -588,8 +593,8 @@ public class FileManager {
 		} else {
 			// if the file is not locked
 			if (!isFileLocked(fileName)){
-				//checking the localfiles
-				allNodeOwnedFiles.lockFileWithName(fileName);
+
+				lockRequests.lockFileWithName(fileName);
 				System.out.println("The lock request is set.");
 				long sleepTime = 100;
 				while (!allNetworkFiles.isLockOnFile(fileName)){

@@ -25,13 +25,7 @@ public class Agent implements Serializable,Runnable {
 	
 	
 	public void run(){
-		Random ran = new Random();
-		boolean printAll = false;
-		//if (ran.nextInt(50)==5){
-		//	printAll = true;
-		//}
-		
-		//add the nodes new owned files
+		//update the allFiles list with the new files of the node
 		FileManager fileManager = node.getFileManager();
 		FileWithoutFileList nodeFileList = fileManager.getAllNodeOwnedFiles();
 		allFiles.addAllFilesNotAlreadyAdded(nodeFileList);
@@ -43,12 +37,7 @@ public class Agent implements Serializable,Runnable {
 		}
 		
 		//set the lock request from the node
-		ArrayList<String> lockRequests = nodeFileList.getNameListLockedFiles();
-		if (true){
-			for (int i=0;i<lockRequests.size();i++){
-				System.out.println("Agent print: lock request on: "+lockRequests.get(i));
-			}
-		}
+		ArrayList<String> lockRequests = fileManager.getNameListLockRequests();
 		allFiles.lockAllFilesInThisNameList(lockRequests);
 		
 		//unlock the files with the unlocks this node has
@@ -56,18 +45,12 @@ public class Agent implements Serializable,Runnable {
 		allFiles.removeAllLocksInThisNameList(unlockList);
 		fileManager.clearUnlockList();
 		
-		//remove the lock request from the nodes list
-		nodeFileList.removeAllLocks();
-		
-		//return the nodes owner list without files (ownedfiles)
-		fileManager.setAllNodeOwnedFiles(nodeFileList);
-		
-		//now we set the new allFile list in the node
+		//now we set the new allFile and the lockRequest list in the node, in the lock request list, the locks are deleted first
 		fileManager.setAllFileList(allFiles);
-		if (printAll){
-			System.out.println("AGENT PRINT: this filelist is set was set in the node: ");
-			allFiles.printAllFiles();
-		}
+		FileWithoutFileList newLockRequestList = allFiles;
+		newLockRequestList.removeAllLocks();
+		fileManager.setLockRequestList(newLockRequestList);
+		
 		
 		//sleeping a bit
 		try {
