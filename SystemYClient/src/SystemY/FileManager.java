@@ -424,14 +424,20 @@ public class FileManager {
 		allNetworkFiles.printAllFiles();
 	}
 	
+	
+	//method for opening a file, if this node doesn't have this file, it will be downloaded.
 	public void openFile(String fileName){
 		//checking the localfiles
 		if (localFiles.checkFileExists(fileName)){
+			System.out.println("The file "+fileName+" was located on this node. ");
+			System.out.println("Opening the file: ");
 			FileWithFile file = localFiles.getFile(fileName);
 			file.open();
 			
 		//checking the replication files on this node	
 		} else if (repFiles.checkFileExists(fileName)){
+			System.out.println("The file "+fileName+" was replicated on this node. ");
+			System.out.println("Opening the file: ");
 			FileWithFile file = repFiles.getFile(fileName);
 			file.open();
 			
@@ -443,6 +449,27 @@ public class FileManager {
 				ni = null;
 				ClientToClientInterface ctci = node.makeCTCI(hashOwner);
 				boolean isFound = ctci.sendFileTo(fileName, node.getOwnHash());
+				// if the file is found
+				if (isFound){
+					System.out.println("The file "+fileName+" is being send to this node...");
+					long sleepTime = 100;
+					while (!hasFile(fileName)){
+					//sleep a bit if the file is not yet been received. 
+						try {
+							Thread.sleep(sleepTime);
+						} catch (InterruptedException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+					}
+					System.out.println("Opening the file: ");
+					FileWithFile file = getFileWithFile(fileName);
+					file.open();
+					
+				// if the file wasn't found
+				} else {
+					System.out.println("The file couldn't be found on the network.");
+				}
 				
 			} catch (RemoteException e) {
 				e.printStackTrace();
@@ -451,7 +478,7 @@ public class FileManager {
 			
 			
 		} else {
-			
+			System.out.println("The file couldn't be found on the network.");
 		}
 	}
 	
@@ -467,9 +494,11 @@ public class FileManager {
 		}
 		return exists;
 	}
-
+	
+	//method invoked by an RMI call from a node who wishes to send a file to a certain hash
 	public void downloadRequestTo(String fileName, int hashNodeToSend) {
 		//getting the file
+		updateOwnedFiles();
 		FileWithFile file = null;
 		if (localFiles.checkFileExists(fileName)){
 			file = localFiles.getFile(fileName);
@@ -479,5 +508,35 @@ public class FileManager {
 			System.out.println("Download request of file "+fileName+" that doesn't exist on this node to node "+hashNodeToSend);
 		}
 		
+		//sending the file correctly to the node
+		//if this node is the owner, we should add the next location to the fiche
+		if (file.isOwner()){
+			ClientToNamingServerInterface ni = node.makeNI();
+			String nodeName;
+			try {
+				nodeName = ni.getNameNode(hashNodeToSend);
+				file.addLocation(nodeName);
+			} catch (RemoteException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+		//if this node isn't the owner, we should add te new location to the owners file filefiche.
+		} else {
+			node.addLocationToFileFromOwnerNodeByHash(fileName, hashNodeToSend);
+		}
+		//actually sending the file:
+		tcp.sendFile(file, hashNodeToSend, false, false);
+		
+	}
+	
+	public FileWithFile getFileWithFile (String fileName){
+		FileWithFile file = null;
+		if (localFiles.checkFileExists(fileName)){
+			file = localFiles.getFile(fileName);
+		} else {
+			file = repFiles.getFile(fileName);
+		}
+		return file;
 	}
 }
