@@ -15,4 +15,5 @@ public interface ClientToClientInterface extends Remote {
 	public void addLocationToFile(String fileName, String nodeNameToAdd) throws RemoteException;
 	public void transferOwnerShip(FileFiche fiche) throws RemoteException;
 	public void removeFileFromNetwork(String fileName, int hashOriginalNode) throws RemoteException;
+	public void startAgent(FileWithoutFileList listAgent) throws RemoteException;
 }

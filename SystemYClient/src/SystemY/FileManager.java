@@ -276,7 +276,7 @@ public class FileManager {
 
 		//waiting till all files are send
 		long sleepTime = 100;
-		while(tcp.sendThreadRunning()){
+		while(tcp.threadRunning()){
 			try {
 				Thread.sleep(sleepTime);
 			} catch (InterruptedException e) {

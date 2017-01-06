@@ -15,13 +15,11 @@ public class Agent implements Runnable, Serializable{
 	private FileWithoutFileList allFiles;
 	private NodeClient node;
 	
-	public Agent(){
-		allFiles = new FileWithoutFileList();
+	public Agent(FileWithoutFileList allFileList, NodeClient nodeClient){
+		allFiles = allFileList;
+		node = nodeClient;
 	}
 	
-	public void setNode(NodeClient newNode){
-		node = newNode;
-	}
 	
 	public void run(){
 		//add the nodes new owned files
@@ -47,8 +45,7 @@ public class Agent implements Runnable, Serializable{
 		//now we set the new allFile list in the node
 		fileManager.setAllFileList(allFiles);
 		
-		
-		
+		node.passAgent(allFiles);
 	}
 	
 	

@@ -29,4 +29,8 @@ public class TCPReceiveBuffer {
 		else
 			return false;
 	}
+	
+	public boolean isEmpty(){
+		return map.isEmpty();
+	}
 }

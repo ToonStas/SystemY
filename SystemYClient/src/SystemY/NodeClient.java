@@ -21,22 +21,15 @@ import javax.swing.text.html.HTMLDocument.Iterator;
 
 public class NodeClient extends UnicastRemoteObject implements ClientToClientInterface, NamingServerToClientInterface{
 	private static final long serialVersionUID = 1L;
-	//private TreeMap<String, Integer> fileList = new TreeMap<>(); // filename, hash
 	private FileManager fileManager;
 	private int nextNode; //hash for next node
 	private int previousNode; //hash for previous node
 	private int ownHash; //hash of this node
 	private Thread multicastReceiverThreadClient; //threaed to receive multicasts by other nodes
-	String serverIP;
-	private String name;
+	String serverIP; //the ip of the namingserver
+	private String name; // this nodes name
 	volatile boolean goAhead = false; //the thread should wait untill the interface has been made before communicating via it
-	//Thread agent; //our agent
-	//TreeMap<String, Boolean> allFiles = new TreeMap<>(); //name, isLocked; has all files in the system provided by the agent
-	//HashSet<String> owned = new HashSet<>(); //contains all files this node is the owner of
-	//HashSet<String> locked = new HashSet<>(); //contains all files that should be locked
-	//HashSet<String> unLocked = new HashSet<>(); //contains all files that should be unlocked
-	private TCP tcp;
-	//private boolean first = true; //to know if the agent should be made
+	private TCP tcp; //the tcp socket
 	
 	public static void main(String args[]) {
 		try {
@@ -163,13 +156,27 @@ public class NodeClient extends UnicastRemoteObject implements ClientToClientInt
 			//start with loading files and executing replication
 			fileManager = new FileManager(this); 
 			fileManager.loadLocalFiles(); //this automatically loads the local files and start the replication
-			
+			boolean isFirst = true;
 			if (ni.amIFirst()!=1){
-				checkReplicationPreviousNode(); //this checks the replication from the previous node
+				isFirst = false;
 			}
 			ni = null;
+			if (!isFirst){
+				checkReplicationPreviousNode(); //this checks the replication from the previous node
+				System.out.println("Replicating files to other nodes...");
+				long sleepTime = 100;
+				while(tcp.threadRunning()){
+					try {
+						Thread.sleep(sleepTime);
+					} catch (InterruptedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+			}
 			
 			fileManager.startCheckLocalFilesThread();
+			
 			System.out.println("Startup Completed");
 		} catch (RemoteException | UnsupportedEncodingException | InterruptedException e) {
 			e.printStackTrace();
@@ -682,6 +689,22 @@ public class NodeClient extends UnicastRemoteObject implements ClientToClientInt
 		}
 		ctci = null;
 		
+	}
+	
+	public void passAgent(FileWithoutFileList listAgent){
+		ClientToClientInterface ctci = makeCTCI(nextNode);
+		try {
+			ctci.startAgent(listAgent);
+		} catch (RemoteException e) {
+			failure(nextNode);
+			e.printStackTrace();
+		}
+		ctci = null;
+	}
+	
+	public void startAgent(FileWithoutFileList listAgent){
+		Agent agent = new Agent(listAgent,this);
+		agent.run();
 	}
 	
 }

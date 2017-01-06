@@ -15,12 +15,12 @@ public class TCP {
 	private volatile Semafoor semReceive = new Semafoor(); //only one file can be received at a time
 	private volatile Semafoor semSend = new Semafoor(); //only one file can be send at a time
 	private volatile HashSet<Integer> sendThreadList;
-	private TCPReceiveBuffer tCPReceiveBuffer; //buffer which holds the receive requests
+	private TCPReceiveBuffer receiveBuffer; //buffer which holds the receive requests
 	private NodeClient node;
 	
 	public TCP(NodeClient nodeClient) {
 		node = nodeClient;
-		tCPReceiveBuffer = new TCPReceiveBuffer();
+		receiveBuffer = new TCPReceiveBuffer();
 		sendThreadList = new HashSet<>();
 	}
 	
@@ -36,8 +36,8 @@ public class TCP {
 		}
 	}
 	
-	public boolean sendThreadRunning(){
-		if (sendThreadList.isEmpty()){
+	public boolean threadRunning(){
+		if (sendThreadList.isEmpty()&&receiveBuffer.isEmpty()){
 			return false;
 		} else {
 			return true;
@@ -45,7 +45,7 @@ public class TCP {
 	}
 	
 	public TCPReceiveBuffer getReceiveBuffer(){
-		return tCPReceiveBuffer;
+		return receiveBuffer;
 	}
 	
 	public Semafoor getSemSend(){
@@ -58,9 +58,9 @@ public class TCP {
 	
 	//this method uses the sender of a file to know if this receiver is ready to receive a file
 	public int checkReceiveAvailable(int fileID){
-		if (tCPReceiveBuffer.contains(fileID)){
+		if (receiveBuffer.contains(fileID)){
 			if (semReceive.tryAcquire()){
-				this.startReceiveFile(tCPReceiveBuffer.get(fileID));
+				this.startReceiveFile(receiveBuffer.get(fileID));
 				return fileID;
 			}
 			else {
@@ -86,7 +86,7 @@ public class TCP {
 	
 	//Adds the request to the buffer
 	public void addReceiveRequest(TCPReceiveFileRequest request) throws IOException {
-		tCPReceiveBuffer.add(request);
+		receiveBuffer.add(request);
 	}
 	
 	
