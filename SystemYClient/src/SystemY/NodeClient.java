@@ -69,7 +69,7 @@ public class NodeClient extends UnicastRemoteObject implements ClientToClientInt
 		System.out.println("[2] Look for file");
 		System.out.println("[3] Print neighbours");
 		System.out.println("[4] List all the files in the network: ");
-		System.out.println("[5] Surprise");
+		System.out.println("[5] List all owner files from this node.");
 		System.out.println("[9] Exit");
 
 		int input = Integer.parseInt(readConsole());
@@ -102,9 +102,11 @@ public class NodeClient extends UnicastRemoteObject implements ClientToClientInt
 			break;	
 			
 		case 5:
-			System.out.println("------------");
-			System.out.println("|Send Nudes|");
-			System.out.println("------------");
+			System.out.println("");
+			System.out.println("Listing all ownerfiles from this node: ");
+			System.out.println("");
+			fileManager.getAllNodeOwnedFiles().printAllFiles();
+			System.out.println("");
 			break;
 		
 			
