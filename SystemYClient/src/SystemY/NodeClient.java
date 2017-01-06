@@ -30,7 +30,6 @@ public class NodeClient extends UnicastRemoteObject implements ClientToClientInt
 	private String name; // this nodes name
 	volatile boolean goAhead = false; //the thread should wait untill the interface has been made before communicating via it
 	private TCP tcp; //the tcp socket
-	private Agent agent;
 	
 	public static void main(String args[]) {
 		try {
@@ -672,7 +671,7 @@ public class NodeClient extends UnicastRemoteObject implements ClientToClientInt
 		
 	}
 	
-	public void passAgent() {
+	public void passAgent(Agent agent) {
 		refreshNeighbours();
 		ClientToClientInterface ctci = makeCTCI(nextNode);
 		try {
@@ -684,14 +683,14 @@ public class NodeClient extends UnicastRemoteObject implements ClientToClientInt
 		ctci = null;
 	}
 	
-	public void startAgent(Agent newAgent){
-		agent = newAgent;
+	public void startAgent(Agent agent){
 		agent.setNode(this);
-		new Thread(agent).start();
+		agent.run();
+		passAgent(agent);
 	}
 	
 	public void startUpAgent(){
-		agent = new Agent();
+		Agent agent = new Agent();
 		startAgent(agent);
 	}
 	
