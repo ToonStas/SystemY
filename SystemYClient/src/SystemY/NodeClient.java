@@ -67,7 +67,7 @@ public class NodeClient extends UnicastRemoteObject implements ClientToClientInt
 	private void consoleGUI() throws RemoteException {
 		System.out.println("What do you want to do?");
 		System.out.println("[1] List local files");
-		System.out.println("[2] Look for file");
+		System.out.println("[2] Open file: ");
 		System.out.println("[3] Print neighbours");
 		System.out.println("[4] List all the files in the network: ");
 		System.out.println("[5] List all owner files from this node.");
@@ -84,8 +84,9 @@ public class NodeClient extends UnicastRemoteObject implements ClientToClientInt
 
 		case 2:
 			System.out.println("Enter file to look for: ");
-			String location = getFileLocation(readConsole());
-			System.out.println("The location is: " + location);
+			String fileName = readConsole();
+			fileManager.openFile(fileName);
+			System.out.println("");
 			break;
 
 		case 3:
