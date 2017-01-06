@@ -9,7 +9,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TreeMap;
 
-public class Agent implements Runnable, Serializable{
+public class Agent extends Thread implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 	private FileWithoutFileList allFiles;
