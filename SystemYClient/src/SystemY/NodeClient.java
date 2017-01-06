@@ -136,7 +136,7 @@ public class NodeClient extends UnicastRemoteObject implements ClientToClientInt
 				//wait until we know the servers ip
 				TimeUnit.SECONDS.sleep(2);
 			}
-			ClientToNamingServerInterface ni = makeNI();
+			
 			ownHash = calculateHash(name);
 			
 			//get our neighbours
@@ -159,12 +159,12 @@ public class NodeClient extends UnicastRemoteObject implements ClientToClientInt
 			fileManager = new FileManager(this); 
 			fileManager.loadLocalFiles(); //this automatically loads the local files and start the replication
 			fileManager.updateOwnedFiles();
-			boolean isFirst = true;
-			if (ni.amIFirst()!=1){
-				isFirst = false;
-			}
+			
+			ClientToNamingServerInterface ni = makeNI();
+			int numberOfNodes = ni.amIFirst();
 			ni = null;
-			if (!isFirst){
+			
+			if (numberOfNodes != 1){
 				checkReplicationPreviousNode(); //this checks the replication from the previous node
 				System.out.println("Replicating files to other nodes...");
 				long sleepTime = 100;
@@ -176,8 +176,10 @@ public class NodeClient extends UnicastRemoteObject implements ClientToClientInt
 						e.printStackTrace();
 					}
 				}
-				FileWithoutFileList emptyList = new FileWithoutFileList();
-				startAgent(emptyList);
+			}
+			
+			if (numberOfNodes == 2){
+				startUpAgent();
 			}
 			
 			fileManager.startCheckLocalFilesThread();
@@ -669,11 +671,11 @@ public class NodeClient extends UnicastRemoteObject implements ClientToClientInt
 		
 	}
 	
-	public void passAgent(FileWithoutFileList listAgent) {
+	public void passAgent(Agent agent) {
 		refreshNeighbours();
 		ClientToClientInterface ctci = makeCTCI(nextNode);
 		try {
-			ctci.startAgent(listAgent);
+			ctci.startAgent(agent);
 		} catch (RemoteException e) {
 			failure(nextNode);
 			e.printStackTrace();
@@ -681,9 +683,15 @@ public class NodeClient extends UnicastRemoteObject implements ClientToClientInt
 		ctci = null;
 	}
 	
-	public void startAgent(FileWithoutFileList listAgent){
-		Thread agent = new Agent(listAgent,this);
-		agent.start();
+	public void startAgent(Agent agent){
+		agent.setNode(this);
+	}
+	
+	public void startUpAgent(){
+		Agent newAgent = new Agent();{
+			newAgent.run();
+			startAgent(newAgent);
+		}
 	}
 	
 }
