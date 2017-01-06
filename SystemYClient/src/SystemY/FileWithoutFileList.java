@@ -159,11 +159,13 @@ public class FileWithoutFileList implements Serializable{
 	}
 	
 	public boolean lockFileWithName(String name){
+		System.out.println("locking file with name: "+name);
 		boolean isLocked = false;
 		int i=0;
 		while (!isLocked && i<list.size()){
 			if (list.get(i).getName().equals(name)){
 				list.get(i).lock();
+				System.out.println("The file "+name+" was locked or there was set a lock request.");
 				isLocked = true;
 			}
 			i++;
