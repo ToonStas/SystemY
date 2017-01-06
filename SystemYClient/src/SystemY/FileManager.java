@@ -11,7 +11,8 @@ public class FileManager {
 	private FileWithFileList ownedFiles = null; //files which are owned and located locally
 	private FileWithFileList filesToReplicate = null; //list of files which are not yet replicated because this node was the first one
 	private FileWithoutFileList allNetworkFiles = null; //list of all the files in the network
-	private FileWithoutFileList lockRequestList = null; //list of all owned files on this node, we use the lock function to implement lock requests;
+	private FileWithoutFileList allNodeOwnedFiles = null; //list of all owned files on this node, we use the lock function to implement lock requests
+	private ArrayList<String> unlockList = null; //list of all the unlocks this node has, contains the names of the files that may by unlocked
 	private NodeClient node = null;		
 	private TCP tcp;	
 	private Thread fileChecker;
@@ -26,7 +27,7 @@ public class FileManager {
 		ownedFiles = new FileWithFileList();
 		filesToReplicate = new FileWithFileList();
 		allNetworkFiles = new FileWithoutFileList();
-		lockRequestList = new FileWithoutFileList();
+		allNodeOwnedFiles = new FileWithoutFileList();
 		
 		//create the file directories if they not already exist
 		File dir = new File("C:/TEMP/LocalFiles/");
@@ -41,8 +42,6 @@ public class FileManager {
 	    		f.delete();
 	    	}
 	    }
-		
-		
 	}
 	
 	public void setAllFileList(FileWithoutFileList newAllFileList){
@@ -53,12 +52,17 @@ public class FileManager {
 		ownedFiles.clearList();
 		ownedFiles.addAll(localFiles.getOwnerFiles());
 		ownedFiles.addAll(repFiles.getOwnerFiles());
-		lockRequestList.addAllFilesNotAlreadyAdded(ownedFiles); //add the new files
-		lockRequestList.removeFilesNotContaining(ownedFiles); //remove the deleted files
+		allNodeOwnedFiles.addAllFilesNotAlreadyAdded(ownedFiles); //add the new files
+		allNodeOwnedFiles.removeFilesNotContaining(ownedFiles); //remove the deleted files
 	}
 	
-	public FileWithoutFileList getLockRequestList(){
-		return lockRequestList;
+	public FileWithoutFileList getAllNodeOwnedFiles(){
+		updateOwnedFiles();
+		return allNodeOwnedFiles;
+	}
+	
+	public void setAllNodeOwnedFiles(FileWithoutFileList newAllNodeOwnedFiles){
+		allNodeOwnedFiles = newAllNodeOwnedFiles;
 	}
 
 

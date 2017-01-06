@@ -22,6 +22,7 @@ public class FileWithoutFileList implements Serializable{
 		}
 	}
 	
+	
 	public boolean addFile(FileWithoutFile newFile){
 		if (list.contains(newFile)){
 			return false;
@@ -111,6 +112,19 @@ public class FileWithoutFileList implements Serializable{
 		}
 	}
 	
+	public void addAllFilesNotAlreadyAdded(FileWithoutFileList fileList){
+		ArrayList<FileWithoutFile> newList = fileList.getList();
+		{
+			for (int i=0;i<newList.size();i++){
+				for (int j=0;j<list.size();j++){
+					if (!newList.get(i).getName().equals(list.get(j).getName())){
+						addNewFile(newList.get(i).getName(),false);
+					}
+				}
+			}
+		}
+	}
+	
 	//this function removes the files which are not found in the file list with files
 	public void removeFilesNotContaining(FileWithFileList fileListWithFiles){
 		ArrayList<String> nameList = new ArrayList<>();
@@ -135,5 +149,43 @@ public class FileWithoutFileList implements Serializable{
 		for (int i=0;i<nameListThis.size();i++){
 			removeFileWithName(nameListThis.get(i));
 		}
+	}
+	
+	public void lockAllFilesInThisNameList(ArrayList<String> lockList){
+		for (int i=0;i<lockList.size();i++){
+			lockFileWithName(lockList.get(i));
+		}
+	}
+	
+	public boolean lockFileWithName(String name){
+		boolean isLocked = false;
+		int i=0;
+		while (!isLocked && i<list.size()){
+			if (list.get(i).getName().equals(name)){
+				list.get(i).lock();
+				isLocked = true;
+			}
+			i++;
+		}
+		return isLocked;
+	}
+	
+	public void removeAllLocksInThisNameList(ArrayList<String> unlockList){
+		for (int i=0;i<unlockList.size();i++){
+			unlockFileWithName(unlockList.get(i));
+		}
+	}
+	
+	public boolean unlockFileWithName(String name){
+		boolean unlocked = false;
+		int i=0;
+		while (!unlocked && i<list.size()){
+			if (list.get(i).getName().equals(name)){
+				list.get(i).unlock();
+				unlocked = true;
+			}
+			i++;
+		}
+		return unlocked;
 	}
 }
