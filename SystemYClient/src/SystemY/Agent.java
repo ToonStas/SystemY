@@ -27,9 +27,9 @@ public class Agent implements Serializable,Runnable {
 	public void run(){
 		Random ran = new Random();
 		boolean printAll = false;
-		if (ran.nextInt(50)==5){
-			printAll = true;
-		}
+		//if (ran.nextInt(50)==5){
+		//	printAll = true;
+		//}
 		
 		//add the nodes new owned files
 		FileManager fileManager = node.getFileManager();

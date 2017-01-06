@@ -56,11 +56,14 @@ public class FileWithoutFileList implements Serializable{
 	
 	public ArrayList<String> getNameListLockedFiles(){
 		ArrayList<String> lockList = new ArrayList<>();
+		
 		for (int i=0;i<list.size();i++){
 			if (list.get(i).isLocked()){
 				lockList.add(list.get(i).getName());
+				System.out.println("File "+list.get(i).getName()+" was added to the locklist.");
 			}
 		}
+		
 		return lockList;
 	}
 	
