@@ -59,7 +59,7 @@ public class Agent implements Serializable,Runnable {
 			e.printStackTrace();
 		}
 		
-		node.passAgent(this);
+		node.passAgent();
 	}
 	
 	
