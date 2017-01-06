@@ -487,6 +487,7 @@ public class FileManager {
 					unlockList.add(fileName);
 					allNetworkFiles.unlockFile(fileName);
 					removeFileWithFile(fileName);
+					System.out.println("The file was deleted succesfully from all nodes.");
 				}
 			} else {
 				System.out.println("The file doesn't exist.");
@@ -803,6 +804,13 @@ public class FileManager {
 			for (int i=0;i<deletedFiles.size();i++){
 				allNetworkFiles.removeFileWithName(deletedFiles.get(i));
 			}
+		}
+	}
+	
+	public void addToDeleteListByNodeClient(String fileName){
+		deletedFiles.add(fileName);
+		for (int i=0;i<deletedFiles.size();i++){
+			allNetworkFiles.removeFileWithName(deletedFiles.get(i));
 		}
 	}
 }

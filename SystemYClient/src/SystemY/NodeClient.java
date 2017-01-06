@@ -798,7 +798,7 @@ public class NodeClient extends UnicastRemoteObject implements ClientToClientInt
 		} else if (hashOriginalNode == ownHash){
 			//do nothing, ring command ends
 		} else {
-			fileManager.addToDeleteList(fileName);
+			fileManager.addToDeleteListByNodeClient(fileName);
 			ClientToClientInterface ctci = makeCTCI(nextNode);
 			try {
 				ctci.addFileToDeleteListNextNode(fileName,hashOriginalNode);
