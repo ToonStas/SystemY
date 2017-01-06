@@ -65,15 +65,20 @@ public class NodeClient extends UnicastRemoteObject implements ClientToClientInt
 	
 	//start the consolegui
 	private void consoleGUI() throws RemoteException {
+		String name;
 		System.out.println("What do you want to do?");
 		System.out.println("[1] List local files");
 		System.out.println("[2] Open file: ");
 		System.out.println("[3] Print neighbours");
 		System.out.println("[4] List all the files in the network: ");
 		System.out.println("[5] List all owner files from this node.");
+		System.out.println("[6] Delete a file locally.");
+		System.out.println("[5] Delete a file from the network (hard delete).");
 		System.out.println("[9] Exit");
+		
+		String inputString = readConsole();
+		int input = stringToInt(inputString);
 
-		int input = Integer.parseInt(readConsole());
 		System.out.println("Your choice was: " + input);
 
 		switch (input) {
@@ -84,15 +89,18 @@ public class NodeClient extends UnicastRemoteObject implements ClientToClientInt
 
 		case 2:
 			System.out.println("Enter file to look for: ");
-			String fileName = readConsole();
-			fileManager.openFile(fileName);
+			name = readConsole();
+			fileManager.openFile(name);
 			System.out.println("");
 			break;
 
 		case 3:
 			refreshNeighbours();
+			System.out.println("");
+			System.out.println("PRINTING NEIGHBOURS: ");
 			System.out.println("Previous hash: "+previousNode);
 			System.out.println("Next hash: "+nextNode);
+			System.out.println("This nodes hash is: "+ownHash);
 			break;
 			
 		case 4:
@@ -110,7 +118,23 @@ public class NodeClient extends UnicastRemoteObject implements ClientToClientInt
 			fileManager.getAllNodeOwnedFiles().printAllFiles();
 			System.out.println("");
 			break;
+			
+		case 6: //deleting a file locally
+			System.out.println("Enter the name of the file you want to remove locally: ");
+			name = readConsole();
+			fileManager.deleteFileLocally(name);
+			System.out.println("");
+			break;
+			
+		case 7: //deleting file from the whole network, even locally files
+			System.out.println("Enter the name of the file you want to remove from the network.");
+			name = readConsole();
+			fileManager.deleteFileFromNetwork(name);
+			System.out.println("");
+			break;
 		
+		case 258:
+			System.out.println("Your input wasn't a number, try again: ");
 			
 		case 666:
 			System.out.println("------------------------");
@@ -121,7 +145,25 @@ public class NodeClient extends UnicastRemoteObject implements ClientToClientInt
 		case 9:
 			shutdown();
 			break;
+		
+		default:
+			System.out.println("Wrong number, try again: ");
+			break;
 		}
+	}
+	
+	private int stringToInt(String input){
+		int output;
+		try { 
+	        output = Integer.parseInt(input); 
+	    } catch(NumberFormatException e) { 
+	        output = 258;
+	    } catch(NullPointerException e) {
+	        output = 258;
+	    } catch(ClassCastException e) {
+	    	output = 258;
+	    }
+		return output;
 	}
 	
 	private void startUp() {
