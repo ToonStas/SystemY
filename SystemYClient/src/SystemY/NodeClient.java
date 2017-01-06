@@ -738,5 +738,34 @@ public class NodeClient extends UnicastRemoteObject implements ClientToClientInt
 	public boolean canFileBeDeleted(String fileName){
 		return fileManager.canFileBeDeleted(fileName);
 	}
+
+	public void addFileNameToDeleteListAllNodes(String fileName) {
+		addFileToDeleteListNextNode(fileName,0);
+	}
+	
+	public void addFileToDeleteListNextNode(String fileName, int hashOriginalNode){
+		if (hashOriginalNode == 0){
+			ClientToClientInterface ctci = makeCTCI(nextNode);
+			try {
+				ctci.addFileToDeleteListNextNode(fileName,ownHash);
+			} catch (RemoteException e) {
+				failure(nextNode);
+				e.printStackTrace();
+			}
+			ctci = null;
+		} else if (hashOriginalNode == ownHash){
+			//do nothing, ring command ends
+		} else {
+			fileManager.addToDeleteList(fileName);
+			ClientToClientInterface ctci = makeCTCI(nextNode);
+			try {
+				ctci.addFileToDeleteListNextNode(fileName,hashOriginalNode);
+			} catch (RemoteException e) {
+				failure(nextNode);
+				e.printStackTrace();
+			}
+			ctci = null;
+		}
+	}
 	
 }

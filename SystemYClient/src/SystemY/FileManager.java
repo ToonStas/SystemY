@@ -13,6 +13,7 @@ public class FileManager {
 	private FileWithoutFileList allNetworkFiles = null; //list of all the files in the network
 	private FileWithoutFileList allNodeOwnedFiles = null; //list of all owned files on this node, we use the lock function to implement lock requests
 	private ArrayList<String> unlockList = null; //list of all the unlocks this node has, contains the names of the files that may by unlocked
+	private ArrayList<String> deletedFiles = null; //list for the agent that holds the deleted files
 	private NodeClient node = null;		
 	private TCP tcp;	
 	private Thread fileChecker;
@@ -330,12 +331,14 @@ public class FileManager {
 	public int removeRepFile(FileWithFile toRemove){
 		ownedFiles.removeFileFromList(toRemove);
 		int check = repFiles.removeWithFile(toRemove);
+		addToDeleteList(toRemove.getName());
 		return check;
 	}
 	
 	public int removeLocalFile(FileWithFile toRemove){
 		ownedFiles.removeFileFromList(toRemove);
 		int check = localFiles.removeWithFile(toRemove);
+		addToDeleteList(toRemove.getName());
 		return check;
 	}
 	
@@ -343,6 +346,7 @@ public class FileManager {
 	//fileWithFile verwijderen op basis van naam
 	public boolean removeRepFile(String fileName){
 		ownedFiles.removeFileFromList(fileName);
+		addToDeleteList(fileName);
 		return repFiles.removeFileWithFile(fileName);
 		
 	}
@@ -422,6 +426,10 @@ public class FileManager {
 	public ArrayList<String> getUnlockList(){
 		return unlockList;
 	}
+	
+	public ArrayList<String> getDeletedList(){
+		return deletedFiles;
+	}
 
 	public void printAllFilesInTheNetwork() {
 		allNetworkFiles.printAllFiles();
@@ -470,6 +478,7 @@ public class FileManager {
 					}
 					System.out.println("The lock was set by the agent.");
 					node.removeFileFromNetwork(fileName);
+					addToDeleteList(fileName);
 					unlockList.add(fileName);
 					allNetworkFiles.unlockFile(fileName);
 				}
@@ -764,5 +773,17 @@ public class FileManager {
 			}
 		}
 		return canDeleteList;
+	}
+	
+	//add files to the list that the agent should remove
+	public void addToDeleteList(String fileName){
+		if (!deletedFiles.contains(fileName))
+		{
+			node.addFileNameToDeleteListAllNodes(fileName);
+			deletedFiles.add(fileName);
+			for (int i=0;i<deletedFiles.size();i++){
+				allNetworkFiles.removeFileWithName(deletedFiles.get(i));
+			}
+		}
 	}
 }

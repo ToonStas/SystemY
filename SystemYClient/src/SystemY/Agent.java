@@ -30,6 +30,12 @@ public class Agent implements Serializable,Runnable {
 		FileWithoutFileList nodeFileList = fileManager.getAllNodeOwnedFiles();
 		allFiles.addAllFilesNotAlreadyAdded(nodeFileList);
 		
+		//delete files in allFiles list who are in the deleteList from this node:
+		ArrayList<String> deleteList = fileManager.getDeletedList();
+		for (int i=0;i<deleteList.size();i++){
+			allFiles.removeFileWithName(deleteList.get(i));
+		}
+		
 		//unlock the files with the unlocks this node has
 		ArrayList<String> unlockList = fileManager.getUnlockList();
 		allFiles.removeAllLocksInThisNameList(unlockList);
@@ -42,7 +48,7 @@ public class Agent implements Serializable,Runnable {
 		//remove the lock request from the nodes list
 		nodeFileList.removeAllLocksInThisNameList(lockRequests);
 		
-		//return the nodes lock request list:
+		//return the nodes owner list without files (ownedfiles)
 		fileManager.setAllNodeOwnedFiles(nodeFileList);
 		
 		//now we set the new allFile list in the node
