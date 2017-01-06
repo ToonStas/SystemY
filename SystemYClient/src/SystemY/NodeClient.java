@@ -173,6 +173,8 @@ public class NodeClient extends UnicastRemoteObject implements ClientToClientInt
 						e.printStackTrace();
 					}
 				}
+				FileWithoutFileList emptyList = new FileWithoutFileList();
+				startAgent(emptyList);
 			}
 			
 			fileManager.startCheckLocalFilesThread();
@@ -453,33 +455,6 @@ public class NodeClient extends UnicastRemoteObject implements ClientToClientInt
 	}
 	
 	
-	
-
-	/*public HashSet<String> getUnlocked() {return unLocked;}
-
-	//method called on this client, that the agent should be started
-	public void activateAgent(Thread agent) throws RemoteException {
-		//if the agent already exists
-		if(agent != null){
-			this.agent = agent;
-		//the agent should be made
-		}else{
-			this.agent = new Thread(new Agent(this));
-		}
-	}
-	
-	public void nextAgent(){
-		int nextHash = getNextNode();
-		
-		try {
-			makeCTCI(nextHash).activateAgent(agent);
-		} catch (RemoteException e) {
-			System.err.println("NamingServer exception: " + e.getMessage());
-			failure(nextHash); //when we can't connect to the node we assume it failed.
-			e.printStackTrace();
-		}
-		
-	}*/
 	
 	//makes an interface for the specified hash for RMI between nodes
 	public ClientToClientInterface makeCTCI(int hash){
