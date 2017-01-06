@@ -28,6 +28,7 @@ public class FileManager {
 		filesToReplicate = new FileWithFileList();
 		allNetworkFiles = new FileWithoutFileList();
 		allNodeOwnedFiles = new FileWithoutFileList();
+		unlockList = new ArrayList<>();
 		
 		//create the file directories if they not already exist
 		File dir = new File("C:/TEMP/LocalFiles/");
@@ -406,6 +407,21 @@ public class FileManager {
 	public FileWithFileList getFileListLockRequests(){
 		return ownedFiles.getFileListLockRequests();
 	}
+	
+	public void addToUnlockList(String fileNameToUnlock){
+		unlockList.add(fileNameToUnlock);
+	}
+	
+	public void clearUnlockList(){
+		unlockList.clear();
+	}
+	
+	public ArrayList<String> getUnlockList(){
+		return unlockList;
+	}
 
+	public void printAllFilesInTheNetwork() {
+		allNetworkFiles.printAllFiles();
+	}
 
 }

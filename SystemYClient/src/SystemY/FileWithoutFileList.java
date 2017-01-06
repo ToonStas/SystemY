@@ -188,4 +188,27 @@ public class FileWithoutFileList implements Serializable{
 		}
 		return unlocked;
 	}
+	
+	public void printAllFiles(){
+		String str;
+		for (int i=0;i<list.size();i++){
+			System.out.print("Filename: ");
+			//making name exact 30 characters wide
+			str = list.get(i).getName();
+			if (str.length()<=40){
+				while (str.length()<40){
+					str = str + " ";
+				}
+			} else {
+				str = str.substring(0, 37);
+				str = str + "...";
+			}
+			System.out.print(str+"    ");
+			if (list.get(i).isLocked()){
+				System.out.print("    [locked]");
+			}
+			System.out.print("\n");
+		}
+		
+	}
 }
