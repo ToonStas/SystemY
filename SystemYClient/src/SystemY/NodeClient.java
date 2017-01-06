@@ -706,4 +706,8 @@ public class NodeClient extends UnicastRemoteObject implements ClientToClientInt
 		return isFound;
 	}
 	
+	public boolean canFileBeDeleted(String fileName){
+		return fileManager.canFileBeDeleted(fileName);
+	}
+	
 }

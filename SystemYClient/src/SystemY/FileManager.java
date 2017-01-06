@@ -583,7 +583,7 @@ public class FileManager {
 		return file;
 	}
 	
-	public boolean canFileBeDeleted(String fileName, String nameNodeToDelete){
+	public boolean canFileBeDeleted(String fileName){
 		boolean can = false;
 		if (ownedFiles.checkFileExists(fileName)){
 			can = ownedFiles.canFileBeDeleted(fileName);

@@ -18,4 +18,5 @@ public interface ClientToClientInterface extends Remote {
 	public void removeFileFromNetwork(String fileName, int hashOriginalNode) throws RemoteException;
 	public void startAgent(FileWithoutFileList allFiles) throws RemoteException;
 	public boolean sendFileTo(String fileName, int hashNodeToSend) throws RemoteException;
+	public boolean canFileBeDeleted(String fileName) throws RemoteException;
 }
