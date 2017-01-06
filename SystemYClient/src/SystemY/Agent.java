@@ -44,7 +44,7 @@ public class Agent implements Serializable,Runnable {
 		
 		//set the lock request from the node
 		ArrayList<String> lockRequests = nodeFileList.getNameListLockedFiles();
-		if (printAll){
+		if (true){
 			for (int i=0;i<lockRequests.size();i++){
 				System.out.println("Agent print: lock request on: "+lockRequests.get(i));
 			}
