@@ -437,6 +437,19 @@ public class FileManager {
 		// if the file is not locked
 		if (!isFileLocked(fileName)){
 			//checking the localfiles
+			allNodeOwnedFiles.lockFileWithName(fileName);
+			System.out.println("The lock request is set.");
+			long sleepTime = 100;
+			while (allNodeOwnedFiles.isLockOnFile(fileName)){
+				System.out.println("The file was locked by the agent. Now we search the file: ");
+				//sleep a bit if the lock is not yet set 
+				try {
+					Thread.sleep(sleepTime);
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
 			if (localFiles.checkFileExists(fileName)){
 				System.out.println("The file "+fileName+" was located on this node. ");
 				System.out.println("Opening the file: ");
@@ -461,7 +474,7 @@ public class FileManager {
 					// if the file is found
 					if (isFound){
 						System.out.println("The file "+fileName+" is being send to this node...");
-						long sleepTime = 100;
+						sleepTime = 100;
 						while (tcp.threadRunning()){
 						//sleep a bit if the file is not yet been received. 
 							try {
@@ -489,6 +502,8 @@ public class FileManager {
 			} else {
 				System.out.println("The file couldn't be found on the network.");
 			}
+			allNetworkFiles.unlockFile(fileName);
+			System.out.println("The lock was removed.");
 		} else {
 			System.out.println("The file is locked and can not be opened/downloaded");
 		}

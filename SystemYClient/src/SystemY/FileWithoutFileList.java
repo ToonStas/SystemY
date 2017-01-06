@@ -170,11 +170,11 @@ public class FileWithoutFileList implements Serializable{
 	
 	public void removeAllLocksInThisNameList(ArrayList<String> unlockList){
 		for (int i=0;i<unlockList.size();i++){
-			unlockFileWithName(unlockList.get(i));
+			unlockFile(unlockList.get(i));
 		}
 	}
 	
-	public boolean unlockFileWithName(String name){
+	public boolean unlockFile(String name){
 		boolean unlocked = false;
 		int i=0;
 		while (!unlocked && i<list.size()){
@@ -208,5 +208,15 @@ public class FileWithoutFileList implements Serializable{
 			System.out.print("\n");
 		}
 		
+	}
+	
+	public boolean isLockOnFile(String fileName){
+		boolean isLocked = false;
+		for (int i=0;i<list.size();i++){
+			if (list.get(i).getName().equals(fileName)&&list.get(i).isLocked()){
+				isLocked = true;
+			}
+		}
+		return isLocked;
 	}
 }

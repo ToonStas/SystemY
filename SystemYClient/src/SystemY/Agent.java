@@ -13,7 +13,7 @@ import java.util.TreeMap;
 public class Agent implements Serializable,Runnable {
 
 	private static final long serialVersionUID = 1L;
-	private static long SLEEPTIME = 100;
+	private static long SLEEPTIME = 50;
 	private FileWithoutFileList allFiles;
 	private NodeClient node;
 	
