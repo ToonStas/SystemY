@@ -434,14 +434,151 @@ public class FileManager {
 	
 	//method for deleting a file in the whole network
 	public void deleteFileFromNetwork(String fileName){
-		if (allNetworkFiles.existsWithName(fileName)){
-			if (allNetworkFiles.isLockOnFile(fileName)){
-				System.out.println("The file can't be deleted because there is a lock on it.");
+		int numberOfClients = 4;
+		ClientToNamingServerInterface ni = node.makeNI();
+		try {
+			numberOfClients = ni.amIFirst();
+		} catch (RemoteException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		ni = null;
+		if (numberOfClients == 1){
+			if (localFiles.checkFileExists(fileName)){
+				localFiles.removeFileWithFile(fileName);
 			} else {
-				System.out.println("Setting the lock request: ");
+				System.out.println("The file wasn't found on this node.");
+			}
+		} else {
+			if (allNetworkFiles.existsWithName(fileName)){
+				if (allNetworkFiles.isLockOnFile(fileName)){
+					System.out.println("The file can't be deleted because there is a lock on it.");
+				} else {
+					System.out.println("Setting the lock request: ");
+					allNodeOwnedFiles.lockFileWithName(fileName);
+					long sleepTime = 100;
+					while (allNetworkFiles.isLockOnFile(fileName)){
+						try {
+							Thread.sleep(sleepTime);
+						} catch (InterruptedException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+					}
+					System.out.println("The lock was set by the agent.");
+					node.removeFileFromNetwork(fileName);
+					unlockList.add(fileName);
+					allNetworkFiles.unlockFile(fileName);
+				}
+			} else {
+				System.out.println("The file doesn't exist.");
+			}
+		}
+	}
+	
+	//method for deleting a file locally, can only be done if this node isn't the owner and there are still two copies in the network
+	public void deleteFileLocally(String fileName){
+		int numberOfClients = 4;
+		ClientToNamingServerInterface ni = node.makeNI();
+		try {
+			numberOfClients = ni.amIFirst();
+		} catch (RemoteException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		ni = null;
+		if (numberOfClients == 1){
+			System.out.println("The file cannot be deleted locally because this node is the only owner.");
+		} else {
+			if (hasFile(fileName)){
+				if (ownedFiles.checkFileExists(fileName) && localFiles.checkFileExists(fileName)){
+					System.out.println("This node is the (local) owner, cannot delete this file.");
+				} else {
+					int hashOwner = -1;
+					ni = node.makeNI();
+					try {
+						hashOwner = ni.getHashFileLocation(fileName);
+					} catch (RemoteException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					ni = null;
+					boolean canBeDeleted = false;
+					ClientToClientInterface ctci = node.makeCTCI(hashOwner);
+					try {
+						canBeDeleted = ctci.canFileBeDeleted(fileName);
+					} catch (RemoteException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					if (canBeDeleted){
+						if (allNetworkFiles.isLockOnFile(fileName)){
+							System.out.println("The file can't be deleted because there is a lock on it.");
+						} else {
+							allNodeOwnedFiles.lockFileWithName(fileName);
+							System.out.println("The lock request is set.");
+							long sleepTime = 100;
+							while (allNodeOwnedFiles.isLockOnFile(fileName)){
+								//sleep a bit if the lock is not yet set 
+								try {
+									Thread.sleep(sleepTime);
+								} catch (InterruptedException e) {
+									// TODO Auto-generated catch block
+									e.printStackTrace();
+								}
+							}
+							System.out.println("The file was locked by the agent. Now we can delete the file.");
+							node.removeLocationFromFileFromOwnerNode(fileName, node.getName());
+							//fileWithFile verwijderen op basis van naam
+							removeRepFile(fileName);
+							System.out.println("The file was deleted.");
+							unlockList.add(fileName);
+							allNetworkFiles.unlockFile(fileName);
+						}
+						
+						
+					} else {
+						System.out.println("The file can't be deleted because there are only 2 copies.");
+					}
+				}
+				
+			} else {
+				System.out.println("This node doesn't have that file");
+			}
+		}
+		
+		
+	}
+	
+	//method for opening a file, if this node doesn't have this file, it will be downloaded.
+	public void openFile(String fileName){
+		int numberOfClients = 4;
+		ClientToNamingServerInterface ni = node.makeNI();
+		try {
+			numberOfClients = ni.amIFirst();
+		} catch (RemoteException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		ni = null;
+		if (numberOfClients == 1){
+			if (localFiles.checkFileExists(fileName)){
+				System.out.println("The file "+fileName+" was located on this node. ");
+				System.out.println("Opening the file: ");
+				FileWithFile file = localFiles.getFile(fileName);
+				file.open();
+			} else {
+				System.out.println("The file wasn't found.");
+			}
+		} else {
+			// if the file is not locked
+			if (!isFileLocked(fileName)){
+				//checking the localfiles
 				allNodeOwnedFiles.lockFileWithName(fileName);
+				System.out.println("The lock request is set.");
 				long sleepTime = 100;
-				while (allNetworkFiles.isLockOnFile(fileName)){
+				while (allNodeOwnedFiles.isLockOnFile(fileName)){
+					//sleep a bit if the lock is not yet set 
 					try {
 						Thread.sleep(sleepTime);
 					} catch (InterruptedException e) {
@@ -449,153 +586,68 @@ public class FileManager {
 						e.printStackTrace();
 					}
 				}
-				System.out.println("The lock was set by the agent.");
-				node.removeFileFromNetwork(fileName);
-				unlockList.add(fileName);
-				allNetworkFiles.unlockFile(fileName);
-			}
-			
-			
-		} else {
-			System.out.println("The file doesn't exist.");
-		}
-	}
-	
-	//method for deleting a file locally, can only be done if this node isn't the owner and there are still two copies in the network
-	public void deleteFileLocally(String fileName){
-		if (hasFile(fileName)){
-			if (ownedFiles.checkFileExists(fileName) && localFiles.checkFileExists(fileName)){
-				System.out.println("This node is the (local) owner, cannot delete this file.");
-			} else {
-				int hashOwner = -1;
-				ClientToNamingServerInterface ni = node.makeNI();
-				try {
-					hashOwner = ni.getHashFileLocation(fileName);
-				} catch (RemoteException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				ni = null;
-				boolean canBeDeleted = false;
-				ClientToClientInterface ctci = node.makeCTCI(hashOwner);
-				try {
-					canBeDeleted = ctci.canFileBeDeleted(fileName);
-				} catch (RemoteException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				if (canBeDeleted){
-					if (allNetworkFiles.isLockOnFile(fileName)){
-						System.out.println("The file can't be deleted because there is a lock on it.");
-					} else {
-						allNodeOwnedFiles.lockFileWithName(fileName);
-						System.out.println("The lock request is set.");
-						long sleepTime = 100;
-						while (allNodeOwnedFiles.isLockOnFile(fileName)){
-							//sleep a bit if the lock is not yet set 
-							try {
-								Thread.sleep(sleepTime);
-							} catch (InterruptedException e) {
-								// TODO Auto-generated catch block
-								e.printStackTrace();
+				System.out.println("The file was locked by the agent. Now we search the file: ");
+				if (localFiles.checkFileExists(fileName)){
+					System.out.println("The file "+fileName+" was located on this node. ");
+					System.out.println("Opening the file: ");
+					FileWithFile file = localFiles.getFile(fileName);
+					file.open();
+					
+				//checking the replication files on this node	
+				} else if (repFiles.checkFileExists(fileName)){
+					System.out.println("The file "+fileName+" was replicated on this node. ");
+					System.out.println("Opening the file: ");
+					FileWithFile file = repFiles.getFile(fileName);
+					file.open();
+					
+				//checking the network	
+				} else if (allNetworkFiles.existsWithName(fileName)){
+					ni = node.makeNI();
+					try {
+						int hashOwner = ni.getHashFileLocation(fileName);
+						ni = null;
+						ClientToClientInterface ctci = node.makeCTCI(hashOwner);
+						boolean isFound = ctci.sendFileTo(fileName, node.getOwnHash());
+						// if the file is found
+						if (isFound){
+							System.out.println("The file "+fileName+" is being send to this node...");
+							sleepTime = 100;
+							while (tcp.threadRunning()){
+							//sleep a bit if the file is not yet been received. 
+								try {
+									Thread.sleep(sleepTime);
+								} catch (InterruptedException e) {
+									// TODO Auto-generated catch block
+									e.printStackTrace();
+								}
 							}
+							System.out.println("Opening the file: ");
+							FileWithFile file = getFileWithFile(fileName);
+							file.open();
+							
+						// if the file wasn't found
+						} else {
+							System.out.println("The file couldn't be found on the network.");
 						}
-						System.out.println("The file was locked by the agent. Now we can delete the file.");
-						node.removeLocationFromFileFromOwnerNode(fileName, node.getName());
-						//fileWithFile verwijderen op basis van naam
-						removeRepFile(fileName);
-						System.out.println("The file was deleted.");
-						unlockList.add(fileName);
-						allNetworkFiles.unlockFile(fileName);
+						
+					} catch (RemoteException e) {
+						e.printStackTrace();
+						ni = null;
 					}
 					
 					
 				} else {
-					System.out.println("The file can't be deleted because there are only 2 copies.");
+					System.out.println("The file couldn't be found on the network.");
 				}
-			}
-			
-		} else {
-			System.out.println("This node doesn't have that file");
-		}
-	}
-	
-	//method for opening a file, if this node doesn't have this file, it will be downloaded.
-	public void openFile(String fileName){
-		// if the file is not locked
-		if (!isFileLocked(fileName)){
-			//checking the localfiles
-			allNodeOwnedFiles.lockFileWithName(fileName);
-			System.out.println("The lock request is set.");
-			long sleepTime = 100;
-			while (allNodeOwnedFiles.isLockOnFile(fileName)){
-				//sleep a bit if the lock is not yet set 
-				try {
-					Thread.sleep(sleepTime);
-				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			}
-			System.out.println("The file was locked by the agent. Now we search the file: ");
-			if (localFiles.checkFileExists(fileName)){
-				System.out.println("The file "+fileName+" was located on this node. ");
-				System.out.println("Opening the file: ");
-				FileWithFile file = localFiles.getFile(fileName);
-				file.open();
-				
-			//checking the replication files on this node	
-			} else if (repFiles.checkFileExists(fileName)){
-				System.out.println("The file "+fileName+" was replicated on this node. ");
-				System.out.println("Opening the file: ");
-				FileWithFile file = repFiles.getFile(fileName);
-				file.open();
-				
-			//checking the network	
-			} else if (allNetworkFiles.existsWithName(fileName)){
-				ClientToNamingServerInterface ni = node.makeNI();
-				try {
-					int hashOwner = ni.getHashFileLocation(fileName);
-					ni = null;
-					ClientToClientInterface ctci = node.makeCTCI(hashOwner);
-					boolean isFound = ctci.sendFileTo(fileName, node.getOwnHash());
-					// if the file is found
-					if (isFound){
-						System.out.println("The file "+fileName+" is being send to this node...");
-						sleepTime = 100;
-						while (tcp.threadRunning()){
-						//sleep a bit if the file is not yet been received. 
-							try {
-								Thread.sleep(sleepTime);
-							} catch (InterruptedException e) {
-								// TODO Auto-generated catch block
-								e.printStackTrace();
-							}
-						}
-						System.out.println("Opening the file: ");
-						FileWithFile file = getFileWithFile(fileName);
-						file.open();
-						
-					// if the file wasn't found
-					} else {
-						System.out.println("The file couldn't be found on the network.");
-					}
-					
-				} catch (RemoteException e) {
-					e.printStackTrace();
-					ni = null;
-				}
-				
-				
+				allNetworkFiles.unlockFile(fileName);
+				unlockList.add(fileName);
+				System.out.println("The lock was removed.");
 			} else {
-				System.out.println("The file couldn't be found on the network.");
+				System.out.println("The file is locked and can not be opened/downloaded");
 			}
-			allNetworkFiles.unlockFile(fileName);
-			unlockList.add(fileName);
-			System.out.println("The lock was removed.");
-		} else {
-			System.out.println("The file is locked and can not be opened/downloaded");
 		}
+		
+		
 	}
 		
 	
