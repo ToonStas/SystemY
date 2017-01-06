@@ -16,7 +16,6 @@ public class Agent implements Serializable,Runnable {
 	private static long SLEEPTIME = 100;
 	private FileWithoutFileList allFiles;
 	private NodeClient node;
-	private boolean start = false;
 	
 	public Agent(){
 		allFiles = new FileWithoutFileList();
@@ -25,57 +24,42 @@ public class Agent implements Serializable,Runnable {
 	
 	public void setNode(NodeClient nodeClient){
 		node = nodeClient;
-		start = true;
 	}
 	
 	
 	public void run(){
+		//add the nodes new owned files
+		FileManager fileManager = node.getFileManager();
+		FileWithoutFileList nodeFileList = fileManager.getAllNodeOwnedFiles();
+		allFiles.addAllFilesNotAlreadyAdded(nodeFileList);
 		
-		while (true){
-			//waiting till the thread may start and the node is set
-			while (start == false){
-				try {
-					Thread.sleep(SLEEPTIME);
-				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			}
-			//add the nodes new owned files
-			FileManager fileManager = node.getFileManager();
-			FileWithoutFileList nodeFileList = fileManager.getAllNodeOwnedFiles();
-			allFiles.addAllFilesNotAlreadyAdded(nodeFileList);
-			
-			//unlock the files with the unlocks this node has
-			ArrayList<String> unlockList = fileManager.getUnlockList();
-			allFiles.removeAllLocksInThisNameList(unlockList);
-			fileManager.clearUnlockList();
-			
-			//set the lock request from the node
-			ArrayList<String> lockRequests = nodeFileList.getNameListLockedFiles();
-			allFiles.lockAllFilesInThisNameList(lockRequests);
-			
-			//remove the lock request from the nodes list
-			nodeFileList.removeAllLocksInThisNameList(lockRequests);
-			
-			//return the nodes lock request list:
-			fileManager.setAllNodeOwnedFiles(nodeFileList);
-			
-			//now we set the new allFile list in the node
-			fileManager.setAllFileList(allFiles);
-			
-			//sleeping a bit
-			try {
-				Thread.sleep(SLEEPTIME);
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			
-			start = false;
-			node.passAgent(this);
+		//unlock the files with the unlocks this node has
+		ArrayList<String> unlockList = fileManager.getUnlockList();
+		allFiles.removeAllLocksInThisNameList(unlockList);
+		fileManager.clearUnlockList();
+		
+		//set the lock request from the node
+		ArrayList<String> lockRequests = nodeFileList.getNameListLockedFiles();
+		allFiles.lockAllFilesInThisNameList(lockRequests);
+		
+		//remove the lock request from the nodes list
+		nodeFileList.removeAllLocksInThisNameList(lockRequests);
+		
+		//return the nodes lock request list:
+		fileManager.setAllNodeOwnedFiles(nodeFileList);
+		
+		//now we set the new allFile list in the node
+		fileManager.setAllFileList(allFiles);
+		
+		//sleeping a bit
+		try {
+			Thread.sleep(SLEEPTIME);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 		
+		node.passAgent(this);
 	}
 	
 	

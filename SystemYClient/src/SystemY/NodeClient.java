@@ -685,11 +685,11 @@ public class NodeClient extends UnicastRemoteObject implements ClientToClientInt
 	
 	public void startAgent(Agent agent){
 		agent.setNode(this);
+		new Thread(agent).start();
 	}
 	
 	public void startUpAgent(){
 		Agent agent = new Agent();
-		(new Thread(agent)).start();
 		startAgent(agent);
 	}
 	
