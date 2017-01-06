@@ -227,4 +227,11 @@ public class FileWithoutFileList implements Serializable{
 		}
 		return nameList;
 	}
+
+	public void removeAllLocks() {
+		for (int i=0;i<list.size();i++){
+			list.get(i).unlock();
+		}
+		
+	}
 }

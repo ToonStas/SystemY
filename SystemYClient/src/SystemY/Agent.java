@@ -36,17 +36,17 @@ public class Agent implements Serializable,Runnable {
 			allFiles.removeFileWithName(deleteList.get(i));
 		}
 		
+		//set the lock request from the node
+		ArrayList<String> lockRequests = nodeFileList.getNameListLockedFiles();
+		allFiles.lockAllFilesInThisNameList(lockRequests);
+		
 		//unlock the files with the unlocks this node has
 		ArrayList<String> unlockList = fileManager.getUnlockList();
 		allFiles.removeAllLocksInThisNameList(unlockList);
 		fileManager.clearUnlockList();
 		
-		//set the lock request from the node
-		ArrayList<String> lockRequests = nodeFileList.getNameListLockedFiles();
-		allFiles.lockAllFilesInThisNameList(lockRequests);
-		
 		//remove the lock request from the nodes list
-		nodeFileList.removeAllLocksInThisNameList(lockRequests);
+		nodeFileList.removeAllLocks();
 		
 		//return the nodes owner list without files (ownedfiles)
 		fileManager.setAllNodeOwnedFiles(nodeFileList);
