@@ -762,6 +762,18 @@ public class FileManager {
 	}
 	
 	public ArrayList<String> getListAllFiles(){
+		ClientToNamingServerInterface ni = node.makeNI();
+		int numberOfClients = 0;
+		try {
+			numberOfClients = ni.amIFirst();
+		} catch (RemoteException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		if (numberOfClients == -1){
+			allNetworkFiles.addAllFilesNotAlreadyAdded(localFiles);
+			allNetworkFiles.addAllFilesNotAlreadyAdded(repFiles);
+		} 
 		return allNetworkFiles.getNameList();
 	}
 	
