@@ -42,21 +42,19 @@ public class NodeClient extends UnicastRemoteObject implements ClientToClientInt
 	}
 
 	public NodeClient() throws RemoteException{
+		//INSTRUCTIES VOOR GUIMAKER THIJS
+		
+		//stap 1: maak een GUI waar je de naam van de node kan ingeven, nu gebeurd door de methode hieronder:
 		name = readConsoleName();
-		multicastReceiverThreadClient = new Thread(
-				new MulticastReceiverThreadClient(ownHash, this));
-
-		//GUI gui = new GUI(this);
-
+		//stap 2: nadat de naam in NodeClient is ingegeven kan je beginnen met hetopstarten van de node, methode "startUp();" 
+		//			laat ondertussen op de gui verschijnen dat we aan het opstarten zijn.
 		startUp();
-
 		System.out.println("This nodes hash is: "+ownHash);
-		
-
-		
+		//stap 3: start de "hoofdgui" (als startup compleet is) met de lijst van de bestanden en refresh deze gui om de zoveel (200 ongeveer) milliseconden
+					
 		//infinite while loop for the gui
 		while (true){
-			consoleGUI(); 
+			consoleGUI();
 		}
 			
 	}
@@ -168,6 +166,9 @@ public class NodeClient extends UnicastRemoteObject implements ClientToClientInt
 	
 	private void startUp() {
 		try {
+			multicastReceiverThreadClient = new Thread(
+					new MulticastReceiverThreadClient(ownHash, this));
+	
 			//make registry to establish communication of server to client
 			String bindLocation = "Client"+name;
 			Registry reg = LocateRegistry.createRegistry(1200);

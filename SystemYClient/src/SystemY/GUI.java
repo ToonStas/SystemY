@@ -13,6 +13,7 @@ import javax.swing.JTextField;
 
 
 public class GUI extends JFrame implements ActionListener {
+	JFrame frame;
 	NodeClient node;
 	FileManager fileManager;
 	int lengthList;
@@ -26,13 +27,20 @@ public class GUI extends JFrame implements ActionListener {
 	public GUI(NodeClient nodeClient){
 		node = nodeClient;
 		this.fileManager = node.getFileManager();
+		frame = new JFrame("Filelist");
+		JFrame.setDefaultLookAndFeelDecorated(true);
+		frame.setBackground(Color.LIGHT_GRAY);
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.setLayout(new GridLayout(lengthList,4));
+		
+		//getting the lists
 		fileList = fileManager.getListAllFiles();
 		fileListDeleteLocally = fileManager.getListAllFilesThatCanBeDeletedLocally();
 		openButtons = new JButton[lengthList];
 		deleteButtons = new JButton[lengthList];
 		deleteLocallyButtons = new JButton[lengthList];
 		
-		
+		//making the buttons
 		for(int i=0; i< lengthList;i++){
 			JButton btn = new JButton("OPEN");
 			btn.addActionListener(this);
@@ -52,11 +60,6 @@ public class GUI extends JFrame implements ActionListener {
 			add(btn);
 			deleteLocallyButtons[i] = btn;
 		}
-		JFrame frame = new JFrame("Filelist");
-		JFrame.setDefaultLookAndFeelDecorated(true);
-		frame.setBackground(Color.LIGHT_GRAY);
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		frame.setLayout(new GridLayout(lengthList,4));
 		
 		for(int i = 0; i< lengthList; i++)	
 		{
@@ -68,20 +71,17 @@ public class GUI extends JFrame implements ActionListener {
 			if (fileListDeleteLocally.contains(fileList.get(i))){
 				p.add(deleteLocallyButtons[i]);
 			}
-			
-			//if(checkOwned(FileWithFile.getNaam(), FileManager.BestandenLijst())){								//Check if file is local file
-			//	p.add(new JButton("LOCAL_DELETE"));
-			// }
 			frame.add(p);
 			frame.pack();
 		}
-	    
+		
 		JPanel p5 = new JPanel(new GridLayout(lengthList+1,3));
 		p5.add(logout);
 		frame.add(p5);
 		frame.pack();
 	    frame.setVisible(true);
 	}
+	
 	
 	@Override
 	public void actionPerformed(ActionEvent e) {
