@@ -4,7 +4,7 @@ import java.awt.Color;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-
+import java.util.ArrayList;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -13,46 +13,62 @@ import javax.swing.JTextField;
 
 
 public class GUI extends JFrame implements ActionListener {
-	NodeClient nodeClient;
+	NodeClient node;
 	FileManager fileManager;
-	int length;
+	int lengthList;
+	ArrayList<String> fileList;
+	ArrayList<String> fileListDeleteLocally;
 	JButton logout = new JButton("LOG OUT");
-	JButton openbuttons[] = new JButton[length];
-	JButton deletebuttons[] = new JButton[length];
-	FileWithFile fileWithFile; //een fileWithFile
+	JButton openButtons[];
+	JButton deleteButtons[];
+	JButton deleteLocallyButtons[];
 	
 	public GUI(NodeClient nodeClient){
-		this.nodeClient = nodeClient;
-		fileManager = nodeClient.getBestandenLijst();
-		length = fileManager.getSize();
+		node = nodeClient;
+		this.fileManager = node.getFileManager();
+		fileList = fileManager.getListAllFiles();
+		fileListDeleteLocally = fileManager.getListAllFilesThatCanBeDeletedLocally();
+		openButtons = new JButton[lengthList];
+		deleteButtons = new JButton[lengthList];
+		deleteLocallyButtons = new JButton[lengthList];
 		
-		for(int i=0; i< length;i++){
+		
+		for(int i=0; i< lengthList;i++){
 			JButton btn = new JButton("OPEN");
 			btn.addActionListener(this);
 			add(btn);
-			openbuttons[i] = btn;
+			openButtons[i] = btn;
 		}
-		for(int i=0;i<length;i++)
+		for(int i=0;i<lengthList;i++)
 		{
 			JButton btn = new JButton("DELETE");
 			btn.addActionListener(this);
 			add(btn);
-			deletebuttons[i] = btn;
+			deleteButtons[i] = btn;
+		}
+		for (int i=0;i<lengthList;i++){
+			JButton btn = new JButton ("DELETE LOCALLY");
+			btn.addActionListener(this);
+			add(btn);
+			deleteLocallyButtons[i] = btn;
 		}
 		JFrame frame = new JFrame("Filelist");
 		JFrame.setDefaultLookAndFeelDecorated(true);
 		frame.setBackground(Color.LIGHT_GRAY);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		frame.setLayout(new GridLayout(length,4));
+		frame.setLayout(new GridLayout(lengthList,4));
 		
-		
-		for(int i = 0; i< length; i++)	
+		for(int i = 0; i< lengthList; i++)	
 		{
 			JPanel p = new JPanel();
 			p.setLayout(new GridLayout(1, 4));
-			p.add(new JTextField(fileWithFile.getName()));	//get filename
-			p.add(openbuttons[i]);
-			p.add(deletebuttons[i]);
+			p.add(new JTextField(fileList.get(i)));	//get filename
+			p.add(openButtons[i]);
+			p.add(deleteButtons[i]);
+			if (fileListDeleteLocally.contains(fileList.get(i))){
+				p.add(deleteLocallyButtons[i]);
+			}
+			
 			//if(checkOwned(FileWithFile.getNaam(), FileManager.BestandenLijst())){								//Check if file is local file
 			//	p.add(new JButton("LOCAL_DELETE"));
 			// }
@@ -60,7 +76,7 @@ public class GUI extends JFrame implements ActionListener {
 			frame.pack();
 		}
 	    
-		JPanel p5 = new JPanel(new GridLayout(length+1,3));
+		JPanel p5 = new JPanel(new GridLayout(lengthList+1,3));
 		p5.add(logout);
 		frame.add(p5);
 		frame.pack();
@@ -70,14 +86,22 @@ public class GUI extends JFrame implements ActionListener {
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		JButton b = (JButton) e.getSource();
-		int i=0;
-		if(b == openbuttons[i]){
-			fileWithFile.getFile();
+		String name;
+		for (int i=0;i<lengthList;i++){
+			if(b.equals(openButtons[i])){
+				name = fileList.get(i);
+				fileManager.openFile(name);
+			}
+			if(b.equals(deleteButtons[i])){
+				name = fileList.get(i);
+				fileManager.deleteFileFromNetwork(name);
+			}
+			if(b.equals(deleteLocallyButtons[i])){
+				name = fileList.get(i);
+				fileManager.deleteFileLocally(name);
+			}
 		}
-		if(b == deletebuttons[i]){
-			String name = fileWithFile.getName();
-			fileManager.verwijderBestandMetNaam(name);
-		}
+		
 		
 	}
 
