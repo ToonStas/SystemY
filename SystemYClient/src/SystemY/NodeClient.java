@@ -18,6 +18,8 @@ import java.util.HashSet;
 import java.util.Random;
 import java.util.TreeMap;
 import java.util.concurrent.TimeUnit;
+
+import javax.swing.JTextField;
 import javax.swing.text.html.HTMLDocument.Iterator;
 
 public class NodeClient extends UnicastRemoteObject implements ClientToClientInterface, NamingServerToClientInterface{
@@ -45,13 +47,14 @@ public class NodeClient extends UnicastRemoteObject implements ClientToClientInt
 		//INSTRUCTIES VOOR GUIMAKER THIJS
 		
 		//stap 1: maak een GUI waar je de naam van de node kan ingeven, nu gebeurd door de methode hieronder:
+		new MenuGUI(this);
 		name = readConsoleName();
 		//stap 2: nadat de naam in NodeClient is ingegeven kan je beginnen met hetopstarten van de node, methode "startUp();" 
 		//			laat ondertussen op de gui verschijnen dat we aan het opstarten zijn.
 		startUp();
 		System.out.println("This nodes hash is: "+ownHash);
 		//stap 3: start de "hoofdgui" (als startup compleet is) met de lijst van de bestanden en refresh deze gui om de zoveel (200 ongeveer) milliseconden
-					
+		new GUI(this);
 		//infinite while loop for the gui
 		while (true){
 			consoleGUI();
@@ -164,7 +167,7 @@ public class NodeClient extends UnicastRemoteObject implements ClientToClientInt
 		return output;
 	}
 	
-	private void startUp() {
+	public void startUp() {
 		try {
 			multicastReceiverThreadClient = new Thread(
 					new MulticastReceiverThreadClient(ownHash, this));
@@ -389,7 +392,7 @@ public class NodeClient extends UnicastRemoteObject implements ClientToClientInt
 	}
 	
 	//when this node starts ask for user input for the name
-	private String readConsoleName() {
+	public String readConsoleName() {
 		String naam = null;
 		BufferedReader br = null;
 

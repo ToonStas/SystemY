@@ -27,11 +27,6 @@ public class GUI extends JFrame implements ActionListener {
 	public GUI(NodeClient nodeClient){
 		node = nodeClient;
 		this.fileManager = node.getFileManager();
-		frame = new JFrame("Filelist");
-		JFrame.setDefaultLookAndFeelDecorated(true);
-		frame.setBackground(Color.LIGHT_GRAY);
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		frame.setLayout(new GridLayout(lengthList,4));
 		
 		//getting the lists
 		fileList = fileManager.getListAllFiles();
@@ -40,6 +35,12 @@ public class GUI extends JFrame implements ActionListener {
 		openButtons = new JButton[lengthList];
 		deleteButtons = new JButton[lengthList];
 		deleteLocallyButtons = new JButton[lengthList];
+		
+		frame = new JFrame("Filelist");
+		JFrame.setDefaultLookAndFeelDecorated(true);
+		frame.setBackground(Color.LIGHT_GRAY);
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.setLayout(new GridLayout(lengthList,4));
 		
 		//making the buttons
 		for(int i=0; i< lengthList;i++){
