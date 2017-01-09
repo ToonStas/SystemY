@@ -52,13 +52,12 @@ public class NodeClient extends UnicastRemoteObject implements ClientToClientInt
 		//stap 2: nadat de naam in NodeClient is ingegeven kan je beginnen met hetopstarten van de node, methode "startUp();" 
 		//			laat ondertussen op de gui verschijnen dat we aan het opstarten zijn.
 		//startUp();
-		System.out.println("This nodes hash is: "+ownHash);
 		//stap 3: start de "hoofdgui" (als startup compleet is) met de lijst van de bestanden en refresh deze gui om de zoveel (200 ongeveer) milliseconden
-		new GUI(this);
+
 		//infinite while loop for the gui
-		while (true){
-			consoleGUI();
-		}
+//		while (true){
+//			consoleGUI();
+//		}
 			
 	}
 	
@@ -815,6 +814,10 @@ public class NodeClient extends UnicastRemoteObject implements ClientToClientInt
 			}
 			ctci = null;
 		}
+	}
+	
+	public void startMainGUI(){
+		new GUI(this);
 	}
 	
 }

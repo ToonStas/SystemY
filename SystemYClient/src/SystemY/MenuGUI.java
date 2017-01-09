@@ -47,6 +47,8 @@ public MenuGUI(NodeClient nodeClient)
     p2.add(enter);
     frame.add(p2);
     frame.pack();
+    
+    frame.setVisible(true);
     }
 
 	public void actionPerformed(ActionEvent e){
@@ -59,6 +61,7 @@ public MenuGUI(NodeClient nodeClient)
 	if(b == enter)
 	{
 		node.startUp();
+		node.startMainGUI();
 	}
 	}
 
