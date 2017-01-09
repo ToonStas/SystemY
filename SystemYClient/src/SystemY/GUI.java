@@ -102,6 +102,10 @@ public class GUI extends JFrame implements ActionListener {
 				name = fileList.get(i);
 				fileManager.deleteFileLocally(name);
 			}
+		if(b == logout)
+		{
+			node.shutdown();
+		}
 		}
 		
 		

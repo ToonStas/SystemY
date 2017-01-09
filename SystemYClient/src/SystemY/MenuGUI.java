@@ -36,7 +36,7 @@ public MenuGUI(NodeClient nodeClient)
     
     JPanel p1 = new JPanel();
     p1.setLayout(new GridLayout(1,1));
-    enter.addActionListener(this);
+    set.addActionListener(this);
     p1.add(set);
     frame.add(p1);
     frame.pack();
@@ -55,9 +55,11 @@ public MenuGUI(NodeClient nodeClient)
 	JButton b = (JButton) e.getSource();
 	if(b == set)
 	{
-		String str = name.getText(); 
+		String str = name.getText();
+		System.out.println(str);
 		node.setName(str);
 	}
+	
 	if(b == enter)
 	{
 		node.startUp();
