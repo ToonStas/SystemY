@@ -48,12 +48,17 @@ public class NodeClient extends UnicastRemoteObject implements ClientToClientInt
 		
 		//stap 1: maak een GUI waar je de naam van de node kan ingeven, nu gebeurd door de methode hieronder:
 		new MenuGUI(this);
+		//name = readConsoleName();
 		//stap 2: nadat de naam in NodeClient is ingegeven kan je beginnen met hetopstarten van de node, methode "startUp();" 
 		//			laat ondertussen op de gui verschijnen dat we aan het opstarten zijn.
-
+		//startUp();
+		System.out.println("This nodes hash is: "+ownHash);
 		//stap 3: start de "hoofdgui" (als startup compleet is) met de lijst van de bestanden en refresh deze gui om de zoveel (200 ongeveer) milliseconden
-
+		new GUI(this);
 		//infinite while loop for the gui
+		while (true){
+			consoleGUI();
+		}
 			
 	}
 	
@@ -388,7 +393,6 @@ public class NodeClient extends UnicastRemoteObject implements ClientToClientInt
 	
 	public void setName(String name){
 		this.name = name;
-		System.out.println(name);
 	}
 	//when this node starts ask for user input for the name
 	public String readConsoleName() {
@@ -811,10 +815,6 @@ public class NodeClient extends UnicastRemoteObject implements ClientToClientInt
 			}
 			ctci = null;
 		}
-	}
-	
-	public void startMainGUI(){
-		new GUI(this);
 	}
 	
 }
