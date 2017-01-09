@@ -7,7 +7,7 @@ import java.util.HashSet;
 import java.util.Random;
 import java.util.concurrent.Semaphore;
 
-// this class handles the tcp sends/receives.
+// this class handles the tcp sends/receives
 public class TCP {
 	private final static int SOCKET_PORT = 13267;
 	private Thread receiveThread;
