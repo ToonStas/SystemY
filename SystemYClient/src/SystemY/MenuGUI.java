@@ -27,6 +27,7 @@ public MenuGUI(NodeClient nodeClient)
     frame.setBackground(Color.LIGHT_GRAY);
     frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     frame.setLayout(new GridLayout(3,1));
+    JFrame.setDefaultLookAndFeelDecorated(true);
    
     JPanel p = new JPanel();
     p.setLayout(new GridLayout(1,1));
@@ -47,6 +48,7 @@ public MenuGUI(NodeClient nodeClient)
     p2.add(enter);
     frame.add(p2);
     frame.pack();
+    frame.setVisible(true);
     }
 
 	public void actionPerformed(ActionEvent e){
