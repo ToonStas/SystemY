@@ -1,6 +1,7 @@
 package SystemY;
 
 import java.awt.Color;
+import java.awt.GridBagConstraints;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -17,6 +18,7 @@ public class GUI extends JFrame implements ActionListener {
 	NodeClient node;
 	FileManager fileManager;
 	int lengthList;
+	int column;
 	ArrayList<String> fileList;
 	ArrayList<String> fileListDeleteLocally;
 	JButton logout = new JButton("LOG OUT");
@@ -32,6 +34,7 @@ public class GUI extends JFrame implements ActionListener {
 		fileList = fileManager.getListAllFiles();
 		fileListDeleteLocally = fileManager.getListAllFilesThatCanBeDeletedLocally();
 		lengthList = fileList.size();
+		System.out.println(lengthList);
 		openButtons = new JButton[lengthList];
 		deleteButtons = new JButton[lengthList];
 		deleteLocallyButtons = new JButton[lengthList];
@@ -41,6 +44,8 @@ public class GUI extends JFrame implements ActionListener {
 		frame.setBackground(Color.LIGHT_GRAY);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setLayout(new GridLayout(lengthList,4));
+		
+		
 		
 		//making the buttons
 		for(int i=0; i< lengthList;i++){
@@ -65,14 +70,26 @@ public class GUI extends JFrame implements ActionListener {
 		
 		for(int i = 0; i< lengthList; i++)	
 		{
-			JPanel p = new JPanel();
-			p.setLayout(new GridLayout(1, 4));
+			if(fileListDeleteLocally.contains(fileList.get(i))){
+				column = 4;
+			}
+			else
+			{
+				column = 3;
+			}
+			JPanel p= new JPanel();
+			p.setLayout(new GridLayout(1,column));
 			p.add(new JTextField(fileList.get(i)));	//get filename
+			System.out.println(fileList.get(i));
 			p.add(openButtons[i]);
 			p.add(deleteButtons[i]);
 			if (fileListDeleteLocally.contains(fileList.get(i))){
 				p.add(deleteLocallyButtons[i]);
 			}
+			//else
+			//{
+			//	p.add();
+			//}
 			frame.add(p);
 			frame.pack();
 		}
