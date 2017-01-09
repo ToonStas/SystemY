@@ -36,6 +36,7 @@ public class GUI extends JFrame implements ActionListener {
 		//getting the lists
 		fileList = fileManager.getListAllFiles();
 		fileListDeleteLocally = fileManager.getListAllFilesThatCanBeDeletedLocally();
+		lengthList = fileList.size();
 		openButtons = new JButton[lengthList];
 		deleteButtons = new JButton[lengthList];
 		deleteLocallyButtons = new JButton[lengthList];
