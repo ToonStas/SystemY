@@ -5,8 +5,6 @@ import java.awt.Color;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.ArrayList;
-
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -15,6 +13,7 @@ import javax.swing.JTextField;
 public class MenuGUI extends JFrame implements ActionListener {
 
 	JFrame frame;
+    JPanel p;
 	JButton enter = new JButton("ENTER");
 	JButton set = new JButton("SET");
 	JTextField name = new JTextField();
@@ -28,7 +27,7 @@ public MenuGUI(NodeClient nodeClient)
     frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     frame.setLayout(new GridLayout(3,1));
    
-    JPanel p = new JPanel();
+    p = new JPanel();
     p.setLayout(new GridLayout(1,1));
     p.add(name);
     frame.add(p);
@@ -47,6 +46,8 @@ public MenuGUI(NodeClient nodeClient)
     p2.add(enter);
     frame.add(p2);
     frame.pack();
+    
+    frame.setVisible(true);
     }
 
 	public void actionPerformed(ActionEvent e){
@@ -59,6 +60,7 @@ public MenuGUI(NodeClient nodeClient)
 	if(b == enter)
 	{
 		node.startUp();
+		node.startMainGUI();
 	}
 	}
 
