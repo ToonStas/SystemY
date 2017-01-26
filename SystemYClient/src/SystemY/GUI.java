@@ -38,13 +38,22 @@ public class GUI extends JFrame implements ActionListener {
 		openButtons = new JButton[lengthList];
 		deleteButtons = new JButton[lengthList];
 		deleteLocallyButtons = new JButton[lengthList];
+		int rijen = lengthList;
 		
 		frame = new JFrame("Filelist");
 		JFrame.setDefaultLookAndFeelDecorated(true);
 		frame.setBackground(Color.LIGHT_GRAY);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		frame.setLayout(new GridLayout(lengthList,4));
+		frame.setLayout(new GridLayout(rijen+1,4));
 		
+		JPanel prij = new JPanel();
+		prij.setLayout(new GridLayout(1,4));
+		prij.add(new JTextField("Naam"));
+		prij.add(new JTextField("Open"));
+		prij.add(new JTextField("Delete"));
+		prij.add(new JTextField("Delete local"));
+		frame.add(prij);
+		frame.pack();
 		
 		
 		//making the buttons
@@ -70,15 +79,8 @@ public class GUI extends JFrame implements ActionListener {
 		
 		for(int i = 0; i< lengthList; i++)	
 		{
-			if(fileListDeleteLocally.contains(fileList.get(i))){
-				column = 4;
-			}
-			else
-			{
-				column = 3;
-			}
 			JPanel p= new JPanel();
-			p.setLayout(new GridLayout(1,column));
+			p.setLayout(new GridLayout(1,4));
 			p.add(new JTextField(fileList.get(i)));	//get filename
 			System.out.println(fileList.get(i));
 			p.add(openButtons[i]);
@@ -86,10 +88,10 @@ public class GUI extends JFrame implements ActionListener {
 			if (fileListDeleteLocally.contains(fileList.get(i))){
 				p.add(deleteLocallyButtons[i]);
 			}
-			//else
-			//{
-			//	p.add();
-			//}
+			else
+			{
+				p.add(deleteLocallyButtons[i]);
+			}
 			frame.add(p);
 			frame.pack();
 		}
