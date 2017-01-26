@@ -47,7 +47,7 @@ public class NodeClient extends UnicastRemoteObject implements ClientToClientInt
 		//INSTRUCTIES VOOR GUIMAKER THIJS
 		
 		//stap 1: maak een GUI waar je de naam van de node kan ingeven, nu gebeurd door de methode hieronder:
-		//new MenuGUI(this);
+		new MenuGUI(this);
 		//name = readConsoleName();
 		//stap 2: nadat de naam in NodeClient is ingegeven kan je beginnen met hetopstarten van de node, methode "startUp();" 
 		//			laat ondertussen op de gui verschijnen dat we aan het opstarten zijn.
@@ -55,9 +55,9 @@ public class NodeClient extends UnicastRemoteObject implements ClientToClientInt
 		//stap 3: start de "hoofdgui" (als startup compleet is) met de lijst van de bestanden en refresh deze gui om de zoveel (200 ongeveer) milliseconden
 
 		//infinite while loop for the gui
-		while (true){
-			consoleGUI();
-		}
+		//while (true){
+			//consoleGUI();
+		//}
 			
 	}
 	
@@ -73,7 +73,7 @@ public class NodeClient extends UnicastRemoteObject implements ClientToClientInt
 		System.out.println("[4] List all the files in the network: ");
 		System.out.println("[5] List all owner files from this node.");
 		System.out.println("[6] Delete a file locally.");
-		System.out.println("[5] Delete a file from the network (hard delete).");
+		System.out.println("[7] Delete a file from the network (hard delete).");
 		System.out.println("[9] Exit");
 		
 		String inputString = readConsole();

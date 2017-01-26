@@ -770,7 +770,7 @@ public class FileManager {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		if (numberOfClients == -1){
+		if (numberOfClients == 1){
 			allNetworkFiles.addAllFilesNotAlreadyAdded(localFiles);
 			allNetworkFiles.addAllFilesNotAlreadyAdded(repFiles);
 		} 
