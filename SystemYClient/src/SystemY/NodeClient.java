@@ -47,7 +47,7 @@ public class NodeClient extends UnicastRemoteObject implements ClientToClientInt
 		//INSTRUCTIES VOOR GUIMAKER THIJS
 		
 		//stap 1: maak een GUI waar je de naam van de node kan ingeven, nu gebeurd door de methode hieronder:
-		new MenuGUI(this);
+		//new MenuGUI(this);
 		//name = readConsoleName();
 		//stap 2: nadat de naam in NodeClient is ingegeven kan je beginnen met hetopstarten van de node, methode "startUp();" 
 		//			laat ondertussen op de gui verschijnen dat we aan het opstarten zijn.
@@ -55,9 +55,9 @@ public class NodeClient extends UnicastRemoteObject implements ClientToClientInt
 		//stap 3: start de "hoofdgui" (als startup compleet is) met de lijst van de bestanden en refresh deze gui om de zoveel (200 ongeveer) milliseconden
 
 		//infinite while loop for the gui
-//		while (true){
-//			consoleGUI();
-//		}
+		while (true){
+			consoleGUI();
+		}
 			
 	}
 	
